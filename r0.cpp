@@ -1,10 +1,13 @@
+#include <time.h>
+#include <random>
 #include <iostream>
 #include "r0.hpp"
 
+#define READ_DEBUG 1
+
 void Program::print(){
     this->expr->print();
-    std::cout << std::endl;
-}
+    std::cout << std::endl; }
 
 Expr* Program::interp(){
     return this->expr->interp();
@@ -38,4 +41,22 @@ void Num::print(){
 
 Expr* Num::interp(){
     return this;
+}
+
+Read::Read(){
+#if !READ_DEBUG
+    std::cin >> this->num;
+#else
+    std::mt19937_64 rng(time(0));
+    std::uniform_int_distribution<int> unii(-1e2, 1e2);
+    this->num = unii(rng);
+#endif
+} 
+
+void Read::print(){
+    std::cout << this->num;
+}
+
+Expr* Read::interp(){ 
+    return new Num(this->num);
 }

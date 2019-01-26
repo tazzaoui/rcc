@@ -47,4 +47,14 @@ class Num : public Expr {
   void print(void);
   Expr* interp(void);
 };
+
+class Read : public Expr {
+  int num;
+
+ public:
+  Read(void);
+  Read(int n) : num(n) {};
+  void print(void);
+  Expr* interp(void);
+};
 #endif /* R0_HPP */
