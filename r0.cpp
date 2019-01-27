@@ -17,6 +17,10 @@ std::ostream &operator<<(std::ostream &out, Program &p) {
 
 int Program::interp() { return this->expr->interp(); }
 
+Program* Program::optimize(){
+    return new Program(this->info, this->expr->optimize());
+}
+
 void Neg::print(std::ostream &out) {
   out << "(-(";
   this->expr->print(out);
@@ -53,7 +57,7 @@ Expr *Add::optimize() {
 
   /* Both Nums: just reduce to the addition itself */
   if (l_opt->type == NUM && r_opt->type == NUM)
-    return new Num(((Num *)l_opt)->get_num() + ((Num *)l_opt)->get_num());
+    return new Num(((Num *)l_opt)->get_num() + ((Num *)r_opt)->get_num());
 
   /* Left is a num, right is an add */
   if (l_opt->type == NUM && r_opt->type == ADD) {
@@ -94,7 +98,12 @@ int Num::interp() { return this->num; }
 
 Expr *Num::optimize() { return this; }
 
-void Read::print(std::ostream &out) { out << this->num; }
+void Read::print(std::ostream &out) { 
+    if (this->read)
+        out << this->num; 
+    else
+        out << "READ";
+}
 
 int Read::interp() {
   if (!QUIET_READ) {
@@ -105,6 +114,7 @@ int Read::interp() {
     std::uniform_int_distribution<int> unii(-1e2, 1e2);
     this->num = unii(rng);
   }
+  this->read = true;
   return this->num;
 }
 

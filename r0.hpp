@@ -20,7 +20,7 @@ class Program {
 
  public:
   Program(void* i, Expr* e) : info(i), expr(e){};
-  void optimize(void);
+  Program* optimize(void);
   void print(std::ostream&);
   int interp(void);
   friend std::ostream& operator<<(std::ostream&, Program&);
@@ -62,10 +62,10 @@ class Num : public Expr {
 
 class Read : public Expr {
   int num;
-
+  bool read;
  public:
-  Read(void) : num(0) {type=READ;};
-  Read(int n) : num(n){type=READ;};
+  Read(void) : num(0), read(false) {type=READ;};
+  Read(int n) : num(n), read(true) {type=READ;};
   void print(std::ostream&);
   int interp(void);
   Expr* optimize();
