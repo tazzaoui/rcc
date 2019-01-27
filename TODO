@@ -7,7 +7,7 @@
 * Extend your test suite to generate a large number of random programs.
 * Write some optimizer tests.
 * Write an optimizer for R0.
-Extend your test suite to use your optimizer.
+* Extend your test suite to use your optimizer.
 Extend your data types from R0 to R1.
 Extend your pretty printer from R0 to R1.
 Write a dozen test R1 programs.
