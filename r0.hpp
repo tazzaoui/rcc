@@ -5,8 +5,9 @@ typedef enum EXPR_TYPE { NEG, ADD, READ, NUM } EXPR_TYPE;
 
 class Expr {
  public:
-  virtual void print() = 0;
+  virtual void print(std::ostream&) = 0;
   virtual Expr* interp() = 0;
+  friend std::ostream & operator << (std::ostream&, Expr&); 
 };
 
 class Program {
@@ -15,8 +16,9 @@ class Program {
 
  public:
   Program(void* i, Expr* e) : info(i), expr(e) {};
-  void print(void);
+  void print(std::ostream&);
   Expr* interp(void);
+  friend std::ostream & operator << (std::ostream &, Program &); 
 };
 
 class Neg : public Expr {
@@ -24,7 +26,7 @@ class Neg : public Expr {
 
  public:
   Neg(Expr* e) : expr(e) {};
-  void print(void);
+  void print(std::ostream&);
   Expr* interp(void);
 };
 
@@ -33,7 +35,7 @@ class Add : public Expr {
 
  public:
   Add(Expr* l, Expr* r) : left(l), right(r) {};
-  void print(void);
+  void print(std::ostream&);
   Expr* interp(void);
 };
 
@@ -44,7 +46,7 @@ class Num : public Expr {
   Num(int n) : num(n){};
   int get_num() { return this->num; };
   void set_num(int n) { this->num = n; };
-  void print(void);
+  void print(std::ostream&);
   Expr* interp(void);
 };
 
@@ -54,7 +56,7 @@ class Read : public Expr {
  public:
   Read(void);
   Read(int n) : num(n) {};
-  void print(void);
+  void print(std::ostream&);
   Expr* interp(void);
 };
 #endif /* R0_HPP */

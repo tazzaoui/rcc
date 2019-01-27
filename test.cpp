@@ -4,56 +4,41 @@
 int main(int argc, char* argv[]){
     /* (3) Test numbers */
     Num x(42), y(-42), z(0);
-    std::cout << "x, y, z = ";
-    x.print();
-    std::cout << ", ";
-    y.print();
-    std::cout << ", ";
-    z.print();
-    std::cout << std::endl;
+    std::cout << "x = " << x << std::endl;
+    std::cout << "y = " << y << std::endl;
+    std::cout << "z = " << z << std::endl;
 
     /* (3) Test Additions */
     Add a(&x, &y);
-    a.print();
-    std::cout << std::endl;
+    std::cout << a << std::endl;
 
     Add b(&x, &z);
-    b.print();
-    std::cout << std::endl;
+    std::cout << b << std::endl;
 
     Add c(&a, &b);
-    c.print();
-    std::cout << std::endl;
-
-    
+    std::cout << c << std::endl;
+ 
     /* (3) Test Negations */
     Neg m(&x);
-    m.print();
-    std::cout << std::endl;
+    std::cout << m << std::endl;
 
     Neg n(&a);
-    n.print();
-    std::cout << std::endl;
+    std::cout << n << std::endl;
 
     Neg l(&c);
-    l.print();
-    std::cout << std::endl;
-
+    std::cout << l << std::endl;
 
     /* (3) Test Reads */
     Read r1;
-    r1.print();
-    std::cout << std::endl;
+    std::cout << r1 << std::endl;
 
     Read r2;
     Add r_add(&r2, &r1);
-    r_add.print();
-    std::cout << std::endl;
+    std::cout << r_add << std::endl;
 
     Read r3;
     Neg r_neg(&r3);
-    r_neg.print();
-    std::cout << std::endl;
+    std::cout << r_neg << std::endl;
 
     return 0;
 }

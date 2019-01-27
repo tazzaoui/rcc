@@ -5,38 +5,44 @@
 
 #define READ_DEBUG 1
 
-void Program::print(){
-    this->expr->print();
-    std::cout << std::endl; }
-
+std::ostream & operator << (std::ostream &out, Expr &e){ 
+    e.print(out);
+    return out;
+} 
+ 
+std::ostream & operator << (std::ostream &out, Program &p){ 
+    out << p.expr;
+    return out;
+} 
+ 
 Expr* Program::interp(){
     return this->expr->interp();
 }
 
-void Neg::print(){
-    std::cout << "(-(";
-    this->expr->print();
-    std::cout << "))";
+void Neg::print(std::ostream &out){
+    out << "(-(";
+    this->expr->print(out);
+    out << "))";
 }
 
 Expr* Neg::interp(){
     return this->expr;
 }
 
-void Add::print(){
-    std::cout << "(+ ";
-    this->left->print(); 
-    std::cout << " ";
-    this->right->print();
-    std::cout << ")";
+void Add::print(std::ostream &out){
+    out << "(+ ";
+    this->left->print(out); 
+    out << " ";
+    this->right->print(out);
+    out << ")";
 }
 
 Expr* Add::interp(){
     return this->left;
 }
 
-void Num::print(){
-    std::cout << this->num;
+void Num::print(std::ostream &out){
+    out << this->num;
 }
 
 Expr* Num::interp(){
@@ -53,8 +59,8 @@ Read::Read(){
 #endif
 } 
 
-void Read::print(){
-    std::cout << this->num;
+void Read::print(std::ostream &out){
+    out << this->num;
 }
 
 Expr* Read::interp(){ 
