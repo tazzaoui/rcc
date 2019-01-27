@@ -1,6 +1,8 @@
 #ifndef R0_HPP
 #define R0_HPP
 
+#include <iostream>
+
 typedef enum EXPR_TYPE { NEG, ADD, READ, NUM } EXPR_TYPE;
 
 class Expr {

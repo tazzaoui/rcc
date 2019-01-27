@@ -11,7 +11,7 @@ std::ostream &operator<<(std::ostream &out, Expr &e) {
 }
 
 std::ostream &operator<<(std::ostream &out, Program &p) {
-  out << p.expr;
+  p.expr->print(out);
   return out;
 }
 
