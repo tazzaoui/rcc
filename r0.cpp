@@ -3,7 +3,7 @@
 #include <iostream>
 #include <random>
 
-#define READ_DEBUG 1
+#define QUIET_READ 1
 
 std::ostream &operator<<(std::ostream &out, Expr &e) {
   e.print(out);
@@ -42,12 +42,13 @@ int Num::interp() { return this->num; }
 void Read::print(std::ostream &out) { out << this->num; }
 
 int Read::interp() {
-#if !READ_DEBUG
-  std::cin >> this->num;
-#else
-  std::mt19937_64 rng(time(0));
-  std::uniform_int_distribution<int> unii(-1e2, 1e2);
-  this->num = unii(rng);
-#endif
-  return this->num;
+    if(!QUIET_READ){
+        std::cout << "read> ";
+        std::cin >> this->num;
+    }else{
+        std::mt19937_64 rng(time(0));
+        std::uniform_int_distribution<int> unii(-1e2, 1e2);
+        this->num = unii(rng);
+    }   
+    return this->num;
 }
