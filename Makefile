@@ -25,3 +25,6 @@ rcc.o: rcc.cpp rcc.hpp
 
 clean:
 	rm -f *.o *~ $(EXE) 
+
+format:
+	clang-format -i -style=google ./*.*pp tests/*.*pp

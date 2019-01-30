@@ -23,6 +23,8 @@ class Program {
   Program* optimize(void);
   void print(std::ostream&);
   int interp(void);
+  Expr* get_expr(){return this->expr;};
+  EXPR_TYPE get_type(){return this->expr->type;};
   friend std::ostream& operator<<(std::ostream&, Program&);
 };
 
