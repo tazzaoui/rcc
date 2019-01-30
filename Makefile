@@ -5,11 +5,11 @@ EXE=rcc $(TESTS)
 
 all: $(EXE) 
 
-rcc: r0.o main.o
-	$(CXX) main.o r0.o -o rcc
+rcc: rcc.o main.o
+	$(CXX) main.o rcc.o -o rcc
 
-test: r0.o main_tests.o tests.o 
-	$(CXX) main_tests.o tests.o r0.o -o test
+test: rcc.o main_tests.o tests.o 
+	$(CXX) main_tests.o tests.o rcc.o -o test
 
 main.o: main.cpp
 	$(CXX) -c $(CXX_FLAGS) main.cpp -o main.o
@@ -20,8 +20,8 @@ main_tests.o: tests/main.cpp
 tests.o: tests/tests.cpp
 	$(CXX) -c $(CXX_FLAGS) tests/tests.cpp -o tests.o
 
-r0.o: r0.cpp r0.hpp
-	$(CXX) -c $(CXX_FLAGS) r0.cpp -o r0.o
+rcc.o: rcc.cpp rcc.hpp
+	$(CXX) -c $(CXX_FLAGS) rcc.cpp -o rcc.o
 
 clean:
 	rm -f *.o *~ $(EXE) 

@@ -1,6 +1,6 @@
 #include <iostream>
 #include <random>
-#include "../r0.hpp"
+#include "../rcc.hpp"
 
 #define DEBUG 0
 

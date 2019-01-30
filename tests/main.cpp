@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <iostream>
-#include "../r0.hpp"
+#include "../rcc.hpp"
 #include "tests.hpp"
 
 #define DEBUG 0

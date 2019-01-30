@@ -1,5 +1,5 @@
-#ifndef R0_HPP
-#define R0_HPP
+#ifndef RCC_HPP
+#define RCC_HPP
 
 #include <iostream>
 
@@ -71,4 +71,4 @@ class Read : public Expr {
   int interp(void);
   Expr* optimize();
 };
-#endif /* R0_HPP */
+#endif /* RCC_HPP */
