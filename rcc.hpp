@@ -2,9 +2,11 @@
 #define RCC_HPP
 
 #include <iostream>
+#include <map>
 #include <string>
 
-typedef enum EXPR_TYPE { NEG, ADD, READ, NUM } EXPR_TYPE;
+#define ENVT std::map<Var*, int>
+typedef enum EXPR_TYPE { NEG, ADD, READ, NUM, VAR, LET } EXPR_TYPE;
 
 class Expr {
  public:
@@ -38,7 +40,7 @@ class Var : public Expr {
   void print(std::ostream&);
   int interp(void);
   Expr* optimize();
-}
+};
 
 class Let : public Expr {
   Var* var;
@@ -49,7 +51,7 @@ class Let : public Expr {
   void print(std::ostream&);
   int interp(void);
   Expr* optimize();
-}
+};
 
 class Neg : public Expr {
   Expr* expr;

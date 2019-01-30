@@ -22,6 +22,35 @@ Program *Program::optimize() {
   return new Program(this->info, this->expr->optimize());
 }
 
+Var::Var(std::string &s, Expr *val) {
+  this->var = s;
+  this->val = val;
+  this->type = VAR;
+}
+
+void Var::print(std::ostream &os) { os << this->var; }
+
+int Var::interp(void) { return 0; }
+
+Expr *Var::optimize() { return this; }
+
+Let::Let(Var *v, Expr *expr, Expr *body) {
+  this->var = v;
+  this->expr = expr;
+  this->body = body;
+  this->type = VAR;
+}
+
+void Let::print(std::ostream &os) {
+  os << "("
+     << "let " << this->var << " := " << this->expr << " in " << this->body
+     << ")";
+}
+
+int Let::interp(void) { return 0; }
+
+Expr *Let::optimize() { return this; }
+
 void Neg::print(std::ostream &out) {
   out << "(N(";
   this->expr->print(out);
