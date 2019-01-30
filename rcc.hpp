@@ -2,6 +2,7 @@
 #define RCC_HPP
 
 #include <iostream>
+#include <string>
 
 typedef enum EXPR_TYPE { NEG, ADD, READ, NUM } EXPR_TYPE;
 
@@ -23,10 +24,32 @@ class Program {
   Program* optimize(void);
   void print(std::ostream&);
   int interp(void);
-  Expr* get_expr(){return this->expr;};
-  EXPR_TYPE get_type(){return this->expr->type;};
+  Expr* get_expr() { return this->expr; };
+  EXPR_TYPE get_type() { return this->expr->type; };
   friend std::ostream& operator<<(std::ostream&, Program&);
 };
+
+class Var : public Expr {
+  std::string var;
+  Expr* val;
+
+ public:
+  Var(std::string&, Expr* val);
+  void print(std::ostream&);
+  int interp(void);
+  Expr* optimize();
+}
+
+class Let : public Expr {
+  Var* var;
+  Expr *expr, *body;
+
+ public:
+  Let(Var*, Expr*, Expr*);
+  void print(std::ostream&);
+  int interp(void);
+  Expr* optimize();
+}
 
 class Neg : public Expr {
   Expr* expr;

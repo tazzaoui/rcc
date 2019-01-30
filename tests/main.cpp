@@ -10,7 +10,7 @@
 
 int main(int argc, char* argv[]) {
   int count = 0, full_count, res, res_opt, rand_depth;
-  Program *prog_opt;
+  Program* prog_opt;
   srand(time(0));
   std::cout << "==================================================="
             << std::endl;
@@ -84,19 +84,21 @@ int main(int argc, char* argv[]) {
   count = full_count = 0;
   for (size_t i = 0; i < NUM_PROGS; ++i) {
     rand_depth = rand() % 20;
-    Program prog(NULL, randp(rand_depth)); 
+    Program prog(NULL, randp(rand_depth));
     res = prog.interp();
     if (DEBUG) std::cout << "Normal   : " << prog << " -> " << res << std::endl;
     prog_opt = prog.optimize();
-    res_opt = prog_opt->interp(); 
-    if (DEBUG)
-      std::cout << "Optimized: " <<  *prog_opt << std::endl;
+    res_opt = prog_opt->interp();
+    if (DEBUG) std::cout << "Optimized: " << *prog_opt << std::endl;
     count += (res_opt == res);
     full_count += (res_opt == res && prog_opt->get_type() == NUM);
   }
 
-  std::cout << GRN << "Successfully optimized " << count << "/" << NUM_PROGS << " programs." << std::endl;
-  std::cout << "Fully optimized " << count << "/" << NUM_PROGS << " programs." << std::endl << NRM;
+  std::cout << GRN << "Successfully optimized " << count << "/" << NUM_PROGS
+            << " programs." << std::endl;
+  std::cout << "Fully optimized " << count << "/" << NUM_PROGS << " programs."
+            << std::endl
+            << NRM;
   assert(count == NUM_PROGS);
   std::cout << "==================================================="
             << std::endl;
