@@ -4,6 +4,7 @@
 #include <random>
 
 #define QUIET_READ 1
+#define DEBUG 0
 
 std::ostream &operator<<(std::ostream &out, Expr &e) {
   e.print(out);
@@ -17,12 +18,12 @@ std::ostream &operator<<(std::ostream &out, Program &p) {
 
 int Program::interp() { return this->expr->interp(); }
 
-Program* Program::optimize(){
-    return new Program(this->info, this->expr->optimize());
+Program *Program::optimize() {
+  return new Program(this->info, this->expr->optimize());
 }
 
 void Neg::print(std::ostream &out) {
-  out << "(-(";
+  out << "(N(";
   this->expr->print(out);
   out << "))";
 }
@@ -30,15 +31,19 @@ void Neg::print(std::ostream &out) {
 int Neg::interp() { return -1 * this->expr->interp(); }
 
 Expr *Neg::optimize() {
-  if (this->expr->type == NUM)
-    return new Num(-1 * ((Num *)this->expr)->get_num());
+  Expr *res = this->expr->optimize();
 
-  if (this->expr->type == NEG) return ((Neg *)this->expr)->expr;
+  if (res->type == NUM)
+    res = new Num(-1 * ((Num *)res)->get_num());
 
-  if (this->expr->type == ADD)
-    return new Add(new Neg(((Add *)this->expr)->get_left()),
-                   new Neg(((Add *)this->expr)->get_right()));
-  return this;
+  else if (res->type == NEG)
+    res = (((Neg *)res)->expr)->optimize();
+
+  else if (res->type == ADD)
+    res = new Add(new Neg(((Add *)res)->get_left()),
+                  new Neg(((Add *)res)->get_right()));
+
+  return res;
 }
 
 void Add::print(std::ostream &out) {
@@ -54,6 +59,7 @@ int Add::interp() { return this->left->interp() + this->right->interp(); }
 Expr *Add::optimize() {
   Expr *l_opt = this->left->optimize();
   Expr *r_opt = this->right->optimize();
+  Add *res = new Add(l_opt->optimize(), r_opt->optimize());
 
   /* Both Nums: just reduce to the addition itself */
   if (l_opt->type == NUM && r_opt->type == NUM)
@@ -63,14 +69,15 @@ Expr *Add::optimize() {
   if (l_opt->type == NUM && r_opt->type == ADD) {
     Add *r_opt_add = (Add *)r_opt;
     if (r_opt_add->left->type == NUM) {
-      Num *res = new Num(((Num *)l_opt)->get_num() +
-                         ((Num *)r_opt_add->left)->get_num());
-      return new Add(res, r_opt_add->right);
+      Num *res_num = new Num(((Num *)l_opt)->get_num() +
+                             ((Num *)r_opt_add->left)->get_num());
+      return (new Add(res_num, r_opt_add->right));
     }
+
     if (r_opt_add->right->type == NUM) {
-      Num *res = new Num(((Num *)l_opt)->get_num() +
-                         ((Num *)r_opt_add->right)->get_num());
-      return new Add(res, r_opt_add->left);
+      Num *res_num = new Num(((Num *)l_opt)->get_num() +
+                             ((Num *)r_opt_add->right)->get_num());
+      return (new Add(res_num, r_opt_add->left));
     }
   }
 
@@ -78,18 +85,18 @@ Expr *Add::optimize() {
   if (r_opt->type == NUM && l_opt->type == ADD) {
     Add *l_opt_add = (Add *)l_opt;
     if (l_opt_add->left->type == NUM) {
-      Num *res = new Num(((Num *)r_opt)->get_num() +
-                         ((Num *)l_opt_add->left)->get_num());
-      return new Add(res, l_opt_add->right);
+      Num *res_num = new Num(((Num *)r_opt)->get_num() +
+                             ((Num *)l_opt_add->left)->get_num());
+      return (new Add(res_num, l_opt_add->right));
     }
     if (l_opt_add->right->type == NUM) {
-      Num *res = new Num(((Num *)r_opt)->get_num() +
-                         ((Num *)l_opt_add->right)->get_num());
-      return new Add(res, l_opt_add->left);
+      Num *res_num = new Num(((Num *)r_opt)->get_num() +
+                             ((Num *)l_opt_add->right)->get_num());
+      return (new Add(res_num, l_opt_add->left));
     }
   }
 
-  return this;
+  return res;
 }
 
 void Num::print(std::ostream &out) { out << this->num; }
@@ -98,11 +105,11 @@ int Num::interp() { return this->num; }
 
 Expr *Num::optimize() { return this; }
 
-void Read::print(std::ostream &out) { 
-    if (this->read)
-        out << this->num; 
-    else
-        out << "READ";
+void Read::print(std::ostream &out) {
+  if (this->read)
+    out << this->num;
+  else
+    out << "READ";
 }
 
 int Read::interp() {
@@ -118,4 +125,6 @@ int Read::interp() {
   return this->num;
 }
 
-Expr *Read::optimize() { return this; }
+Expr *Read::optimize() {
+  return this->read ? (Expr *)new Num(this->num) : (Expr *)this;
+}

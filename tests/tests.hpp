@@ -1,9 +1,9 @@
 #ifndef TESTS_HPP
-#define TESTS_HPP 
+#define TESTS_HPP
 
-#define NRM  "\x1B[0m"
-#define RED  "\x1B[31m"
-#define GRN  "\x1B[32m"
+#define NRM "\x1B[0m"
+#define RED "\x1B[31m"
+#define GRN "\x1B[32m"
 
 /* Initial Interpreter Sanity Checks*/
 void test_interp();
