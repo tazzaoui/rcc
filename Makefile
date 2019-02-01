@@ -1,30 +1,33 @@
-CXX=g++
-CXX_FLAGS=--std=c++11 -Wall -pedantic
+CC=gcc
+CFLAGS=-Wall -Werror -std=c99 -pedantic -g
 TESTS=test
 EXE=rcc $(TESTS) 
 
 all: $(EXE) 
 
-rcc: rcc.o main.o
-	$(CXX) main.o rcc.o -o rcc
+rcc: utils.o rcc.o main.o
+	$(CC) main.o rcc.o utils.o -o rcc
 
-test: rcc.o main_tests.o tests.o 
-	$(CXX) main_tests.o tests.o rcc.o -o test
+test: utils.o rcc.o main_tests.o tests.o 
+	$(CC) main_tests.o tests.o rcc.o utils.o -o test
 
-main.o: main.cpp
-	$(CXX) -c $(CXX_FLAGS) main.cpp -o main.o
+main.o: main.c
+	$(CC) -c $(CFLAGS) main.c -o main.o
 
-main_tests.o: tests/main.cpp
-	$(CXX) -c $(CXX_FLAGS) tests/main.cpp -o main_tests.o
+main_tests.o: tests/main.c
+	$(CC) -c $(CFLAGS) tests/main.c -o main_tests.o
 
-tests.o: tests/tests.cpp
-	$(CXX) -c $(CXX_FLAGS) tests/tests.cpp -o tests.o
+tests.o: tests/tests.c
+	$(CC) -c $(CFLAGS) tests/tests.c -o tests.o
 
-rcc.o: rcc.cpp rcc.hpp
-	$(CXX) -c $(CXX_FLAGS) rcc.cpp -o rcc.o
+rcc.o: rcc.c rcc.h
+	$(CC) -c $(CFLAGS) rcc.c -o rcc.o
+
+utils.o: utils.c utils.h
+	$(CC) -c $(CFLAGS) utils.c -o utils.o
 
 clean:
 	rm -f *.o *~ $(EXE) 
 
 format:
-	clang-format -i -style=google ./*.*pp tests/*.*pp
+	clang-format -i -style=google ./*.c ./*.h tests/*.c tests/*.h
