@@ -116,6 +116,14 @@ int main(int argc, char *argv[]) {
 
   printf("Fully optimized %d/%d\n", count, NUM_PROGS);
   assert(count == NUM_PROGS);
+
   printf("===================================================\n");
+
+  printf("Testing a dozen R1 programs...\n");
+
+  test_dozen_r1();
+
+  printf("===================================================\n");
+
   return 0;
 }

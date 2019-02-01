@@ -8,9 +8,9 @@
 * Write some optimizer tests.
 * Write an optimizer for R0.
 * Extend your test suite to use your optimizer
-Extend your data types from R0 to R1.
-Extend your pretty printer from R0 to R1.
-Write a dozen test R1 programs.
+* Extend your data types from R0 to R1.
+* Extend your pretty printer from R0 to R1.
+* Write a dozen test R1 programs.
 Extend your interpreter from R0 to R1.
 Extend your random generation function from R0 to R1.
 Write some R1-specific optimizer tests.

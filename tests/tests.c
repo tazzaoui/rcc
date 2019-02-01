@@ -74,3 +74,55 @@ void test_dozen_r0() {
   printf("\nr_neg = ");
   print(r_neg);
 }
+
+void test_dozen_r1() {
+  Expr *x = new_var("x");
+  Expr *y = new_var("y");
+  Expr *z = new_var("z");
+
+  print(x);
+  printf("\n");
+  print(y);
+  printf("\n");
+  print(z);
+  printf("\n");
+
+  Expr *let_x = new_let(x, new_num(42), new_num(10));
+  print(let_x);
+  printf("\n");
+
+  Expr *let_y = new_let(y, new_num(42), new_neg(new_num(18)));
+  print(let_y);
+  printf("\n");
+
+  Expr *let_z = new_let(z, new_num(42), new_add(new_num(2), new_num(-2)));
+  print(let_z);
+  printf("\n");
+
+  Expr *let_h = new_let(x, new_add(new_num(42), new_num(42)),
+                        new_add(new_num(2), new_num(-2)));
+  print(let_h);
+  printf("\n");
+
+  Expr *let_i = new_let(y, new_num(12), new_add(new_var("P"), new_num(1)));
+  print(let_i);
+  printf("\n");
+
+  Expr *let_j =
+      new_let(z, new_add(new_num(4), new_num(2)), new_add(x, new_num(1)));
+  print(let_j);
+  printf("\n");
+
+  Expr *let_k = new_let(x, new_neg(new_num(12)), new_neg(new_var("T")));
+  print(let_k);
+  printf("\n");
+
+  Expr *let_l = new_let(y, new_read(), new_add(x, new_num(1)));
+  print(let_l);
+  printf("\n");
+
+  Expr *let_m =
+      new_let(z, new_num(42), new_neg(new_add(new_var("P"), new_num(1))));
+  print(let_m);
+  printf("\n");
+}

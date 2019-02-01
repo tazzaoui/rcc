@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include "rcc.h"
 #include "utils.h"
@@ -21,15 +22,16 @@ Program* new_prog(void* info, Expr* expr) {
   return p;
 }
 
-Expr* new_var(const char* name, Expr* val) {
+Expr* new_var(const char* name) {
   Var* v = malloc_or_die(sizeof(Var));
   v->name = name;
-  v->val = val;
   return new_expr(v, VAR);
 }
 
-Expr* new_let(Var* var, Expr* expr, Expr* body) {
+Expr* new_let(Expr* var, Expr* expr, Expr* body) {
+  assert(var->type == VAR);
   Let* l = malloc_or_die(sizeof(Let));
+  l->var = var;
   l->expr = expr;
   l->body = body;
   return new_expr(l, LET);
@@ -189,6 +191,9 @@ void print(Expr* expr) {
         print(((Let*)expr->expr)->var);
         printf(" := ");
         print(((Let*)expr->expr)->expr);
+        printf(" in ");
+        print(((Let*)expr->expr)->body);
+        printf(")");
         break;
       case NEG:
         printf("(NEG(");

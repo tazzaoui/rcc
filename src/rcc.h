@@ -20,7 +20,6 @@ typedef struct Program {
 
 typedef struct Var {
   const char* name;
-  Expr* val;
 } Var;
 
 typedef struct Let {
@@ -45,8 +44,8 @@ typedef struct Read {
 
 Program* new_prog(void*, Expr*);
 Expr* new_expr(void*, EXPR_TYPE);
-Expr* new_var(const char*, Expr*);
-Expr* new_let(Var*, Expr*, Expr*);
+Expr* new_var(const char*);
+Expr* new_let(Expr*, Expr*, Expr*);
 Expr* new_neg(Expr*);
 Expr* new_add(Expr*, Expr*);
 Expr* new_num(int);
@@ -74,5 +73,4 @@ static inline int get_num(Expr* expr) {
   }
   return INT_MIN;
 }
-
 #endif /* RCC_H */
