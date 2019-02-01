@@ -20,14 +20,14 @@ main_tests.o: tests/main.c
 tests.o: tests/tests.c
 	$(CC) -c $(CFLAGS) tests/tests.c -o tests.o
 
-rcc.o: rcc.c rcc.h
-	$(CC) -c $(CFLAGS) rcc.c -o rcc.o
+rcc.o: src/rcc.c src/rcc.h
+	$(CC) -c $(CFLAGS) src/rcc.c -o rcc.o
 
-utils.o: utils.c utils.h
-	$(CC) -c $(CFLAGS) utils.c -o utils.o
+utils.o: src/utils.c src/utils.h
+	$(CC) -c $(CFLAGS) src/utils.c -o utils.o
 
 clean:
 	rm -f *.o *~ $(EXE) 
 
 format:
-	clang-format -i -style=google ./*.c ./*.h tests/*.c tests/*.h
+	clang-format -i -style=google main.c src/*.h src/*.h tests/*.c tests/*.h 

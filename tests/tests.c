@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../rcc.h"
-#include "../utils.h"
+#include "../src/rcc.h"
 
 Expr *test_2n(int n) {
   if (n <= 0) return new_num(1);

@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "../rcc.h"
-#include "../utils.h"
+
+#include "../src/rcc.h"
 #include "tests.h"
 
 #define DEBUG 0

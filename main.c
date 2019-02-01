@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "rcc.h"
-#include "utils.h"
+
+#include "src/rcc.h"
 
 int main(int argc, char* argv[]) { return 0; }
