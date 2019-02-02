@@ -22,6 +22,12 @@ int main(int argc, char *argv[]) {
   srand(time(0));
 
   printf("===================================================\n");
+  printf("Testing Linked List...\n");
+
+  test_list();
+  printf("%sAll List Tests Passed.\n%s", GRN, NRM);
+
+  printf("===================================================\n");
   printf("Interpreting a dozen r0 programs....\n");
 
   test_dozen_r0();

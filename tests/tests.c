@@ -1,6 +1,13 @@
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "../src/list.h"
 #include "../src/rcc.h"
+#include "../src/utils.h"
+#include "tests.h"
+
+#define NUM 1024
 
 Expr *test_2n(int n) {
   if (n <= 0) return new_num(1);
@@ -125,4 +132,70 @@ void test_dozen_r1() {
       new_let(z, new_num(42), new_neg(new_add(new_var("P"), new_num(1))));
   print(let_m);
   printf("\n");
+}
+
+void print_node(void *data) { printf("%lu ", (long)data); }
+
+int cmp_nodes(void *a, void *b) {
+  int *x = (int *)a;
+  int *y = (int *)b;
+  return !(a != NULL && b != NULL && *x == *y);
+}
+
+void test_list() {
+  int nums[NUM];
+  for (int i = 0; i < NUM; ++i) nums[i] = rand();
+
+  Node *head = list_create(nums);
+
+  // Nothing in the list, find should always ret NULL
+  for (int i = 1; i < NUM; ++i) {
+    Node *temp = list_find(head, nums + i, cmp_nodes);
+    assert(temp == NULL);
+  }
+
+  for (int i = 1; i < NUM; ++i) list_insert(&head, nums + i);
+
+  // list_print(head, print_node);
+
+  // List is populated, find should never ret NULL
+  for (int i = 0; i < NUM; ++i) {
+    Node *temp = list_find(head, nums + i, cmp_nodes);
+    assert(temp != NULL);
+  }
+
+  // Update the list with new nums
+  for (int i = 0; i < NUM; ++i) {
+    int *n = malloc_or_die(sizeof(int));
+    *n = -1 * nums[i];
+    list_update(&head, nums + i, n, cmp_nodes);
+  }
+
+  // Old nums should no longer be in the list
+  for (int i = 0; i < NUM; ++i) {
+    Node *temp = list_find(head, nums + i, cmp_nodes);
+    assert(temp == NULL);
+  }
+
+  // New nums should be in the list
+  for (int i = 0; i < NUM; ++i) {
+    int *n = malloc_or_die(sizeof(int));
+    *n = -1 * nums[i];
+    Node *temp = list_find(head, n, cmp_nodes);
+    assert(temp != NULL);
+  }
+
+  // Update the list with old nums again
+  for (int i = 0; i < NUM; ++i) {
+    int *n = malloc_or_die(sizeof(int));
+    *n = -1 * nums[i];
+    list_update(&head, n, nums + i, cmp_nodes);
+  }
+
+  // Find should ret NULL after remove
+  for (int i = 0; i < NUM; ++i) {
+    list_remove(&head, nums + i, cmp_nodes);
+    Node *temp = list_find(head, nums + i, cmp_nodes);
+    assert(temp == NULL);
+  }
 }
