@@ -1,10 +1,6 @@
 #ifndef TESTS_H
 #define TESTS_H
 
-#define NRM "\x1B[0m"
-#define RED "\x1B[31m"
-#define GRN "\x1B[32m"
-
 /* R0 Interpreter Sanity Checks (A dozen R0 progs)*/
 void test_dozen_r0(void);
 

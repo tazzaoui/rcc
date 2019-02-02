@@ -4,6 +4,7 @@
 #include <time.h>
 
 #include "../src/rcc.h"
+#include "../src/utils.h"
 #include "tests.h"
 
 #define DEBUG 0
@@ -37,7 +38,7 @@ int main(int argc, char *argv[]) {
 
   for (size_t i = 0; i < 10; ++i) {
     expr = test_2n(i);
-    res = interp(expr);
+    res = interp(expr, NULL);
     if (res == (1 << i))
       printf("%s %d \t==\t %d %s\n", GRN, res, (1 << i), NRM);
     else
@@ -50,7 +51,7 @@ int main(int argc, char *argv[]) {
   for (size_t i = 0; i < NUM_PROGS; ++i) {
     rand_depth = rand() % 20;
     expr = randp(rand_depth);
-    res = interp(expr);
+    res = interp(expr, NULL);
     if (DEBUG) {
       print(expr);
       printf(" -> %d\n", res);
@@ -100,14 +101,14 @@ int main(int argc, char *argv[]) {
   for (size_t i = 0; i < NUM_PROGS; ++i) {
     rand_depth = rand() % 20;
     expr = randp(rand_depth);
-    res = interp(expr);
+    res = interp(expr, NULL);
     if (DEBUG) {
       printf("Normal   : ");
       print(expr);
       printf(" -> %d\n", res);
     }
     expr_opt = optimize(expr);
-    res_opt = interp(expr_opt);
+    res_opt = interp(expr_opt, NULL);
     if (DEBUG) {
       printf("Optimized: ");
       print(expr_opt);

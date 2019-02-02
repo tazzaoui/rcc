@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 
 #include "rcc.h"
 #include "utils.h"
+#include "list.h"
 
 #define QUIET_READ 1
 #define DEBUG 0
@@ -63,16 +65,46 @@ Expr* new_read() {
   return new_expr(r, READ);
 }
 
-int interp(Expr* expr) {
+env_pair_t *new_env_pair(Expr* var, int val){
+    env_pair_t *ep = malloc_or_die(sizeof(env_pair_t));
+    ep->var = var;
+    ep->val = val;
+    return ep;
+}
+
+int ep_cmp(void *a, void *b){
+    Expr *a_expr = ((env_pair_t*) a)->var;
+    Expr *b_expr = ((env_pair_t*) b)->var;
+    if(a_expr->type == VAR && b_expr->type == VAR)
+        return strcmp(((Var*)a_expr->expr)->name, ((Var*)a_expr->expr)->name) == 0; 
+    return 0;
+}
+
+void* ep_cpy(void *old){
+    env_pair_t *old_pair = (env_pair_t*) old;
+    return (void*) new_env_pair(old_pair->var, old_pair->val);
+}
+
+int interp(Expr* expr, Node *env) {
+    Node *node;
+    int val;
+    env_pair_t *ep;
   if (expr != NULL) switch (expr->type) {
       case VAR:
-        return 0;
+          node = list_find(env, expr, ep_cmp);
+          if(node == NULL) die("Unbound Variable!\n");
+          ep = (env_pair_t*) node->data;
+          return ep->val;
       case LET:
-        return 0;
+        val = interp(((Let*)expr)->expr, env); 
+        ep = new_env_pair(((Let*)expr)->var, val);
+        node = list_copy(env, ep_cpy);
+        list_insert(&node, ep);
+        return interp(((Let*)expr)->body, node);
       case NEG:
-        return -1 * interp(((Neg*)expr->expr)->expr);
+        return -1 * interp(((Neg*)expr->expr)->expr, env);
       case ADD:
-        return interp(get_left(expr)) + interp(get_right(expr));
+        return interp(get_left(expr), env) + interp(get_right(expr), env);
       case NUM:
         return get_num(expr);
       case READ:
