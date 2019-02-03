@@ -2,28 +2,34 @@
 #include "utils.h"
 #include "list.h" 
 
-Node* list_create(void* data) {
+list_t list_create() {
+  list_t list = malloc_or_die(sizeof(list_t));
+  *list = NULL;
+  return list;
+}
+
+Node* node_create(void* data) {
   Node *n = malloc_or_die(sizeof(Node));
   n->next = NULL;
   n->data = data;
   return n;
 }
 
-void list_insert(Node** node, void* data){ 
-  if (node != NULL && *node == NULL) {
-    *node = malloc_or_die(sizeof(Node));
-    (*node)->next = NULL;
-    (*node)->data = data;
+void list_insert(list_t list, void* data){ 
+  if (list != NULL && *list == NULL) {
+    *list = malloc_or_die(sizeof(Node));
+    (*list)->next = NULL;
+    (*list)->data = data;
   } else
-    list_insert(&((*node)->next), data);
+    list_insert(&((*list)->next), data);
 }
 
-void list_update(Node **node, void* old, void* new, cmp_func_t cmp) {
-  if (node != NULL && *node != NULL) {
-    if (cmp((*node)->data, old))
-        (*node)->data = new;
+void list_update(list_t list, void* old, void* new, cmp_func_t cmp) {
+  if (list != NULL && *list != NULL) {
+    if (cmp((*list)->data, old))
+        (*list)->data = new;
     else
-      list_update(&((*node)->next), old, new, cmp);
+      list_update(&((*list)->next), old, new, cmp);
   }
 }
 
@@ -47,39 +53,53 @@ void list_remove(Node** node, void* data, cmp_func_t cmp) {
   }
 }
 
-Node* list_find(Node* node, void *data, cmp_func_t cmp){
+Node* list_find(const list_t list, void *data, cmp_func_t cmp){
+    Node *node = *list;
     if(node == NULL)
         return NULL;
-    else if(cmp(node->data, data))
+    else if(cmp(data, node->data))
         return node;
     else
-        return list_find(node->next, data, cmp);
+        return list_find(&(node->next), data, cmp);
 }
 
-void list_print(Node* node, print_func_t p){ 
-    if(node != NULL){
-        p(node->data);
-        list_print(node->next, p);
+void list_print(const list_t list, print_func_t p){ 
+    if(list != NULL && *list != NULL){
+        p((*list)->data);
+        list_print(&(*list)->next, p);
     }
 }
 
-Node *list_copy(Node *old_head, deep_cpy_t dc){
-    Node *new_node = NULL; 
+list_t list_copy(const list_t list, deep_cpy_t dc){
+	Node *head = *list;
+    list_t new_list = list_create(); 
     void *new_data;
-    if(old_head != NULL){
-        new_data = dc(old_head->data);
-        new_node = list_create(new_data);
-        new_node->next = list_copy(old_head->next, dc);
+    while(head != NULL){
+        new_data = dc(head->data);
+        list_insert(new_list, new_data);
+        head = head->next;
     }
-    return new_node;
+    return new_list; 
 }
 
 
-int list_size(Node* head){
-    int size = 0;
+size_t list_size(const list_t list){
+    size_t size = 0;
+    if(list){
+    Node *head = *list;
     while(head != NULL){
         ++size;
         head = head->next;
     }
+    }
     return size; 
+}
+
+Node* list_get(const list_t list, size_t index){
+    size_t i = 0;
+    Node *head = *list, *res = head;
+    if(head && index < list_size(&head))
+        while(i++ < index)
+            res = res->next; 
+    return res;
 }

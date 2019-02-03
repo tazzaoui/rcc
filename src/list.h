@@ -7,6 +7,8 @@ struct Node {
   void *data;
 };
 
+typedef Node **list_t;
+
 /* A generic comparison function */
 typedef int (*cmp_func_t)(void *, void *);
 
@@ -17,27 +19,33 @@ typedef void (*print_func_t)(void *);
 typedef void *(*deep_cpy_t)(void *);
 
 /*Init the list*/
-Node *list_create(void *);
+list_t list_create(void);
+
+/*Create a node*/
+Node *node_create(void *);
 
 /*Insert an element into the list*/
-void list_insert(Node **, void *);
+void list_insert(list_t, void *);
 
 /*Update the data element of a node*/
-void list_update(Node **, void *, void *, cmp_func_t);
+void list_update(list_t, void *, void *, cmp_func_t);
 
 /*Remove the node by data*/
-void list_remove(Node **, void *, cmp_func_t);
+void list_remove(list_t, void *, cmp_func_t);
 
 /*Return node containing data*/
-Node *list_find(Node *, void *, cmp_func_t);
+Node *list_find(const list_t, void *, cmp_func_t);
+
+/* Return a node at a given index */
+Node *list_get(const list_t, size_t);
 
 /*Return a copy of the list*/
-Node *list_copy(Node *, deep_cpy_t);
+list_t list_copy(const list_t, deep_cpy_t);
 
 /*Print the list*/
-void list_print(Node *, print_func_t);
+void list_print(const list_t, print_func_t);
 
 /* Return the num of elements in the list*/
-int list_size(Node *);
+size_t list_size(const list_t);
 
 #endif /* LIST_H */

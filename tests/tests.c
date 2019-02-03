@@ -14,7 +14,7 @@ Expr *test_2n(int n) {
   return new_add(test_2n(n - 1), test_2n(n - 1));
 }
 
-Expr *randp(int n) {
+Expr *randp_r0(int n) {
   int rand_num = GET_RAND();
   if (n <= 0) {
     if (rand_num % 2)
@@ -22,9 +22,49 @@ Expr *randp(int n) {
     else
       return new_num(rand_num);
   } else {
-    if (rand_num % 2) return new_neg(randp(n - 1));
-    return new_add(randp(n - 1), randp(n - 1));
+    if (rand_num % 2) return new_neg(randp_r0(n - 1));
+    return new_add(randp_r0(n - 1), randp_r0(n - 1));
   }
+}
+
+Expr *randp(list_t vars, int n) {
+  list_t env;
+  Node *node;
+  Expr *rand_var;
+  env_pair_t *ep;
+  char *buf;
+  int rand_num = GET_RAND(), choice = rand() % 3;
+  char rand_char;
+  if (n == 0) {
+    if (choice == 0 && list_size(vars) == 0) choice += ((rand() % 2) + 1);
+    switch (choice) {
+      case 0:
+        node = list_get(vars, rand() % list_size(vars));
+        ep = (env_pair_t *)node->data;
+        return ep->var;
+      case 1:
+        return new_read();
+      case 2:
+        return new_num(rand_num);
+    }
+  } else
+    switch (choice) {
+      case 0:
+        return new_neg(randp(vars, n - 1));
+      case 1:
+        return new_add(randp(vars, n - 1), randp(vars, n - 1));
+      case 2:
+        env = list_copy(vars, ep_cpy);
+        buf = malloc_or_die(2 * sizeof(char));
+        rand_char = 0x61 + rand() % (0x7a - 0x61);
+        buf[0] = rand_char;
+        buf[1] = 0x0;
+        rand_var = new_var(buf);
+        ep = new_env_pair(rand_var, 0);
+        list_insert(env, ep);
+        return new_let(rand_var, randp(vars, n - 1), randp(env, n - 1));
+    }
+  return NULL;
 }
 
 void test_dozen_r0() {
@@ -148,51 +188,59 @@ void *cpy_node(void *data) {
   *y = *x;
   return (void *)y;
 }
+
 void test_list() {
   int nums[NUM];
   for (int i = 0; i < NUM; ++i) nums[i] = rand();
 
-  Node *head = list_create(nums), *copy = NULL;
+  list_t list = list_create(), copy = NULL;
 
-  assert(list_size(head) == 1);
+  assert(list_size(list) == 0);
   assert(list_size(copy) == 0);
 
   // Nothing in the list, find should always ret NULL
-  for (int i = 1; i < NUM; ++i) {
-    Node *temp = list_find(head, nums + i, cmp_nodes);
+  for (int i = 0; i < NUM; ++i) {
+    Node *temp = list_find(list, nums + i, cmp_nodes);
     assert(temp == NULL);
   }
 
-  for (int i = 1; i < NUM; ++i) list_insert(&head, nums + i);
-  assert(list_size(head) == NUM);
+  for (int i = 0; i < NUM; ++i) list_insert(list, nums + i);
+  assert(list_size(list) == NUM);
 
-  copy = list_copy(head, cpy_node);
+  copy = list_copy(list, cpy_node);
   assert(list_size(copy) == NUM);
 
   // Make sure copy was deep
   for (int i = 0; i < NUM; ++i) {
     Node *temp_copy = list_find(copy, nums + i, cmp_nodes);
-    Node *temp_head = list_find(head, nums + i, cmp_nodes);
+    Node *temp_head = list_find(list, nums + i, cmp_nodes);
     assert(temp_copy->data != temp_head->data);
   }
 
   // List is populated, find should never ret NULL
   for (int i = 0; i < NUM; ++i) {
-    Node *temp_head = list_find(head, nums + i, cmp_nodes);
+    Node *temp_head = list_find(list, nums + i, cmp_nodes);
     Node *temp_copy = list_find(copy, nums + i, cmp_nodes);
     assert(temp_head != NULL && temp_copy != NULL);
+  }
+
+  // Test find by index
+  for (int i = 0; i < NUM; ++i) {
+    Node *temp_head = list_find(list, nums + i, cmp_nodes);
+    Node *get = list_get(list, i);
+    assert(temp_head == get);
   }
 
   // Update the list with new nums
   for (int i = 0; i < NUM; ++i) {
     int *n = malloc_or_die(sizeof(int));
     *n = -1 * nums[i];
-    list_update(&head, nums + i, n, cmp_nodes);
+    list_update(list, nums + i, n, cmp_nodes);
   }
 
   // Old nums should no longer be in the old list
   for (int i = 0; i < NUM; ++i) {
-    Node *temp_head = list_find(head, nums + i, cmp_nodes);
+    Node *temp_head = list_find(list, nums + i, cmp_nodes);
     Node *temp_copy = list_find(copy, nums + i, cmp_nodes);
     assert(temp_head == NULL && temp_copy != NULL);
   }
@@ -201,7 +249,7 @@ void test_list() {
   for (int i = 0; i < NUM; ++i) {
     int *n = malloc_or_die(sizeof(int));
     *n = -1 * nums[i];
-    Node *temp_head = list_find(head, n, cmp_nodes);
+    Node *temp_head = list_find(list, n, cmp_nodes);
     Node *temp_copy = list_find(copy, n, cmp_nodes);
     assert(temp_head != NULL && temp_copy == NULL);
   }
@@ -210,13 +258,13 @@ void test_list() {
   for (int i = 0; i < NUM; ++i) {
     int *n = malloc_or_die(sizeof(int));
     *n = -1 * nums[i];
-    list_update(&head, n, nums + i, cmp_nodes);
+    list_update(list, n, nums + i, cmp_nodes);
   }
 
   // Find should ret NULL after remove
   for (int i = 0; i < NUM; ++i) {
-    list_remove(&head, nums + i, cmp_nodes);
-    Node *temp = list_find(head, nums + i, cmp_nodes);
+    list_remove(list, nums + i, cmp_nodes);
+    Node *temp = list_find(list, nums + i, cmp_nodes);
     assert(temp == NULL);
   }
 }

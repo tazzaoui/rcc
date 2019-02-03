@@ -7,7 +7,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "../src/rcc.h"
 
 static inline void *malloc_or_die(size_t size) {
   void *mem = malloc(size);
@@ -19,10 +18,5 @@ static inline void *malloc_or_die(size_t size) {
 }
 
 int die(const char *err_msg);
-
-typedef struct env_pair_t {
-  Expr *var;
-  int val;
-} env_pair_t;
 
 #endif /* UTILS_H */

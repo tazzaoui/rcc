@@ -73,10 +73,12 @@ env_pair_t *new_env_pair(Expr* var, int val){
 }
 
 int ep_cmp(void *a, void *b){
-    Expr *a_expr = ((env_pair_t*) a)->var;
+    if(a != NULL && b != NULL){
+    Expr *a_expr = (Expr*) a; 
     Expr *b_expr = ((env_pair_t*) b)->var;
-    if(a_expr->type == VAR && b_expr->type == VAR)
-        return strcmp(((Var*)a_expr->expr)->name, ((Var*)a_expr->expr)->name) == 0; 
+    if(a_expr != NULL && b_expr != NULL && a_expr->type == VAR && b_expr->type == VAR)
+        return strcmp(((Var*)a_expr->expr)->name, ((Var*)b_expr->expr)->name) == 0; 
+    }
     return 0;
 }
 
@@ -85,22 +87,33 @@ void* ep_cpy(void *old){
     return (void*) new_env_pair(old_pair->var, old_pair->val);
 }
 
-int interp(Expr* expr, Node *env) {
-    Node *node;
+void ep_print(void *data){
+    env_pair_t *ep = (env_pair_t*)data;
+    printf("<");
+    print(ep->var);
+    printf(",%d> ", ep->val);
+}
+
+int interp(Expr* expr, list_t env) {
+    Node* n;
+    if(env == NULL)
+        env = list_create();
+    list_t new_env;
     int val;
     env_pair_t *ep;
-  if (expr != NULL) switch (expr->type) {
-      case VAR:
-          node = list_find(env, expr, ep_cmp);
-          if(node == NULL) die("Unbound Variable!\n");
-          ep = (env_pair_t*) node->data;
+  if (expr != NULL) 
+      switch (expr->type) {
+      case VAR: 
+          n = list_find(env, expr, ep_cmp);
+          if(n == NULL) die("Unbound Variable!\n");
+          ep = (env_pair_t*) n->data;
           return ep->val;
       case LET:
-        val = interp(((Let*)expr)->expr, env); 
-        ep = new_env_pair(((Let*)expr)->var, val);
-        node = list_copy(env, ep_cpy);
-        list_insert(&node, ep);
-        return interp(((Let*)expr)->body, node);
+        val = interp(get_expr(expr), env); 
+        ep = new_env_pair(get_var(expr), val);
+        new_env = list_copy(env, ep_cpy);
+        list_insert(new_env, ep);
+        return interp(get_body(expr), new_env);
       case NEG:
         return -1 * interp(((Neg*)expr->expr)->expr, env);
       case ADD:
@@ -114,6 +127,7 @@ int interp(Expr* expr, Node *env) {
         }
         return ((Read*)expr->expr)->num;
     }
+  die("Invalid Program!");
   return -1;
 }
 

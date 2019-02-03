@@ -20,6 +20,7 @@ static inline void print_optim(Expr *e) {
 int main(int argc, char *argv[]) {
   int count = 0, res, rand_depth, res_opt, full_count;
   Expr *expr, *expr_opt;
+  list_t vars = list_create();
   srand(time(0));
 
   printf("===================================================\n");
@@ -50,8 +51,8 @@ int main(int argc, char *argv[]) {
 
   for (size_t i = 0; i < NUM_PROGS; ++i) {
     rand_depth = rand() % 20;
-    expr = randp(rand_depth);
-    res = interp(expr, NULL);
+    expr = randp(vars, rand_depth);
+    res = interp(expr, vars);
     if (DEBUG) {
       print(expr);
       printf(" -> %d\n", res);
@@ -100,7 +101,7 @@ int main(int argc, char *argv[]) {
   count = full_count = 0;
   for (size_t i = 0; i < NUM_PROGS; ++i) {
     rand_depth = rand() % 20;
-    expr = randp(rand_depth);
+    expr = randp(vars, rand_depth);
     res = interp(expr, NULL);
     if (DEBUG) {
       printf("Normal   : ");

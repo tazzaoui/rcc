@@ -3,6 +3,7 @@
 
 #include <limits.h>
 #include "list.h"
+#include "utils.h"
 
 #define RAND_RANGE 1024
 #define GET_RAND() (rand() % (2 * RAND_RANGE)) - RAND_RANGE
@@ -43,6 +44,11 @@ typedef struct Read {
   int num, read;
 } Read;
 
+typedef struct env_pair_t {
+  Expr* var;
+  int val;
+} env_pair_t;
+
 /* Return a new program */
 Program* new_prog(void*, Expr*);
 
@@ -77,7 +83,7 @@ int ep_cmp(void*, void*);
 void* ep_cpy(void* old);
 
 /* Interpret an expression in an environment*/
-int interp(Expr*, Node*);
+int interp(Expr*, list_t);
 
 /* Optimize an expression */
 Expr* optimize(Expr*);
@@ -108,4 +114,20 @@ static inline int get_num(Expr* expr) {
   }
   return INT_MIN;
 }
+
+static inline Expr* get_var(Expr* expr) {
+  if (expr != NULL && expr->type == LET) return ((Let*)expr->expr)->var;
+  return expr;
+}
+
+static inline Expr* get_expr(Expr* expr) {
+  if (expr != NULL && expr->type == LET) return ((Let*)expr->expr)->expr;
+  return expr;
+}
+
+static inline Expr* get_body(Expr* expr) {
+  if (expr != NULL && expr->type == LET) return ((Let*)expr->expr)->body;
+  return expr;
+}
+
 #endif /* RCC_H */
