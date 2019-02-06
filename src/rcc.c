@@ -72,7 +72,7 @@ env_pair_t *new_env_pair(Expr* var, Expr* val){
     return ep;
 }
 
-int ep_cmp(void *a, void *b){
+int ep_var_cmp(void *a, void *b){
     if(a != NULL && b != NULL){
     Expr *a_expr = (Expr*) a; 
     Expr *b_expr = ((env_pair_t*) b)->var;
@@ -106,7 +106,7 @@ int interp(Expr* expr, list_t env) {
   if (expr != NULL) 
       switch (expr->type) {
       case VAR: 
-          n = list_find(env, expr, ep_cmp);
+          n = list_find(env, expr, ep_var_cmp);
           if(n == NULL) die("Unbound Variable!\n");
           ep = (env_pair_t*) n->data;
           return get_num(ep->val);
@@ -133,17 +133,17 @@ int interp(Expr* expr, list_t env) {
   return -1;
 }
 
-Expr* optimize_neg(Expr* neg) {
+Expr* optimize_neg(Expr* neg, list_t env) {
   if (neg != NULL && neg->type == NEG) {
     Expr *neg_left, *neg_right, *res;
 
-    res = optimize(((Neg*)neg->expr)->expr);
+    res = optimize(((Neg*)neg->expr)->expr, env);
 
     if (res->type == NUM)
       return new_num(-1 * ((Num*)res->expr)->num);
 
     else if (res->type == NEG)
-      return optimize(((Neg*)res->expr)->expr);
+      return optimize(((Neg*)res->expr)->expr, env);
 
     else if (res->type == ADD) {
       neg_left = new_neg(get_left(res));
@@ -154,10 +154,10 @@ Expr* optimize_neg(Expr* neg) {
   return neg;
 }
 
-Expr* optimize_add(Expr* add) {
+Expr* optimize_add(Expr* add, list_t env) {
   if (add != NULL && add->type == ADD) {
-    Expr* left_opt = optimize(get_left(add));
-    Expr* right_opt = optimize(get_right(add));
+    Expr* left_opt = optimize(get_left(add), env);
+    Expr* right_opt = optimize(get_right(add), env);
     Expr *left, *right, *res_num;
 
     /* (+ NUM NUM) -> NUM+NUM */
@@ -207,17 +207,38 @@ int is_simple(Expr* expr){
     return expr && (expr->type == NUM || expr->type == VAR); 
 }
 
-Expr* optimize(Expr* expr) {
+Expr* optimize(Expr* expr, list_t env) {
+  env_pair_t *ep;
+  list_t new_env;
+  Expr *tmp, *e;
+  Node* node;
   int n;
+  if(env == NULL)
+      env = list_create();
   if (expr != NULL) switch (expr->type) {
       case VAR:
-        return expr;
+          node = list_find(env, expr, ep_var_cmp);
+          if(node == NULL)
+              die("[OPT] Unbound Variable!");
+          return ((env_pair_t*) node->data)->val; 
       case LET:
+          tmp = optimize(((Let*)expr->expr)->expr, env);
+          new_env = list_copy(env, ep_cpy);
+          if(is_simple(tmp)){     
+              ep = new_env_pair(((Let*)expr->expr)->var, tmp);
+              list_insert(new_env, ep);
+              return optimize(((Let*)expr->expr)->body, new_env);
+          }else{
+              ep = new_env_pair(((Let*)expr->expr)->var, ((Let*)expr->expr)->body);
+              list_insert(new_env, ep);
+              e = optimize(((Let*)expr->expr)->body, new_env);
+              return new_let(((Let*)expr->expr)->var, tmp, e);
+          }
         return expr;
       case NEG:
-        return optimize_neg(expr);
+        return optimize_neg(expr, env);
       case ADD:
-        return optimize_add(expr);
+        return optimize_add(expr, env);
       case NUM:
         return expr;
       case READ:

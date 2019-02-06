@@ -75,8 +75,11 @@ Expr* new_read(void);
 /* Return a new environment pair */
 env_pair_t* new_env_pair(Expr*, Expr*);
 
-/* Compare two environment pairs */
-int ep_cmp(void*, void*);
+/* Compare two Var -> int pairs */
+int ep_var_cmp(void*, void*);
+
+/* Compare two Var -> Expr pairs */
+int ep_expr_cmp(void*, void*);
 
 /* (shallow) copy an environment pair*/
 void* ep_cpy(void* old);
@@ -84,14 +87,13 @@ void* ep_cpy(void* old);
 /* Interpret an expression in an environment*/
 int interp(Expr*, list_t);
 
-/* Optimize an expression */
-Expr* optimize(Expr*);
+Expr* optimize(Expr*, list_t);
 
 /* Optimize a neg expression */
-Expr* optimize_neg(Expr*);
+Expr* optimize_neg(Expr*, list_t);
 
 /* Optimize an add expression */
-Expr* optimize_add(Expr*);
+Expr* optimize_add(Expr*, list_t);
 
 /* Print an expression to stdout */
 void print(Expr*);

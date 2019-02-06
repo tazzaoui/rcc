@@ -13,7 +13,7 @@
 static inline void print_optim(Expr *e) {
   print(e);
   printf(" -> ");
-  print(optimize(e));
+  print(optimize(e, NULL));
   printf("\n");
 }
 
@@ -121,7 +121,7 @@ int main(int argc, char *argv[]) {
       print(expr);
       printf(" -> %d\n", res);
     }
-    expr_opt = optimize(expr);
+    expr_opt = optimize(expr, NULL);
     res_opt = interp(expr_opt, NULL);
     if (DEBUG) {
       printf("Optimized: ");
