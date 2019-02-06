@@ -13,7 +13,7 @@
 * Write a dozen test R1 programs.
 * Extend your interpreter from R0 to R1.
 * Extend your random generation function from R0 to R1.
-Write some R1-specific optimizer tests.
+* Write some R1-specific optimizer tests.
 Extend your optimizer from R0 to R1.
 Define data types for X0 program ASTs.
 Write an emitter for X0 programs.

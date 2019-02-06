@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
 
   for (size_t i = 0; i < NUM_PROGS; ++i) {
     rand_depth = rand() % 20;
-    expr = randp(vars, rand_depth);
+    expr = randp(vars, 2);
     res = interp(expr, vars);
     if (DEBUG) {
       print(expr);
@@ -93,6 +93,19 @@ int main(int argc, char *argv[]) {
   print_optim(f);
   print_optim(g);
   print_optim(h);
+
+  printf("===================================================\n");
+
+  printf("R1 Specific Optimizer Checks...\n");
+
+  Expr *x = new_var("x");
+  Expr *z = new_var("z");
+  Expr *l1 = new_let(x, new_num(7), new_add(x, x));
+  Expr *l2 = new_let(x, new_num(42), new_neg(x));
+  Expr *l3 = new_let(z, new_read(), new_neg(z));
+  print_optim(l1);
+  print_optim(l2);
+  print_optim(l3);
 
   printf("===================================================\n");
 

@@ -45,8 +45,7 @@ typedef struct Read {
 } Read;
 
 typedef struct env_pair_t {
-  Expr* var;
-  int val;
+  Expr *var, *val;
 } env_pair_t;
 
 /* Return a new program */
@@ -74,7 +73,7 @@ Expr* new_num(int);
 Expr* new_read(void);
 
 /* Return a new environment pair */
-env_pair_t* new_env_pair(Expr*, int);
+env_pair_t* new_env_pair(Expr*, Expr*);
 
 /* Compare two environment pairs */
 int ep_cmp(void*, void*);
@@ -96,6 +95,9 @@ Expr* optimize_add(Expr*);
 
 /* Print an expression to stdout */
 void print(Expr*);
+
+/* Returns 1 for simple expressions */
+int is_simple(Expr*);
 
 static inline Expr* get_left(Expr* expr) {
   if (expr != NULL && expr->type == ADD) return ((Add*)expr->expr)->left;

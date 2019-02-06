@@ -65,7 +65,7 @@ Expr* new_read() {
   return new_expr(r, READ);
 }
 
-env_pair_t *new_env_pair(Expr* var, int val){
+env_pair_t *new_env_pair(Expr* var, Expr* val){
     env_pair_t *ep = malloc_or_die(sizeof(env_pair_t));
     ep->var = var;
     ep->val = val;
@@ -91,7 +91,9 @@ void ep_print(void *data){
     env_pair_t *ep = (env_pair_t*)data;
     printf("<");
     print(ep->var);
-    printf(",%d> ", ep->val);
+    printf(",");
+    print(ep->val);
+    printf(">");
 }
 
 int interp(Expr* expr, list_t env) {
@@ -107,10 +109,10 @@ int interp(Expr* expr, list_t env) {
           n = list_find(env, expr, ep_cmp);
           if(n == NULL) die("Unbound Variable!\n");
           ep = (env_pair_t*) n->data;
-          return ep->val;
+          return get_num(ep->val);
       case LET:
         val = interp(get_expr(expr), env); 
-        ep = new_env_pair(get_var(expr), val);
+        ep = new_env_pair(get_var(expr), new_num(val));
         new_env = list_copy(env, ep_cpy);
         list_insert(new_env, ep);
         return interp(get_body(expr), new_env);
@@ -199,6 +201,10 @@ Expr* optimize_add(Expr* add) {
     }
   }
   return add;
+}
+
+int is_simple(Expr* expr){
+    return expr && (expr->type == NUM || expr->type == VAR); 
 }
 
 Expr* optimize(Expr* expr) {
