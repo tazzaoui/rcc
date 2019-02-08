@@ -119,6 +119,9 @@ Program* new_prog(void*, list_t);
 /* Return a new block */
 Block* new_block(void*, list_t);
 
+/* Return a new arg */
+Arg* new_arg(ARG_TYPE, void*);
+
 /* Return a new addq instruction */
 Addq* new_addq(Arg*, Arg*);
 

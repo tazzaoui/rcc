@@ -23,6 +23,13 @@ Block* new_block(void* info, list_t instrs){
   return b;
 }
 
+Arg* new_arg(ARG_TYPE type, void* arg){
+    Arg* a = malloc_or_die(sizeof(Arg));
+    a->type = type;
+    a->arg = arg;
+    return a;
+}
+
 Addq* new_addq(Arg* left, Arg* right){
     Addq *a = malloc_or_die(sizeof(Addq));
     a->left = left;
