@@ -110,16 +110,11 @@ Arg_Mem* new_arg_mem(REGISTER reg, int offset){
     Arg_Mem *am = malloc_or_die(sizeof(Arg_Mem));
     am->reg = reg;
     am->offset = offset;
+    return am;
 }
 
 Arg_Var* new_arg_var(const char* name){
     Arg_Var *av = malloc_or_die(sizeof(Arg_Var));
     av->name = name;
     return av;
-}
-
-int x_interp(X_Program *xp){
-
-
-
 }
