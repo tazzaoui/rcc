@@ -4,6 +4,8 @@
 #define NRM "\x1B[0m"
 #define RED "\x1B[31m"
 #define GRN "\x1B[32m"
+#define RAND_RANGE 1024
+#define GET_RAND() (rand() % (2 * RAND_RANGE)) - RAND_RANGE
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,6 +19,9 @@ static inline void *malloc_or_die(size_t size) {
   return mem;
 }
 
-int die(const char *err_msg);
+static inline int die(const char *err_msg) {
+  fprintf(stderr, "%sERROR: %s%s\n", RED, err_msg, NRM);
+  exit(-1);
+}
 
 #endif /* UTILS_H */
