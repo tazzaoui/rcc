@@ -40,10 +40,10 @@ typedef enum REGISTER {
   R15
 } REGISTER;
 
-typedef struct Program {
+typedef struct X_Program {
   void* info;
   list_t labels;  // labels: label -> block
-} Program;
+} X_Program;
 
 typedef struct Block {
   void* info;
@@ -59,6 +59,12 @@ typedef struct Arg {
   ARG_TYPE type;
   void* arg;
 } Arg;
+
+typedef struct State {
+  list_t regs;  // (rn -> num)
+  list_t nums;  // (num -> num)
+  list_t vars;  // (var -> num)
+} State;
 
 typedef struct Addq {
   Arg *left, *right;
@@ -114,10 +120,13 @@ typedef struct Arg_Var {
 } Arg_Var;
 
 /* Return a new program */
-Program* new_prog(void*, list_t);
+X_Program* new_xprog(void*, list_t);
 
 /* Return a new block */
 Block* new_block(void*, list_t);
+
+/* Return an empty machine state */
+State* new_state(void);
 
 /* Return a new arg */
 Arg* new_arg(ARG_TYPE, void*);
@@ -161,4 +170,6 @@ Arg_Mem* new_arg_mem(REGISTER, int);
 /* Return a new variable arg */
 Arg_Var* new_arg_var(const char*);
 
+/* Interp an X Program */
+int x_interp(X_Program* xp);
 #endif /* X_H */

@@ -3,8 +3,10 @@
 #include <stdlib.h>
 
 #include "../src/list.h"
+#include "../src/pairs.h"
 #include "../src/rcc.h"
 #include "../src/utils.h"
+
 #include "tests.h"
 
 #define NUM 1024

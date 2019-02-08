@@ -5,13 +5,13 @@
 const char* registers[NUM_REGS] = { "%rsp", "%rbp", "%rax", "%rbx", "%rcx", "%rdx", "%rsi", "%rdi", 
                                     "%r8", "%r9", "%r10", "%r11", "%r12", "%r13", "%r14", "%r15"};
 
-Program* new_prog(void* info, list_t labels) {
-  Program* p = malloc_or_die(sizeof(Program));
-  p->info = info;
+X_Program* new_prog(void* info, list_t labels) {
+  X_Program* xp = malloc_or_die(sizeof(X_Program));
+  xp->info = info;
   if(labels == NULL)
       labels = list_create();
-  p->labels = labels;
-  return p;
+  xp->labels = labels;
+  return xp;
 }
 
 Block* new_block(void* info, list_t instrs){
@@ -21,6 +21,14 @@ Block* new_block(void* info, list_t instrs){
       instrs = list_create();
   b->instrs = instrs;
   return b;
+}
+
+State* new_state(){
+    State *s = malloc_or_die(sizeof(State));
+    s->regs = list_create();
+    s->nums = list_create();
+    s->vars = list_create();
+    return s;
 }
 
 Arg* new_arg(ARG_TYPE type, void* arg){
@@ -108,4 +116,10 @@ Arg_Var* new_arg_var(const char* name){
     Arg_Var *av = malloc_or_die(sizeof(Arg_Var));
     av->name = name;
     return av;
+}
+
+int x_interp(X_Program *xp){
+
+
+
 }
