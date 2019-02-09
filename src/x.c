@@ -1,3 +1,4 @@
+#include "pairs.h"
 #include "list.h"
 #include "utils.h"
 #include "x.h"
@@ -117,4 +118,88 @@ Arg_Var* new_arg_var(const char* name){
     Arg_Var *av = malloc_or_die(sizeof(Arg_Var));
     av->name = name;
     return av;
+}
+
+void x_emit(X_Program *xp){
+    if(xp){
+        list_print(xp->labels, print_lbl_blk_pair);
+    }
+}
+
+void print_lbl_blk_pair(void* l){
+    if(l){
+        lbl_blk_pair_t *lbp = (lbl_blk_pair_t*)l;
+        Block* blk = (Block*) lbp->block; 
+        printf("%s\n", lbp->label);
+        list_print(blk->instrs, print_instr); 
+    }
+ }
+
+void print_instr(void *instr){
+    if(instr){
+        Instr *i = (Instr*) instr;
+        switch (i->type){
+            case ADDQ:
+                printf("addq\t");
+                x_print_arg(((Addq*)i->instr)->left);
+                x_print_arg(((Addq*)i->instr)->right);
+                break;
+            case SUBQ:
+                printf("subq\t");
+                x_print_arg(((Subq*)i->instr)->left);
+                x_print_arg(((Subq*)i->instr)->right);
+                break;
+            case MOVQ:
+                printf("movq\t");
+                x_print_arg(((Movq*)i->instr)->left);
+                x_print_arg(((Movq*)i->instr)->right);
+                break;
+            case RETQ:
+                printf("retq\t");
+                break;
+            case NEGQ:
+                printf("negq\t");
+                x_print_arg(((Negq*)i->instr)->arg);
+                break;
+            case CALLQ:
+                printf("callq\t%s", ((Callq*)i->instr)->label);
+                break;
+             case JMP:
+                printf("jmp\t%s", ((Jmp*)i->instr)->label);
+                break; 
+            case PUSHQ:
+                printf("pushq\t");
+                x_print_arg(((Pushq*)i->instr)->arg);
+                break;
+            case POPQ:
+                printf("popq\t");
+                x_print_arg(((Popq*)i->instr)->arg);
+                break; 
+            default:
+                die("Invalid Instruction!");
+        };
+    }
+}
+
+void x_print_arg(Arg* arg){
+    if(arg){
+        switch(arg->type){
+            case ARG_NUM:
+                printf("$%d", ((Arg_Num*)arg)->num);
+                break;
+            case ARG_REG:
+                printf("%s", registers[((Arg_Reg*)arg)->reg]);
+                break; 
+            case ARG_MEM:
+                printf("%d(%s)", ((Arg_Mem*)arg)->offset, 
+                                 registers[((Arg_Mem*)arg)->reg]);
+                break; 
+            case ARG_VAR:
+                if(X_PRINT_ARG_ALLOW_VARS)
+                    printf("!%s", ((Arg_Var*)arg)->name);
+                break;
+            default:
+                die("Invalid Arg!");
+        }
+    }
 }

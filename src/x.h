@@ -4,6 +4,7 @@
 #include "list.h"
 
 #define NUM_REGS 16
+#define X_PRINT_ARG_ALLOW_VARS 1
 
 typedef const char* label_t;
 extern const char* registers[NUM_REGS];
@@ -171,5 +172,18 @@ Arg_Mem* new_arg_mem(REGISTER, int);
 Arg_Var* new_arg_var(const char*);
 
 /* Interp an X Program */
-int x_interp(X_Program* xp);
+int x_interp(X_Program*);
+
+/* Emit an X Program */
+void x_emit(X_Program*);
+
+/* Print a block instruction */
+void print_lbl_blk_pair(void*);
+
+/* Print a single instruction */
+void print_instr(void*);
+
+/* Print a single argument */
+void x_print_arg(Arg*);
+
 #endif /* X_H */
