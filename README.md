@@ -1,6 +1,7 @@
 # rcc
 A compiler for the R language
 
+Book: https://github.com/IUCompilerCourse/Essentials-of-Compilation
 ## R1
 
 ```
