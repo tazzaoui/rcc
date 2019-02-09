@@ -270,3 +270,34 @@ void test_list() {
     assert(temp == NULL);
   }
 }
+
+void test_x0_emit() {
+  list_t instrs = list_create();
+  list_t blks = list_create();
+
+  Arg *left = new_arg(ARG_NUM, new_arg_num(10));
+  Arg *right = new_arg(ARG_NUM, new_arg_num(42));
+  Arg *rbx = new_arg(ARG_REG, new_arg_reg(RBX));
+  Arg *rdi = new_arg(ARG_REG, new_arg_reg(RDI));
+
+  Instr *i1 = new_instr(ADDQ, new_addq(left, right));
+  Instr *i2 = new_instr(SUBQ, new_subq(right, left));
+  Instr *i3 = new_instr(MOVQ, new_movq(rbx, rdi));
+  Instr *i4 = new_instr(NEGQ, new_negq(left));
+  Instr *i5 = new_instr(NEGQ, new_negq(rbx));
+
+  list_insert(instrs, i1);
+  list_insert(instrs, i2);
+  list_insert(instrs, i3);
+  list_insert(instrs, i4);
+  list_insert(instrs, i5);
+
+  Block *b = new_block(NULL, instrs);
+  lbl_blk_pair_t *lbp = new_lbl_blk_pair("main", b);
+
+  list_insert(blks, lbp);
+  X_Program *xp = new_prog("hi", blks);
+
+  x_emit(xp);
+  printf("\n");
+}

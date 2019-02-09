@@ -19,4 +19,7 @@ void test_dozen_r1(void);
 /* Test linked list */
 void test_list(void);
 
+/* Test X0 Emitter */
+void test_x0_emit(void);
+
 #endif /* TESTS_H */

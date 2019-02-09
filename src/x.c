@@ -24,6 +24,13 @@ Block* new_block(void* info, list_t instrs){
   return b;
 }
 
+Instr* new_instr(INSTR_TYPE type, void* instr){
+    Instr *i = malloc_or_die(sizeof(Instr));
+    i->type = type;
+    i->instr = instr;
+    return i;
+}
+
 State* new_state(){
     State *s = malloc_or_die(sizeof(State));
     s->regs = list_create();
@@ -130,7 +137,7 @@ void print_lbl_blk_pair(void* l){
     if(l){
         lbl_blk_pair_t *lbp = (lbl_blk_pair_t*)l;
         Block* blk = (Block*) lbp->block; 
-        printf("%s\n", lbp->label);
+        printf("%s:\n", lbp->label);
         list_print(blk->instrs, print_instr); 
     }
  }
@@ -140,44 +147,48 @@ void print_instr(void *instr){
         Instr *i = (Instr*) instr;
         switch (i->type){
             case ADDQ:
-                printf("addq\t");
+                printf("\taddq\t");
                 x_print_arg(((Addq*)i->instr)->left);
+                printf(", ");
                 x_print_arg(((Addq*)i->instr)->right);
                 break;
             case SUBQ:
-                printf("subq\t");
+                printf("\tsubq\t");
                 x_print_arg(((Subq*)i->instr)->left);
+                printf(", ");
                 x_print_arg(((Subq*)i->instr)->right);
                 break;
             case MOVQ:
-                printf("movq\t");
+                printf("\tmovq\t");
                 x_print_arg(((Movq*)i->instr)->left);
+                printf(", ");
                 x_print_arg(((Movq*)i->instr)->right);
                 break;
             case RETQ:
-                printf("retq\t");
+                printf("\tretq\t");
                 break;
             case NEGQ:
-                printf("negq\t");
+                printf("\tnegq\t");
                 x_print_arg(((Negq*)i->instr)->arg);
                 break;
             case CALLQ:
-                printf("callq\t%s", ((Callq*)i->instr)->label);
+                printf("\tcallq\t%s", ((Callq*)i->instr)->label);
                 break;
              case JMP:
-                printf("jmp\t%s", ((Jmp*)i->instr)->label);
+                printf("\tjmp\t%s", ((Jmp*)i->instr)->label);
                 break; 
             case PUSHQ:
-                printf("pushq\t");
+                printf("\tpushq\t");
                 x_print_arg(((Pushq*)i->instr)->arg);
                 break;
             case POPQ:
-                printf("popq\t");
+                printf("\tpopq\t");
                 x_print_arg(((Popq*)i->instr)->arg);
                 break; 
             default:
                 die("Invalid Instruction!");
         };
+        printf("\n");
     }
 }
 
@@ -185,18 +196,18 @@ void x_print_arg(Arg* arg){
     if(arg){
         switch(arg->type){
             case ARG_NUM:
-                printf("$%d", ((Arg_Num*)arg)->num);
+                printf("$%d", ((Arg_Num*)arg->arg)->num);
                 break;
             case ARG_REG:
-                printf("%s", registers[((Arg_Reg*)arg)->reg]);
+                printf("%s", registers[((Arg_Reg*)arg->arg)->reg]);
                 break; 
             case ARG_MEM:
                 printf("%d(%s)", ((Arg_Mem*)arg)->offset, 
-                                 registers[((Arg_Mem*)arg)->reg]);
+                                 registers[((Arg_Mem*)arg->arg)->reg]);
                 break; 
             case ARG_VAR:
                 if(X_PRINT_ARG_ALLOW_VARS)
-                    printf("!%s", ((Arg_Var*)arg)->name);
+                    printf("!%s", ((Arg_Var*)arg->arg)->name);
                 break;
             default:
                 die("Invalid Arg!");

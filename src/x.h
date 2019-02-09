@@ -121,10 +121,13 @@ typedef struct Arg_Var {
 } Arg_Var;
 
 /* Return a new program */
-X_Program* new_xprog(void*, list_t);
+X_Program* new_prog(void*, list_t);
 
 /* Return a new block */
 Block* new_block(void*, list_t);
+
+/* Return a new instruction */
+Instr* new_instr(INSTR_TYPE, void*);
 
 /* Return an empty machine state */
 State* new_state(void);

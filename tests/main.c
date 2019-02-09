@@ -8,7 +8,7 @@
 #include "tests.h"
 
 #define DEBUG 0
-#define NUM_PROGS (1 << 12)
+#define NUM_PROGS (1 << 10)
 
 static inline void print_optim(Expr *e) {
   print(e);
@@ -146,5 +146,10 @@ int main(int argc, char *argv[]) {
 
   printf("===================================================\n");
 
+  printf("Testing X0 emitter...\n");
+
+  test_x0_emit();
+
+  printf("===================================================\n");
   return 0;
 }
