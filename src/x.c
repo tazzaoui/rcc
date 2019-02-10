@@ -204,7 +204,7 @@ void x_print_arg(Arg* arg){
                 printf("%s", registers[((Arg_Reg*)arg->arg)->reg]);
                 break; 
             case ARG_MEM:
-                printf("%d(%s)", ((Arg_Mem*)arg)->offset, 
+                printf("%d(%s)", ((Arg_Mem*)arg->arg)->offset, 
                                  registers[((Arg_Mem*)arg->arg)->reg]);
                 break; 
             case ARG_VAR:
@@ -348,7 +348,7 @@ int update_state(State** s, Arg* arg, int val){
                     return 0;
                 }else {
                     old = ((var_num_pair_t*)n->data)->num; 
-                    list_update(ms->vars, n, new_vnp, var_num_pair_cmp);
+                    list_update(ms->vars, n->data, new_vnp, var_num_pair_cmp);
                     return old;
                 }
             default:

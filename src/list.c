@@ -26,7 +26,7 @@ void list_insert(list_t list, void* data){
 
 void list_update(list_t list, void* old, void* new, cmp_func_t cmp) {
   if (list != NULL && *list != NULL) {
-    if (cmp((*list)->data, old))
+    if (cmp(old, (*list)->data))
         (*list)->data = new;
     else
       list_update(&((*list)->next), old, new, cmp);
