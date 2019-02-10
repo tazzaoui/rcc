@@ -151,5 +151,11 @@ int main(int argc, char *argv[]) {
   test_x0_emit();
 
   printf("===================================================\n");
+
+  printf("Testing a Dozen X0 Progs...\n");
+
+  test_dozen_x0_progs();
+
+  printf("===================================================\n");
   return 0;
 }

@@ -178,7 +178,7 @@ Arg_Var* new_arg_var(const char*);
 int x_interp(X_Program*);
 
 /* Emit an X Program */
-void x_emit(X_Program*);
+void x_emit(X_Program*, const char*);
 
 /* Print a block instruction */
 void print_lbl_blk_pair(void*);

@@ -8,7 +8,6 @@
 #include "../src/utils.h"
 
 #include "tests.h"
-
 #define NUM 1024
 
 Expr *test_2n(int n) {
@@ -298,6 +297,281 @@ void test_x0_emit() {
   list_insert(blks, lbp);
   X_Program *xp = new_prog("hi", blks);
 
-  x_emit(xp);
+  x_emit(xp, NULL);
   printf("\n");
+}
+
+void test_dozen_x0_progs(void) {
+  Arg *n_10 = new_arg(ARG_NUM, new_arg_num(10));
+  Arg *n_42 = new_arg(ARG_NUM, new_arg_num(42));
+
+  Arg *rax = new_arg(ARG_REG, new_arg_reg(RAX));
+  Arg *rbx = new_arg(ARG_REG, new_arg_reg(RBX));
+
+  Instr *i1, *i2, *i3, *i4, *i5, *i6;
+
+  i1 = new_instr(MOVQ, new_movq(n_10, rax));
+  i2 = new_instr(ADDQ, new_addq(n_42, rax));
+  i3 = new_instr(RETQ, new_retq());
+
+  list_t instrs = list_create(), blks = list_create();
+
+  list_insert(instrs, i1);
+  list_insert(instrs, i2);
+  list_insert(instrs, i3);
+
+  Block *b = new_block(NULL, instrs);
+  lbl_blk_pair_t *lbp = new_lbl_blk_pair("main", b);
+
+  list_insert(blks, lbp);
+  X_Program *xp = new_prog(NULL, blks);
+  x_emit(xp, "test0.s");
+
+  list_t instrs1 = list_create(), blks1 = list_create();
+
+  i1 = new_instr(MOVQ, new_movq(n_42, rax));
+  i2 = new_instr(SUBQ, new_subq(n_10, rax));
+  i3 = new_instr(RETQ, new_retq());
+
+  list_insert(instrs1, i1);
+  list_insert(instrs1, i2);
+  list_insert(instrs1, i3);
+
+  b = new_block(NULL, instrs1);
+  lbp = new_lbl_blk_pair("main", b);
+
+  list_insert(blks1, lbp);
+  xp = new_prog(NULL, blks1);
+  x_emit(xp, "test1.s");
+
+  list_t instrs2 = list_create(), blks2 = list_create();
+
+  i1 = new_instr(MOVQ, new_movq(n_42, rax));
+  i2 = new_instr(SUBQ, new_subq(n_10, rax));
+  i3 = new_instr(RETQ, new_retq());
+  i4 = new_instr(NEGQ, new_negq(rax));
+
+  list_insert(instrs2, i1);
+  list_insert(instrs2, i2);
+  list_insert(instrs2, i4);
+  list_insert(instrs2, i3);
+
+  b = new_block(NULL, instrs2);
+  lbp = new_lbl_blk_pair("main", b);
+
+  list_insert(blks2, lbp);
+  xp = new_prog(NULL, blks2);
+  x_emit(xp, "test2.s");
+
+  list_t instrs3 = list_create(), blks3 = list_create();
+
+  i1 = new_instr(MOVQ, new_movq(n_42, rax));
+  i2 = new_instr(SUBQ, new_subq(n_10, rax));
+  i3 = new_instr(PUSHQ, new_pushq(rax));
+  i4 = new_instr(POPQ, new_popq(rax));
+  i5 = new_instr(RETQ, new_retq());
+
+  list_insert(instrs3, i1);
+  list_insert(instrs3, i2);
+  list_insert(instrs3, i3);
+  list_insert(instrs3, i4);
+  list_insert(instrs3, i5);
+
+  b = new_block(NULL, instrs3);
+  lbp = new_lbl_blk_pair("main", b);
+
+  list_insert(blks3, lbp);
+  xp = new_prog(NULL, blks3);
+  x_emit(xp, "test3.s");
+
+  list_t instrs4 = list_create(), blks4 = list_create();
+
+  i1 = new_instr(PUSHQ, new_pushq(n_42));
+  i2 = new_instr(PUSHQ, new_pushq(n_10));
+  i3 = new_instr(POPQ, new_popq(rax));
+  i4 = new_instr(POPQ, new_popq(rbx));
+  i5 = new_instr(ADDQ, new_addq(rbx, rax));
+  i6 = new_instr(RETQ, new_retq());
+
+  list_insert(instrs4, i1);
+  list_insert(instrs4, i2);
+  list_insert(instrs4, i3);
+  list_insert(instrs4, i4);
+  list_insert(instrs4, i5);
+  list_insert(instrs4, i6);
+
+  b = new_block(NULL, instrs4);
+  lbp = new_lbl_blk_pair("main", b);
+
+  list_insert(blks4, lbp);
+  xp = new_prog(NULL, blks4);
+  x_emit(xp, "test4.s");
+
+  list_t instrs5 = list_create(), blks5 = list_create();
+
+  i1 = new_instr(MOVQ, new_movq(n_42, rax));
+  i2 = new_instr(NEGQ, new_negq(rax));
+  i3 = new_instr(NEGQ, new_negq(rax));
+  i4 = new_instr(RETQ, new_retq());
+
+  list_insert(instrs5, i1);
+  list_insert(instrs5, i2);
+  list_insert(instrs5, i3);
+  list_insert(instrs5, i4);
+
+  b = new_block(NULL, instrs5);
+  lbp = new_lbl_blk_pair("main", b);
+
+  list_insert(blks5, lbp);
+  xp = new_prog(NULL, blks5);
+  x_emit(xp, "test5.s");
+
+  list_t instrs6 = list_create(), blks6 = list_create();
+
+  i1 = new_instr(MOVQ, new_movq(n_10, rbx));
+  i2 = new_instr(MOVQ, new_movq(rbx, rax));
+  i3 = new_instr(NEGQ, new_negq(rax));
+  i4 = new_instr(NEGQ, new_negq(rax));
+  i5 = new_instr(RETQ, new_retq());
+
+  list_insert(instrs6, i1);
+  list_insert(instrs6, i2);
+  list_insert(instrs6, i3);
+  list_insert(instrs6, i4);
+  list_insert(instrs6, i5);
+
+  b = new_block(NULL, instrs6);
+  lbp = new_lbl_blk_pair("main", b);
+
+  list_insert(blks6, lbp);
+  xp = new_prog(NULL, blks6);
+  x_emit(xp, "test6.s");
+
+  list_t instrs7 = list_create(), blks7 = list_create();
+
+  i1 = new_instr(MOVQ, new_movq(n_10, rbx));
+  i2 = new_instr(MOVQ, new_movq(rbx, rax));
+  i3 = new_instr(NEGQ, new_negq(rax));
+  i4 = new_instr(NEGQ, new_negq(rax));
+  i5 = new_instr(SUBQ, new_subq(rbx, rax));
+  i6 = new_instr(RETQ, new_retq());
+
+  list_insert(instrs7, i1);
+  list_insert(instrs7, i2);
+  list_insert(instrs7, i3);
+  list_insert(instrs7, i4);
+  list_insert(instrs7, i5);
+  list_insert(instrs7, i6);
+
+  b = new_block(NULL, instrs7);
+  lbp = new_lbl_blk_pair("main", b);
+
+  list_insert(blks7, lbp);
+  xp = new_prog(NULL, blks7);
+  x_emit(xp, "test7.s");
+
+  list_t instrs8 = list_create(), blks8 = list_create();
+
+  i1 = new_instr(MOVQ, new_movq(n_10, rbx));
+  i2 = new_instr(MOVQ, new_movq(n_42, rbx));
+  i3 = new_instr(ADDQ, new_addq(rbx, rax));
+  i4 = new_instr(SUBQ, new_subq(rbx, rax));
+  i5 = new_instr(RETQ, new_retq());
+
+  list_insert(instrs8, i1);
+  list_insert(instrs8, i2);
+  list_insert(instrs8, i3);
+  list_insert(instrs8, i4);
+  list_insert(instrs8, i5);
+
+  b = new_block(NULL, instrs8);
+  lbp = new_lbl_blk_pair("main", b);
+
+  list_insert(blks8, lbp);
+  xp = new_prog(NULL, blks8);
+  x_emit(xp, "test8.s");
+
+  list_t instrs9 = list_create(), blks9 = list_create();
+
+  i1 = new_instr(MOVQ, new_movq(n_10, rbx));
+  i2 = new_instr(ADDQ, new_addq(n_42, rbx));
+  i3 = new_instr(MOVQ, new_movq(n_10, rax));
+  i4 = new_instr(ADDQ, new_addq(rbx, rax));
+  i5 = new_instr(RETQ, new_retq());
+
+  list_insert(instrs9, i1);
+  list_insert(instrs9, i2);
+  list_insert(instrs9, i3);
+  list_insert(instrs9, i4);
+  list_insert(instrs9, i5);
+
+  b = new_block(NULL, instrs9);
+  lbp = new_lbl_blk_pair("main", b);
+
+  list_insert(blks9, lbp);
+  xp = new_prog(NULL, blks9);
+  x_emit(xp, "test9.s");
+
+  list_t instrs10 = list_create(), blks10 = list_create();
+
+  i1 = new_instr(MOVQ, new_movq(n_10, rbx));
+  i2 = new_instr(ADDQ, new_addq(n_42, rbx));
+  i3 = new_instr(MOVQ, new_movq(n_10, rax));
+  i4 = new_instr(SUBQ, new_subq(rbx, rax));
+  i5 = new_instr(RETQ, new_retq());
+
+  list_insert(instrs10, i1);
+  list_insert(instrs10, i2);
+  list_insert(instrs10, i3);
+  list_insert(instrs10, i4);
+  list_insert(instrs10, i5);
+
+  b = new_block(NULL, instrs10);
+  lbp = new_lbl_blk_pair("main", b);
+
+  list_insert(blks10, lbp);
+  xp = new_prog(NULL, blks10);
+  x_emit(xp, "test10.s");
+
+  list_t instrs11 = list_create(), blks11 = list_create();
+
+  i1 = new_instr(MOVQ, new_movq(n_42, rbx));
+  i2 = new_instr(ADDQ, new_addq(n_10, rbx));
+  i3 = new_instr(MOVQ, new_movq(n_42, rax));
+  i4 = new_instr(SUBQ, new_addq(rbx, rax));
+  i5 = new_instr(RETQ, new_retq());
+
+  list_insert(instrs11, i1);
+  list_insert(instrs11, i2);
+  list_insert(instrs11, i3);
+  list_insert(instrs11, i4);
+  list_insert(instrs11, i5);
+
+  b = new_block(NULL, instrs11);
+  lbp = new_lbl_blk_pair("main", b);
+
+  list_insert(blks11, lbp);
+  xp = new_prog(NULL, blks11);
+  x_emit(xp, "test11.s");
+
+  list_t instrs12 = list_create(), blks12 = list_create();
+
+  i1 = new_instr(MOVQ, new_movq(n_42, rbx));
+  i2 = new_instr(ADDQ, new_addq(n_10, rbx));
+  i3 = new_instr(MOVQ, new_movq(n_42, rax));
+  i4 = new_instr(SUBQ, new_subq(rbx, rax));
+  i5 = new_instr(RETQ, new_retq());
+
+  list_insert(instrs12, i1);
+  list_insert(instrs12, i2);
+  list_insert(instrs12, i3);
+  list_insert(instrs12, i4);
+  list_insert(instrs12, i5);
+
+  b = new_block(NULL, instrs12);
+  lbp = new_lbl_blk_pair("main", b);
+
+  list_insert(blks11, lbp);
+  xp = new_prog(NULL, blks12);
+  x_emit(xp, "test12.s");
 }

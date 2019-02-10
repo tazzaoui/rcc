@@ -127,9 +127,14 @@ Arg_Var* new_arg_var(const char* name){
     return av;
 }
 
-void x_emit(X_Program *xp){
+void x_emit(X_Program *xp, const char* file_name){
     if(xp){
+        if(file_name)
+            freopen(file_name, "w", stdout);
+        printf("\t.globl main\n");
         list_print(xp->labels, print_lbl_blk_pair);
+        if(file_name) 
+            freopen("/dev/tty", "w", stdout);
     }
 }
 
@@ -140,7 +145,7 @@ void print_lbl_blk_pair(void* l){
         printf("%s:\n", lbp->label);
         list_print(blk->instrs, print_instr); 
     }
- }
+}
 
 void print_instr(void *instr){
     if(instr){

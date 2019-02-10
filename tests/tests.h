@@ -22,4 +22,7 @@ void test_list(void);
 /* Test X0 Emitter */
 void test_x0_emit(void);
 
+/* Test a dozen X0 programs */
+void test_dozen_x0_progs(void);
+
 #endif /* TESTS_H */
