@@ -39,7 +39,7 @@ list.o: src/list.c src/list.h
 	$(CC) -c $(CFLAGS) src/list.c -o list.o
 
 clean:
-	rm -f *.o *~ test*.s $(EXE) 
+	rm -f *.o *~ a.out test*.s $(EXE) 
 
 format:
 	clang-format -i -style=google main.c src/*.h src/*.h tests/*.c tests/*.h 

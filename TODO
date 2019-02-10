@@ -19,7 +19,7 @@
 * Write an emitter for X0 programs.
 * Build a test suite of a dozen X0 programs.
 * Write an interpreter for X0 programs.
-Connect your X0 test suite to your system assembler.
+* Connect your X0 test suite to your system assembler.
 Define data types for C0 program ASTs.
 Write a pretty printer for C0 programs.
 Build a test suite of a dozen C0 programs.

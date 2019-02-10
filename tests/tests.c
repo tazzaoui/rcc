@@ -302,13 +302,16 @@ void test_x0_emit() {
 }
 
 void test_prog_interp(X_Program *xp, const char *file_name, int test_num) {
-  printf("\n***********************************\n");
-  printf("Testing program #%d\n", test_num);
-  x_emit(xp, NULL);
-  //  if (file_name) x_emit(xp, file_name);
-  int x = x_interp(xp);
-  printf("Result = %d\n", x);
-  printf("\n***********************************\n");
+    printf("\n***********************************\n");
+    char cmd_buf[2048];
+    if (file_name) x_emit(xp, file_name);
+    sprintf(cmd_buf, "gcc %s", file_name);
+    system(cmd_buf);  
+    int exit_code = system("./a.out"); 
+    int interp_res = x_interp(xp); 
+    printf("./a.out: Exit Code = %d\n", exit_code);
+    printf("Interp Result = %d", interp_res);
+    printf("\n***********************************\n");
 }
 
 void test_dozen_x0() {
