@@ -45,6 +45,24 @@ lbl_blk_pair_t* new_lbl_blk_pair(label_t label, Block* blk){
     return lbp;
 }
 
+int lbl_blk_pair_cmp(void *a, void *b){
+    if(a && b){        
+        lbl_blk_pair_t *lbp_a = (lbl_blk_pair_t*) a;
+        lbl_blk_pair_t *lbp_b = (lbl_blk_pair_t*) b;
+        return strcmp(lbp_a->label, lbp_b->label) == 0; 
+    }
+    return 0;
+}
+
+void print_lbl_blk_pair(void* l){
+    if(l){
+        lbl_blk_pair_t *lbp = (lbl_blk_pair_t*)l;
+        Block* blk = (Block*) lbp->block; 
+        printf("%s:\n", lbp->label);
+        list_print(blk->instrs, print_instr); 
+    }
+}
+
 reg_num_pair_t* new_reg_num_pair(REGISTER reg, int num){
     reg_num_pair_t *rnp = malloc_or_die(sizeof(reg_num_pair_t));
     rnp->reg = reg;
@@ -53,7 +71,7 @@ reg_num_pair_t* new_reg_num_pair(REGISTER reg, int num){
 }
 
 int reg_num_pair_cmp(void *a, void *b){
-    if( a && b){
+    if(a && b){
         reg_num_pair_t *rnp_a = (reg_num_pair_t*) a;
         reg_num_pair_t *rnp_b = (reg_num_pair_t*) b;
         return (rnp_a->reg == rnp_b->reg && rnp_a->num == rnp_b->num);

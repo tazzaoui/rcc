@@ -301,7 +301,17 @@ void test_x0_emit() {
   printf("\n");
 }
 
-void test_dozen_x0_progs(void) {
+void test_prog_interp(X_Program *xp, const char *file_name, int test_num) {
+  printf("\n***********************************\n");
+  printf("Testing program #%d\n", test_num);
+  x_emit(xp, NULL);
+  if (file_name) x_emit(xp, file_name);
+  int x = x_interp(xp);
+  printf("Result = %d\n", x);
+  printf("\n***********************************\n");
+}
+
+void test_dozen_x0() {
   Arg *n_10 = new_arg(ARG_NUM, new_arg_num(10));
   Arg *n_42 = new_arg(ARG_NUM, new_arg_num(42));
 
@@ -325,7 +335,7 @@ void test_dozen_x0_progs(void) {
 
   list_insert(blks, lbp);
   X_Program *xp = new_prog(NULL, blks);
-  x_emit(xp, "test0.s");
+  test_prog_interp(xp, "test0.s", 0);
 
   list_t instrs1 = list_create(), blks1 = list_create();
 
@@ -342,7 +352,7 @@ void test_dozen_x0_progs(void) {
 
   list_insert(blks1, lbp);
   xp = new_prog(NULL, blks1);
-  x_emit(xp, "test1.s");
+  test_prog_interp(xp, "test1.s", 1);
 
   list_t instrs2 = list_create(), blks2 = list_create();
 
@@ -361,7 +371,7 @@ void test_dozen_x0_progs(void) {
 
   list_insert(blks2, lbp);
   xp = new_prog(NULL, blks2);
-  x_emit(xp, "test2.s");
+  test_prog_interp(xp, "test2.s", 2);
 
   list_t instrs3 = list_create(), blks3 = list_create();
 
@@ -382,7 +392,7 @@ void test_dozen_x0_progs(void) {
 
   list_insert(blks3, lbp);
   xp = new_prog(NULL, blks3);
-  x_emit(xp, "test3.s");
+  test_prog_interp(xp, "test3.s", 3);
 
   list_t instrs4 = list_create(), blks4 = list_create();
 
@@ -405,7 +415,7 @@ void test_dozen_x0_progs(void) {
 
   list_insert(blks4, lbp);
   xp = new_prog(NULL, blks4);
-  x_emit(xp, "test4.s");
+  test_prog_interp(xp, "test4.s", 4);
 
   list_t instrs5 = list_create(), blks5 = list_create();
 
@@ -424,7 +434,7 @@ void test_dozen_x0_progs(void) {
 
   list_insert(blks5, lbp);
   xp = new_prog(NULL, blks5);
-  x_emit(xp, "test5.s");
+  test_prog_interp(xp, "test5.s", 5);
 
   list_t instrs6 = list_create(), blks6 = list_create();
 
@@ -445,7 +455,7 @@ void test_dozen_x0_progs(void) {
 
   list_insert(blks6, lbp);
   xp = new_prog(NULL, blks6);
-  x_emit(xp, "test6.s");
+  test_prog_interp(xp, "test6.s", 6);
 
   list_t instrs7 = list_create(), blks7 = list_create();
 
@@ -468,7 +478,7 @@ void test_dozen_x0_progs(void) {
 
   list_insert(blks7, lbp);
   xp = new_prog(NULL, blks7);
-  x_emit(xp, "test7.s");
+  test_prog_interp(xp, "test7.s", 7);
 
   list_t instrs8 = list_create(), blks8 = list_create();
 
@@ -489,7 +499,7 @@ void test_dozen_x0_progs(void) {
 
   list_insert(blks8, lbp);
   xp = new_prog(NULL, blks8);
-  x_emit(xp, "test8.s");
+  test_prog_interp(xp, "test8.s", 8);
 
   list_t instrs9 = list_create(), blks9 = list_create();
 
@@ -510,7 +520,7 @@ void test_dozen_x0_progs(void) {
 
   list_insert(blks9, lbp);
   xp = new_prog(NULL, blks9);
-  x_emit(xp, "test9.s");
+  test_prog_interp(xp, "test9.s", 9);
 
   list_t instrs10 = list_create(), blks10 = list_create();
 
@@ -531,7 +541,7 @@ void test_dozen_x0_progs(void) {
 
   list_insert(blks10, lbp);
   xp = new_prog(NULL, blks10);
-  x_emit(xp, "test10.s");
+  test_prog_interp(xp, "test10.s", 10);
 
   list_t instrs11 = list_create(), blks11 = list_create();
 
@@ -552,7 +562,7 @@ void test_dozen_x0_progs(void) {
 
   list_insert(blks11, lbp);
   xp = new_prog(NULL, blks11);
-  x_emit(xp, "test11.s");
+  test_prog_interp(xp, "test11.s", 11);
 
   list_t instrs12 = list_create(), blks12 = list_create();
 
@@ -571,7 +581,7 @@ void test_dozen_x0_progs(void) {
   b = new_block(NULL, instrs12);
   lbp = new_lbl_blk_pair("main", b);
 
-  list_insert(blks11, lbp);
+  list_insert(blks12, lbp);
   xp = new_prog(NULL, blks12);
-  x_emit(xp, "test12.s");
+  test_prog_interp(xp, "test12.s", 12);
 }

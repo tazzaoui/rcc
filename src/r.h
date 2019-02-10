@@ -1,6 +1,7 @@
 #ifndef R_H
 #define R_H
 
+#include "utils.h"
 #define QUIET_READ 1
 
 typedef enum EXPR_TYPE { NEG, ADD, READ, NUM, VAR, LET } EXPR_TYPE;

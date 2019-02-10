@@ -42,6 +42,12 @@ void* ep_cpy(void* old);
 /* Return a new label-block pair */
 lbl_blk_pair_t* new_lbl_blk_pair(label_t, Block*);
 
+/* Compare a label with a lbl_blk_pair_t pair */
+int lbl_blk_pair_cmp(void*, void*);
+
+/* Print the label portion of a lbl_blk_pair */
+void print_lbl_blk_pair(void*);
+
 /* Return new reg -> num pair */
 reg_num_pair_t* new_reg_num_pair(REGISTER, int);
 

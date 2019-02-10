@@ -23,6 +23,9 @@ void test_list(void);
 void test_x0_emit(void);
 
 /* Test a dozen X0 programs */
-void test_dozen_x0_progs(void);
+void test_dozen_x0(void);
+
+/* Interp and output the result of an X0 program */
+void test_prog_interp(X_Program*, const char*, int);
 
 #endif /* TESTS_H */

@@ -1,3 +1,4 @@
+#include <string.h>
 #include "pairs.h"
 #include "list.h"
 #include "utils.h"
@@ -143,15 +144,6 @@ void x_emit(X_Program *xp, const char* file_name){
     }
 }
 
-void print_lbl_blk_pair(void* l){
-    if(l){
-        lbl_blk_pair_t *lbp = (lbl_blk_pair_t*)l;
-        Block* blk = (Block*) lbp->block; 
-        printf("%s:\n", lbp->label);
-        list_print(blk->instrs, print_instr); 
-    }
-}
-
 void print_instr(void *instr){
     if(instr){
         Instr *i = (Instr*) instr;
@@ -226,32 +218,97 @@ void x_print_arg(Arg* arg){
 }
 
 int x_interp(X_Program *xp){
-
-    return 0;
+    State *ms = new_state(xp->labels);
+    return x_blk_interp("main", &ms);
 }
 
 int x_blk_interp(label_t lbl, State **ms){
-
-    return 0;
+    if(ms){
+        Node *n = list_find((*ms)->lbls, new_lbl_blk_pair(lbl, NULL), lbl_blk_pair_cmp);
+        if(n){
+            Block *b = ((lbl_blk_pair_t*) n->data)->block;
+            list_t instrs = b->instrs;
+            if(n) return x_instrs_interp(instrs, ms); 
+        } else die("x_blk_interp: label not found!");
+    }
+    return I32MIN;
 }
 
 int x_instrs_interp(list_t instrs, State **ms){
-    
-    return 0;
+    if(instrs && ms){ 
+        int val;
+        Instr *instr;
+        Node *ins_node =  *instrs;
+        while(ins_node != NULL){
+            instr = (Instr*) ins_node->data;
+            val = x_instr_interp(instr, ms);
+            if(instr->type == RETQ)
+                return val;
+            ins_node = ins_node->next;
+        }
+    }
+    return I32MIN;
 }
 
 int x_instr_interp(Instr *instr, State **ms){ 
     if(instr && ms){
+        int lval, rval;
         State *s = *ms;
+        label_t lbl;
+        Arg *mem_rsp = new_arg(ARG_MEM, new_arg_mem(RSP, 0)); 
+        Arg *rsp = new_arg(ARG_REG, new_arg_reg(RSP));
         switch(instr->type){
             case ADDQ:
-
-                break;
-                
+                lval = lookup_state(s, ((Addq*)instr->instr)->left);
+                rval = lookup_state(s, ((Addq*)instr->instr)->right);
+                rval += lval;
+                update_state(ms, ((Addq*)instr->instr)->right, rval);
+                return rval;
+            case SUBQ:
+                lval = lookup_state(s, ((Subq*)instr->instr)->left);
+                rval = lookup_state(s, ((Subq*)instr->instr)->right);
+                rval -= lval;
+                update_state(ms, ((Subq*)instr->instr)->right, rval);
+                return rval;
+            case NEGQ:
+                lval = lookup_state(s, ((Negq*)instr->instr)->arg);
+                lval *= -1;
+                update_state(ms, ((Negq*)instr->instr)->arg, lval);
+                return lval;
+            case MOVQ:
+                lval = lookup_state(s, ((Movq*)instr->instr)->left);
+                update_state(ms, ((Movq*)instr->instr)->right, lval);
+                rval = lookup_state(s, ((Movq*)instr->instr)->right);
+                return rval;
+            case PUSHQ:
+                lval = lookup_state(s, rsp);
+                rval = lookup_state(s, ((Pushq*)instr->instr)->arg);
+                update_state(ms, rsp, lval - 8);
+                update_state(ms, mem_rsp , rval);
+                return rval; 
+            case POPQ:
+                lval = lookup_state(s, rsp);
+                rval = lookup_state(s, mem_rsp);
+                update_state(ms, ((Popq*)instr->instr)->arg, rval);
+                update_state(ms, rsp, lval + 8);
+                return rval;
+             case JMP:
+                lbl = ((Jmp*)instr->instr)->label; 
+                return x_blk_interp(lbl, ms);
+             case RETQ:
+                return lookup_state(s, new_arg(ARG_REG, new_arg_reg(RAX)));
+             case CALLQ: 
+                lbl = ((Callq*)instr->instr)->label; 
+                lval = GET_RAND();
+                if(strcmp(lbl, "_read_int") == 0){
+                    if(!QUIET_READ)
+                        scanf("%d", &lval);
+                    s->regs[RAX] = lval;
+                }
+                return lval;
+             default:
+                die("Invalid x_instr_interp!");
         };
-
-
-
     }
     return -1;
 }
@@ -262,7 +319,7 @@ int update_state(State** s, Arg* arg, int val){
         Node *n;
         State *ms = *s;  
         num_pair_t *new_np;
-        var_num_pair_t *new_vnp;
+        var_num_pair_t  *new_vnp;
         switch(arg->type){
             case ARG_NUM:
                 return ((Arg_Num*)arg->arg)->num; 
@@ -275,7 +332,10 @@ int update_state(State** s, Arg* arg, int val){
                      ((Arg_Mem*)arg->arg)->offset;
                 new_np = new_num_pair(addr, val);
                 n = list_find(ms->nums, new_np, num_pair_cmp);
-                if(n != NULL){
+                if(n == NULL){
+                    list_insert(ms->nums, new_np);
+                    return 0;
+                }else {
                     old = ((num_pair_t*)n->data)->n2;
                     list_update(ms->nums, n, new_np, num_pair_cmp);
                     return old;
@@ -283,13 +343,16 @@ int update_state(State** s, Arg* arg, int val){
             case ARG_VAR:
                 new_vnp = new_var_num_pair(((Arg_Var*)arg->arg), val);
                 n = list_find(ms->vars, new_vnp, var_num_pair_cmp);
-                if(n != NULL){
+                if(n == NULL){
+                    list_insert(ms->vars, new_vnp);
+                    return 0;
+                }else {
                     old = ((var_num_pair_t*)n->data)->num; 
                     list_update(ms->vars, n, new_vnp, var_num_pair_cmp);
                     return old;
                 }
             default:
-                die("Invalid State Lookup!");
+                die("Invalid State Update!");
         };
     }
     return I32MIN;
