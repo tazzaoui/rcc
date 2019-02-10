@@ -4,6 +4,7 @@
 #define NRM "\x1B[0m"
 #define RED "\x1B[31m"
 #define GRN "\x1B[32m"
+#define I32MIN -2147483648
 #define RAND_RANGE 1024
 #define GET_RAND() (rand() % (2 * RAND_RANGE)) - RAND_RANGE
 

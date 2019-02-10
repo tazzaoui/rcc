@@ -84,7 +84,7 @@ int num_pair_cmp(void *a, void *b){
     if(a && b){
         num_pair_t *np_a = (num_pair_t*) a;
         num_pair_t *np_b = (num_pair_t*) b;
-        return (np_a->n1 == np_b->n1 && np_a->n2 == np_b->n2);
+        return (np_a->n1 == np_b->n1);
     }
     return 0;
 }
@@ -112,7 +112,7 @@ int var_num_pair_cmp(void *a, void *b){
     if(a && b){
         var_num_pair_t *vnp_a = (var_num_pair_t*) a;
         var_num_pair_t *vnp_b = (var_num_pair_t*) b;
-        return (strcmp(vnp_a->var->name, vnp_b->var->name) == 0 && vnp_a->num == vnp_b->num);
+        return strcmp(vnp_a->var->name, vnp_b->var->name) == 0;
     }
     return 0;
 }

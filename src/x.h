@@ -62,9 +62,10 @@ typedef struct Arg {
 } Arg;
 
 typedef struct State {
-  list_t regs;  // (rn -> num)
-  list_t nums;  // (num -> num)
-  list_t vars;  // (var -> num)
+  int regs[NUM_REGS];  // (register -> num)
+  list_t nums;         // (num -> num)
+  list_t vars;         // (var -> num)
+  list_t lbls;         // (lbl - >blks)
 } State;
 
 typedef struct Addq {
@@ -130,7 +131,7 @@ Block* new_block(void*, list_t);
 Instr* new_instr(INSTR_TYPE, void*);
 
 /* Return an empty machine state */
-State* new_state(void);
+State* new_state(list_t);
 
 /* Return a new arg */
 Arg* new_arg(ARG_TYPE, void*);
@@ -174,9 +175,6 @@ Arg_Mem* new_arg_mem(REGISTER, int);
 /* Return a new variable arg */
 Arg_Var* new_arg_var(const char*);
 
-/* Interp an X Program */
-int x_interp(X_Program*);
-
 /* Emit an X Program */
 void x_emit(X_Program*, const char*);
 
@@ -189,4 +187,21 @@ void print_instr(void*);
 /* Print a single argument */
 void x_print_arg(Arg*);
 
+/* Interp an X Program */
+int x_interp(X_Program*);
+
+/* Interp a block */
+int x_blk_interp(label_t, State**);
+
+/* Interpret a list of instructions */
+int x_instrs_interp(list_t, State**);
+
+/* Interpret a single instruction */
+int x_instr_interp(Instr*, State**);
+
+/* Update the Machine State */
+int update_state(State**, Arg*, int);
+
+/* Returns an element from the machine state*/
+int lookup_state(State*, Arg*);
 #endif /* X_H */

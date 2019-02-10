@@ -3,8 +3,10 @@
 #include "utils.h"
 #include "x.h"
 
-const char* registers[NUM_REGS] = { "%rsp", "%rbp", "%rax", "%rbx", "%rcx", "%rdx", "%rsi", "%rdi", 
-                                    "%r8", "%r9", "%r10", "%r11", "%r12", "%r13", "%r14", "%r15"};
+const char* registers[NUM_REGS] = { 
+    "%rsp", "%rbp", "%rax", "%rbx", "%rcx", "%rdx", "%rsi", "%rdi", 
+    "%r8", "%r9", "%r10", "%r11", "%r12", "%r13", "%r14", "%r15"
+};
 
 X_Program* new_prog(void* info, list_t labels) {
   X_Program* xp = malloc_or_die(sizeof(X_Program));
@@ -31,11 +33,14 @@ Instr* new_instr(INSTR_TYPE type, void* instr){
     return i;
 }
 
-State* new_state(){
+State* new_state(list_t lbls){
     State *s = malloc_or_die(sizeof(State));
-    s->regs = list_create();
+    for(int i = 0; i < NUM_REGS; ++i)
+        s->regs[i] = 0;
+    
     s->nums = list_create();
     s->vars = list_create();
+    s->lbls = lbls;
     return s;
 }
 
@@ -218,4 +223,102 @@ void x_print_arg(Arg* arg){
                 die("Invalid Arg!");
         }
     }
+}
+
+int x_interp(X_Program *xp){
+
+    return 0;
+}
+
+int x_blk_interp(label_t lbl, State **ms){
+
+    return 0;
+}
+
+int x_instrs_interp(list_t instrs, State **ms){
+    
+    return 0;
+}
+
+int x_instr_interp(Instr *instr, State **ms){ 
+    if(instr && ms){
+        State *s = *ms;
+        switch(instr->type){
+            case ADDQ:
+
+                break;
+                
+        };
+
+
+
+    }
+    return -1;
+}
+
+int update_state(State** s, Arg* arg, int val){
+    if(s && arg){
+        int old, addr; 
+        Node *n;
+        State *ms = *s;  
+        num_pair_t *new_np;
+        var_num_pair_t *new_vnp;
+        switch(arg->type){
+            case ARG_NUM:
+                return ((Arg_Num*)arg->arg)->num; 
+            case ARG_REG:
+                old = ms->regs[((Arg_Reg*)arg->arg)->reg];
+                ms->regs[((Arg_Reg*)arg->arg)->reg] = val;
+                return old;
+            case ARG_MEM:
+                addr = ms->regs[((Arg_Mem*)arg->arg)->reg] + 
+                     ((Arg_Mem*)arg->arg)->offset;
+                new_np = new_num_pair(addr, val);
+                n = list_find(ms->nums, new_np, num_pair_cmp);
+                if(n != NULL){
+                    old = ((num_pair_t*)n->data)->n2;
+                    list_update(ms->nums, n, new_np, num_pair_cmp);
+                    return old;
+                }
+            case ARG_VAR:
+                new_vnp = new_var_num_pair(((Arg_Var*)arg->arg), val);
+                n = list_find(ms->vars, new_vnp, var_num_pair_cmp);
+                if(n != NULL){
+                    old = ((var_num_pair_t*)n->data)->num; 
+                    list_update(ms->vars, n, new_vnp, var_num_pair_cmp);
+                    return old;
+                }
+            default:
+                die("Invalid State Lookup!");
+        };
+    }
+    return I32MIN;
+}
+
+int lookup_state(State* ms, Arg* arg){
+    if(ms && arg){
+        int val;
+        Node *n;
+        switch(arg->type){
+            case ARG_NUM:
+                return ((Arg_Num*)arg->arg)->num;
+            case ARG_REG:
+                return ms->regs[((Arg_Reg*)arg->arg)->reg];
+            case ARG_MEM:
+                val = ms->regs[((Arg_Mem*)arg->arg)->reg] + 
+                     ((Arg_Mem*)arg->arg)->offset;
+                n = list_find(ms->nums, new_num_pair(val, 0), num_pair_cmp);
+                if(n != NULL)
+                    return ((num_pair_t*)n->data)->n2;
+                return I32MIN; 
+            case ARG_VAR:
+                n = list_find(ms->vars, new_var_num_pair(arg->arg, 0), var_num_pair_cmp);
+                if(n != NULL)
+                    return ((var_num_pair_t*)n->data)->num;
+                return I32MIN;
+            default:
+                die("Invalid State Lookup!");
+        };
+    }
+    return I32MIN;
 }

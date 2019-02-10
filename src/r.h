@@ -2,7 +2,6 @@
 #define R_H
 
 #define QUIET_READ 1
-#define I32MIN -2147483648
 
 typedef enum EXPR_TYPE { NEG, ADD, READ, NUM, VAR, LET } EXPR_TYPE;
 
