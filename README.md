@@ -1,9 +1,12 @@
 # rcc
 A compiler for the R language
 
-![map.png](map.png)
+<p align="center">
+  <img src ="map.png" />
+</p>
 
 Book: https://github.com/IUCompilerCourse/Essentials-of-Compilation
+
 ## R1
 
 ```
