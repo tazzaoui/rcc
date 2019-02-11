@@ -10,12 +10,12 @@
 #include "tests.h"
 #define NUM 1024
 
-Expr *test_2n(int n) {
+R_Expr *test_2n(int n) {
   if (n <= 0) return new_num(1);
   return new_add(test_2n(n - 1), test_2n(n - 1));
 }
 
-Expr *randp_r0(int n) {
+R_Expr *randp_r0(int n) {
   int rand_num = GET_RAND();
   if (n <= 0) {
     if (rand_num % 2)
@@ -28,10 +28,10 @@ Expr *randp_r0(int n) {
   }
 }
 
-Expr *randp(list_t vars, int n) {
+R_Expr *randp(list_t vars, int n) {
   list_t env;
   Node *node;
-  Expr *rand_var;
+  R_Expr *rand_var;
   env_pair_t *ep;
   char *buf;
   int rand_num = GET_RAND(), choice = rand() % 3;
@@ -70,108 +70,108 @@ Expr *randp(list_t vars, int n) {
 
 void test_dozen_r0() {
   /* (3) Test numbers */
-  Expr *x = new_num(42);
-  Expr *y = new_num(-42);
-  Expr *z = new_num(0);
+  R_Expr *x = new_num(42);
+  R_Expr *y = new_num(-42);
+  R_Expr *z = new_num(0);
 
   printf("x = ");
-  print(x);
+  r_print_expr(x);
   printf("\ny = ");
-  print(y);
+  r_print_expr(y);
   printf("\nz = ");
-  print(z);
+  r_print_expr(z);
 
   /* (3) Test Additions */
-  Expr *a = new_add(x, y);
+  R_Expr *a = new_add(x, y);
   printf("\na = ");
-  print(a);
+  r_print_expr(a);
 
-  Expr *b = new_add(x, z);
+  R_Expr *b = new_add(x, z);
   printf("\nb = ");
-  print(b);
+  r_print_expr(b);
 
-  Expr *c = new_add(a, b);
+  R_Expr *c = new_add(a, b);
   printf("\nc = ");
-  print(c);
+  r_print_expr(c);
 
   /* (3) Test Negations */
-  Expr *n = new_neg(x);
+  R_Expr *n = new_neg(x);
   printf("\nn = ");
-  print(n);
+  r_print_expr(n);
 
-  Expr *m = new_neg(a);
+  R_Expr *m = new_neg(a);
   printf("\nm = ");
-  print(m);
+  r_print_expr(m);
 
-  Expr *l = new_neg(c);
+  R_Expr *l = new_neg(c);
   printf("\nl = ");
-  print(l);
+  r_print_expr(l);
 
   /* (3) Test Reads */
-  Expr *r1 = new_read();
+  R_Expr *r1 = new_read();
   printf("\nr1 = ");
-  print(r1);
+  r_print_expr(r1);
 
-  Expr *r2 = new_read();
-  Expr *r_add = new_add(r1, r2);
+  R_Expr *r2 = new_read();
+  R_Expr *r_add = new_add(r1, r2);
   printf("\nr_add = ");
-  print(r_add);
+  r_print_expr(r_add);
 
-  Expr *r3 = new_read();
-  Expr *r_neg = new_neg(r3);
+  R_Expr *r3 = new_read();
+  R_Expr *r_neg = new_neg(r3);
   printf("\nr_neg = ");
-  print(r_neg);
+  r_print_expr(r_neg);
 }
 
 void test_dozen_r1() {
-  Expr *x = new_var("x");
-  Expr *y = new_var("y");
-  Expr *z = new_var("z");
+  R_Expr *x = new_var("x");
+  R_Expr *y = new_var("y");
+  R_Expr *z = new_var("z");
 
-  print(x);
+  r_print_expr(x);
   printf("\n");
-  print(y);
+  r_print_expr(y);
   printf("\n");
-  print(z);
-  printf("\n");
-
-  Expr *let_x = new_let(x, new_num(42), new_num(10));
-  print(let_x);
+  r_print_expr(z);
   printf("\n");
 
-  Expr *let_y = new_let(y, new_num(42), new_neg(new_num(18)));
-  print(let_y);
+  R_Expr *let_x = new_let(x, new_num(42), new_num(10));
+  r_print_expr(let_x);
   printf("\n");
 
-  Expr *let_z = new_let(z, new_num(42), new_add(new_num(2), new_num(-2)));
-  print(let_z);
+  R_Expr *let_y = new_let(y, new_num(42), new_neg(new_num(18)));
+  r_print_expr(let_y);
   printf("\n");
 
-  Expr *let_h = new_let(x, new_add(new_num(42), new_num(42)),
-                        new_add(new_num(2), new_num(-2)));
-  print(let_h);
+  R_Expr *let_z = new_let(z, new_num(42), new_add(new_num(2), new_num(-2)));
+  r_print_expr(let_z);
   printf("\n");
 
-  Expr *let_i = new_let(y, new_num(12), new_add(new_var("P"), new_num(1)));
-  print(let_i);
+  R_Expr *let_h = new_let(x, new_add(new_num(42), new_num(42)),
+                          new_add(new_num(2), new_num(-2)));
+  r_print_expr(let_h);
   printf("\n");
 
-  Expr *let_j =
+  R_Expr *let_i = new_let(y, new_num(12), new_add(new_var("P"), new_num(1)));
+  r_print_expr(let_i);
+  printf("\n");
+
+  R_Expr *let_j =
       new_let(z, new_add(new_num(4), new_num(2)), new_add(x, new_num(1)));
-  print(let_j);
+  r_print_expr(let_j);
   printf("\n");
 
-  Expr *let_k = new_let(x, new_neg(new_num(12)), new_neg(new_var("T")));
-  print(let_k);
+  R_Expr *let_k = new_let(x, new_neg(new_num(12)), new_neg(new_var("T")));
+  r_print_expr(let_k);
   printf("\n");
 
-  Expr *let_l = new_let(y, new_read(), new_add(x, new_num(1)));
-  print(let_l);
+  R_Expr *let_l = new_let(y, new_read(), new_add(x, new_num(1)));
+  r_print_expr(let_l);
   printf("\n");
 
-  Expr *let_m =
+  R_Expr *let_m =
       new_let(z, new_num(42), new_neg(new_add(new_var("P"), new_num(1))));
-  print(let_m);
+  r_print_expr(let_m);
   printf("\n");
 }
 
@@ -302,16 +302,16 @@ void test_x0_emit() {
 }
 
 void test_prog_interp(X_Program *xp, const char *file_name, int test_num) {
-    printf("\n***********************************\n");
-    char cmd_buf[2048];
-    if (file_name) x_emit(xp, file_name);
-    sprintf(cmd_buf, "gcc %s", file_name);
-    system(cmd_buf);  
-    int exit_code = system("./a.out"); 
-    int interp_res = x_interp(xp); 
-    printf("./a.out: Exit Code = %d\n", exit_code);
-    printf("Interp Result = %d", interp_res);
-    printf("\n***********************************\n");
+  printf("\n***********************************\n");
+  char cmd_buf[2048];
+  if (file_name) x_emit(xp, file_name);
+  sprintf(cmd_buf, "gcc %s", file_name);
+  system(cmd_buf);
+  int exit_code = system("./a.out");
+  int interp_res = x_interp(xp);
+  printf("./a.out: Exit Code = %d\n", exit_code);
+  printf("Interp Result = %d", interp_res);
+  printf("\n***********************************\n");
 }
 
 void test_dozen_x0() {

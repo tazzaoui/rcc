@@ -5,7 +5,7 @@
 #include "x.h"
 #include "rcc.h"
 
-env_pair_t *new_env_pair(Expr* var, Expr* val){
+env_pair_t *new_env_pair(R_Expr* var, R_Expr* val){
     env_pair_t *ep = malloc_or_die(sizeof(env_pair_t));
     ep->var = var;
     ep->val = val;
@@ -14,10 +14,10 @@ env_pair_t *new_env_pair(Expr* var, Expr* val){
 
 int ep_var_cmp(void *a, void *b){
     if(a != NULL && b != NULL){
-        Expr *a_expr = (Expr*) a; 
-        Expr *b_expr = ((env_pair_t*) b)->var;
-        if(a_expr != NULL && b_expr != NULL && a_expr->type == VAR && b_expr->type == VAR)
-            return strcmp(((Var*)a_expr->expr)->name, ((Var*)b_expr->expr)->name) == 0; 
+        R_Expr *a_expr = (R_Expr*) a; 
+        R_Expr *b_expr = ((env_pair_t*) b)->var;
+        if(a_expr != NULL && b_expr != NULL && a_expr->type == R_EXPR_VAR && b_expr->type == R_EXPR_VAR)
+            return strcmp(((R_Var*)a_expr->expr)->name, ((R_Var*)b_expr->expr)->name) == 0; 
     }
     return 0;
 }
@@ -31,9 +31,9 @@ void ep_print(void *data){
     if(data){
         env_pair_t *ep = (env_pair_t*)data;
         printf("<");
-        print(ep->var);
+        r_print_expr(ep->var);
         printf(",");
-        print(ep->val);
+        r_print_expr(ep->val);
         printf(">");
     }
 }

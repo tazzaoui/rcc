@@ -5,7 +5,7 @@
 #include "x.h"
 
 typedef struct env_pair_t {
-  Expr *var, *val;
+  R_Expr *var, *val;
 } env_pair_t;
 
 typedef struct lbl_blk_pair_t {
@@ -28,12 +28,12 @@ typedef struct var_num_pair_t {
 } var_num_pair_t;
 
 /* Return a new environment pair */
-env_pair_t* new_env_pair(Expr*, Expr*);
+env_pair_t* new_env_pair(R_Expr*, R_Expr*);
 
 /* Compare two Var -> int pairs */
 int ep_var_cmp(void*, void*);
 
-/* Compare two Var -> Expr pairs */
+/* Compare two Var -> R_Expr pairs */
 int ep_expr_cmp(void*, void*);
 
 /* (shallow) copy an environment pair*/

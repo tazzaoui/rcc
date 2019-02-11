@@ -1,93 +1,116 @@
 #ifndef R_H
 #define R_H
 
+#include "list.h"
 #include "utils.h"
 #define QUIET_READ 1
 
-typedef enum EXPR_TYPE { NEG, ADD, READ, NUM, VAR, LET } EXPR_TYPE;
+typedef enum R_EXPR_TYPE {
+  R_EXPR_NEG,
+  R_EXPR_ADD,
+  R_EXPR_READ,
+  R_EXPR_NUM,
+  R_EXPR_VAR,
+  R_EXPR_LET
+} R_EXPR_TYPE;
 
-typedef struct Expr {
-  EXPR_TYPE type;
+typedef struct R_Expr {
+  R_EXPR_TYPE type;
   void* expr;
-} Expr;
+} R_Expr;
 
-typedef struct Let {
-  Expr *var, *expr, *body;
-} Let;
+typedef struct R_Let {
+  R_Expr *var, *expr, *body;
+} R_Let;
 
-typedef struct Neg {
-  Expr* expr;
-} Neg;
+typedef struct R_Neg {
+  R_Expr* expr;
+} R_Neg;
 
-typedef struct Add {
-  Expr *left, *right;
-} Add;
+typedef struct R_Add {
+  R_Expr *left, *right;
+} R_Add;
 
-typedef struct Num {
+typedef struct R_Num {
   int num;
-} Num;
+} R_Num;
 
-typedef struct Read {
+typedef struct R_Read {
   int num, read;
-} Read;
+} R_Read;
 
-typedef struct Var {
+typedef struct R_Var {
   const char* name;
-} Var;
+} R_Var;
 
 /* Return a new expression */
-Expr* new_expr(void*, EXPR_TYPE);
+R_Expr* new_expr(void*, R_EXPR_TYPE);
 
 /* Return a new let expression */
-Expr* new_let(Expr*, Expr*, Expr*);
+R_Expr* new_let(R_Expr*, R_Expr*, R_Expr*);
 
 /* Return a new neg expression */
-Expr* new_neg(Expr*);
+R_Expr* new_neg(R_Expr*);
 
 /* Return a new add expression */
-Expr* new_add(Expr*, Expr*);
+R_Expr* new_add(R_Expr*, R_Expr*);
 
 /* Return a new num expression */
-Expr* new_num(int);
+R_Expr* new_num(int);
 
 /* Return a new read expression */
-Expr* new_read(void);
+R_Expr* new_read(void);
 
 /* Return a new variable */
-Expr* new_var(const char*);
+R_Expr* new_var(const char*);
 
-static inline int is_simple(Expr* e) {
-  return e && (e->type == NUM || e->type == VAR);
+/* Interpret an expression in an environment*/
+int r_interp(R_Expr*, list_t);
+
+/* Optimize an arbitrary (valid) expression */
+R_Expr* r_optimize(R_Expr*, list_t);
+
+/* Optimize a neg expression */
+R_Expr* r_optimize_neg(R_Expr*, list_t);
+
+/* Optimize an add expression */
+R_Expr* r_optimize_add(R_Expr*, list_t);
+
+/* Print an expression to stdout */
+void r_print_expr(R_Expr*);
+
+static inline int is_simple(R_Expr* e) {
+  return e && (e->type == R_EXPR_NUM || e->type == R_EXPR_VAR);
 }
 
-static inline Expr* get_left(Expr* expr) {
-  if (expr && expr->type == ADD) return ((Add*)expr->expr)->left;
+static inline R_Expr* get_left(R_Expr* expr) {
+  if (expr && expr->type == R_EXPR_ADD) return ((R_Add*)expr->expr)->left;
   return expr;
 }
 
-static inline Expr* get_right(Expr* expr) {
-  if (expr && expr->type == ADD) return ((Add*)expr->expr)->right;
+static inline R_Expr* get_right(R_Expr* expr) {
+  if (expr && expr->type == R_EXPR_ADD) return ((R_Add*)expr->expr)->right;
   return expr;
 }
 
-static inline int get_num(Expr* expr) {
-  if (expr && expr->type == NUM) return ((Num*)expr->expr)->num;
-  if (expr && expr->type == READ) return ((Read*)expr->expr)->num;
+static inline int get_num(R_Expr* expr) {
+  if (expr && expr->type == R_EXPR_NUM) return ((R_Num*)expr->expr)->num;
+  if (expr && expr->type == R_EXPR_READ) return ((R_Read*)expr->expr)->num;
   return I32MIN;
 }
 
-static inline Expr* get_var(Expr* expr) {
-  if (expr && expr->type == LET) return ((Let*)expr->expr)->var;
+static inline R_Expr* get_var(R_Expr* expr) {
+  if (expr && expr->type == R_EXPR_LET) return ((R_Let*)expr->expr)->var;
   return expr;
 }
 
-static inline Expr* get_expr(Expr* expr) {
-  if (expr && expr->type == LET) return ((Let*)expr->expr)->expr;
+static inline R_Expr* get_expr(R_Expr* expr) {
+  if (expr && expr->type == R_EXPR_LET) return ((R_Let*)expr->expr)->expr;
   return expr;
 }
 
-static inline Expr* get_body(Expr* expr) {
-  if (expr && expr->type == LET) return ((Let*)expr->expr)->body;
+static inline R_Expr* get_body(R_Expr* expr) {
+  if (expr && expr->type == R_EXPR_LET) return ((R_Let*)expr->expr)->body;
   return expr;
 }
 

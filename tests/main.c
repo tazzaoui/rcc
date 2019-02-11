@@ -10,16 +10,16 @@
 #define DEBUG 0
 #define NUM_PROGS (1 << 10)
 
-static inline void print_optim(Expr *e) {
-  print(e);
+static inline void print_optim(R_Expr *e) {
+  r_print_expr(e);
   printf(" -> ");
-  print(optimize(e, NULL));
+  r_print_expr(r_optimize(e, NULL));
   printf("\n");
 }
 
 int main(int argc, char *argv[]) {
   int count = 0, res, rand_depth, res_opt, full_count;
-  Expr *expr, *expr_opt;
+  R_Expr *expr, *expr_opt;
   list_t vars = list_create();
   srand(time(0));
 
@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
 
   for (size_t i = 0; i < 10; ++i) {
     expr = test_2n(i);
-    res = interp(expr, NULL);
+    res = r_interp(expr, NULL);
     if (res == (1 << i))
       printf("%s %d \t==\t %d %s\n", GRN, res, (1 << i), NRM);
     else
@@ -52,9 +52,9 @@ int main(int argc, char *argv[]) {
   for (size_t i = 0; i < NUM_PROGS; ++i) {
     rand_depth = rand() % 20;
     expr = randp(vars, 2);
-    res = interp(expr, vars);
+    res = r_interp(expr, vars);
     if (DEBUG) {
-      print(expr);
+      r_print_expr(expr);
       printf(" -> %d\n", res);
     }
     ++count;
@@ -68,14 +68,14 @@ int main(int argc, char *argv[]) {
   printf("Add Optimizer Checks...\n");
 
   // Should reduce to the actual value
-  Expr *a = new_add(new_num(7), new_num(10));
+  R_Expr *a = new_add(new_num(7), new_num(10));
   print_optim(a);
 
   // Should combine across the additions
-  Expr *b = new_add(new_num(10), new_add(new_num(7), new_read()));
-  Expr *c = new_add(new_num(10), new_add(new_read(), new_num(7)));
-  Expr *d = new_add(new_add(new_num(42), new_read()), new_num(7));
-  Expr *e = new_add(new_add(new_read(), new_num(42)), new_num(7));
+  R_Expr *b = new_add(new_num(10), new_add(new_num(7), new_read()));
+  R_Expr *c = new_add(new_num(10), new_add(new_read(), new_num(7)));
+  R_Expr *d = new_add(new_add(new_num(42), new_read()), new_num(7));
+  R_Expr *e = new_add(new_add(new_read(), new_num(42)), new_num(7));
 
   print_optim(b);
   print_optim(c);
@@ -86,9 +86,9 @@ int main(int argc, char *argv[]) {
 
   printf("Neg Optimizer Checks...\n");
 
-  Expr *f = new_neg(new_num(7));
-  Expr *g = new_neg(new_neg(new_add(new_num(-7), new_num(10))));
-  Expr *h = new_neg(new_add(new_num(42), new_read()));
+  R_Expr *f = new_neg(new_num(7));
+  R_Expr *g = new_neg(new_neg(new_add(new_num(-7), new_num(10))));
+  R_Expr *h = new_neg(new_add(new_num(42), new_read()));
 
   print_optim(f);
   print_optim(g);
@@ -98,11 +98,11 @@ int main(int argc, char *argv[]) {
 
   printf("R1 Specific Optimizer Checks...\n");
 
-  Expr *x = new_var("x");
-  Expr *z = new_var("z");
-  Expr *l1 = new_let(x, new_num(7), new_add(x, x));
-  Expr *l2 = new_let(x, new_num(42), new_neg(x));
-  Expr *l3 = new_let(z, new_read(), new_neg(z));
+  R_Expr *x = new_var("x");
+  R_Expr *z = new_var("z");
+  R_Expr *l1 = new_let(x, new_num(7), new_add(x, x));
+  R_Expr *l2 = new_let(x, new_num(42), new_neg(x));
+  R_Expr *l3 = new_let(z, new_read(), new_neg(z));
   print_optim(l1);
   print_optim(l2);
   print_optim(l3);
@@ -115,21 +115,21 @@ int main(int argc, char *argv[]) {
   for (size_t i = 0; i < NUM_PROGS; ++i) {
     rand_depth = rand() % 20;
     expr = randp(vars, rand_depth);
-    res = interp(expr, NULL);
+    res = r_interp(expr, NULL);
     if (DEBUG) {
       printf("Normal   : ");
-      print(expr);
+      r_print_expr(expr);
       printf(" -> %d\n", res);
     }
-    expr_opt = optimize(expr, NULL);
-    res_opt = interp(expr_opt, NULL);
+    expr_opt = r_optimize(expr, NULL);
+    res_opt = r_interp(expr_opt, NULL);
     if (DEBUG) {
       printf("Optimized: ");
-      print(expr_opt);
+      r_print_expr(expr_opt);
       printf("\n");
     }
     count += (res_opt == res);
-    full_count += (res_opt == res && expr_opt->type == NUM);
+    full_count += (res_opt == res && expr_opt->type == R_EXPR_NUM);
   }
 
   printf("%sSuccessfully optimized %d/%d programs.%s\n", GRN, count, NUM_PROGS,
