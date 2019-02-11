@@ -6,8 +6,7 @@ typedef enum C_TAIL_TYPE { C_TAIL_RET, C_TAIL_SEQ } C_TAIL_TYPE;
 typedef enum C_EXPR_TYPE { C_ARG, C_READ, C_NEG, C_ADD } C_EXPR_TYPE;
 
 typedef struct C_Program {
-  list_t labels;  // labels: label -> tail
-  void *info;
+  void *info; list_t labels;  // labels: label -> tail
 } C_Program;
 
 typedef struct C_Tail {
@@ -15,19 +14,85 @@ typedef struct C_Tail {
   void *tail;
 } C_Tail;
 
-typedef struct C_Stmt {
-  C_Var *var;
-  C_Expr *expr;
-} C_Stmt;
-
 typedef struct C_Expr {
   C_EXPR_TYPE type;
-  void expr;
-};
+  void* expr;
+} C_Expr;
 
 typedef struct C_Arg {
   C_ARG_TYPE type;
   void *arg;
 } C_Arg;
+
+typedef struct C_Num{
+    int num;
+} C_Num;
+
+typedef struct C_Var{
+    const char* name;
+} C_Var;
+
+typedef struct C_Ret{
+    C_Arg *arg;
+} C_Ret;
+
+typedef struct C_Read {
+    C_Arg *arg;
+}C_Read;
+
+typedef struct C_Neg {
+    C_Arg *arg;
+} C_Neg;
+
+typedef struct C_Add {
+    C_Arg *left, *right;
+} C_Add;
+
+typedef struct C_Smt {
+  C_Var *var;
+  C_Expr *expr;
+} C_Smt;
+
+typedef struct C_Seq {
+    C_Smt* smt;
+    C_Tail *tail;
+} C_Seq;
+
+
+/* Return a new c program */
+C_Program* new_c_program(void*, list_t);
+
+/* Return a new tail */
+C_Tail* new_c_tail(C_TAIL_TYPE, void*);
+
+/* Return a new statement */
+C_Smt* new_c_smt(C_Var*, C_Expr*);
+
+/* Return a new c expression */
+C_Expr* new_c_expr(C_EXPR_TYPE, void*);
+
+/* Return a new c arg */
+C_Arg* new_c_arg(C_ARG_TYPE type, void*);
+
+/* Return a new c number */
+C_Num* new_c_num(int);
+
+/* Return a new c variable */
+C_Var* new_c_var(const char*);
+
+/* Return a new c ret statement */
+C_Ret* new_c_ret(C_Arg*);
+
+/* Return a new c sequence */
+C_Seq* new_c_seq(C_Smt*, C_Tail*);
+
+/* Return a new call to read */
+C_Read* new_c_read(C_Arg*);
+
+/* Return a new neg statement */
+C_Neg* new_c_neg(C_Arg*);
+
+/* Return a new c add statement */
+C_Add* new_c_add(C_Arg*, C_Arg*);
 
 #endif /* C_H */

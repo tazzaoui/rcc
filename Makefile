@@ -5,11 +5,11 @@ EXE=rcc $(TESTS)
 
 all: $(EXE) 
 
-rcc: list.o utils.o pairs.o r.o x.o rcc.o main.o
-	$(CC) main.o r.o x.o rcc.o pairs.o utils.o list.o -o rcc
+rcc: list.o utils.o pairs.o r.o x.o c.o rcc.o main.o
+	$(CC) main.o r.o x.o c.o rcc.o pairs.o utils.o list.o -o rcc
 
-test: list.o utils.o pairs.o r.o x.o rcc.o main_tests.o tests.o 
-	$(CC) main_tests.o tests.o pairs.o r.o x.o rcc.o utils.o list.o -o test
+test: list.o utils.o pairs.o r.o x.o c.o rcc.o main_tests.o tests.o 
+	$(CC) main_tests.o tests.o pairs.o r.o x.o c.o rcc.o utils.o list.o -o test
 
 main.o: main.c
 	$(CC) -c $(CFLAGS) main.c -o main.o
@@ -28,6 +28,9 @@ r.o: src/r.c src/r.h
 
 x.o: src/x.c src/x.h
 	$(CC) -c $(CFLAGS) src/x.c -o x.o
+
+c.o: src/c.c src/c.h
+	$(CC) -c $(CFLAGS) src/c.c -o c.o
 
 utils.o: src/utils.c src/utils.h
 	$(CC) -c $(CFLAGS) src/utils.c -o utils.o
