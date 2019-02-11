@@ -1,6 +1,7 @@
 #ifndef PAIRS_H
 #define PAIRS_H
 
+#include "c.h"
 #include "r.h"
 #include "x.h"
 
@@ -26,6 +27,23 @@ typedef struct var_num_pair_t {
   Arg_Var* var;
   int num;
 } var_num_pair_t;
+
+typedef struct lbl_tail_pair_t {
+  label_t label;
+  C_Tail* tail;
+} lbl_tail_pair_t;
+
+/* Return a new lbl_tail_pair_t */
+lbl_tail_pair_t* new_lbl_tail_pair_t(label_t, C_Tail*);
+
+/* Compare two lbl -> tail pairs */
+int lbl_tail_cmp(void*, void*);
+
+/* Print a lbl -> tail pair */
+void lbl_tail_print(void*);
+
+/* (shallow) copy a label block pair*/
+void* ep_cpy(void* old);
 
 /* Return a new environment pair */
 env_pair_t* new_env_pair(R_Expr*, R_Expr*);

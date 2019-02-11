@@ -38,6 +38,29 @@ void ep_print(void *data){
     }
 }
 
+lbl_tail_pair_t *new_lbl_tail_pair(label_t lbl, C_Tail *tail){
+    lbl_tail_pair_t *lbt = malloc_or_die(sizeof(lbl_tail_pair_t));
+    lbt->label = lbl;
+    lbt->tail = tail;
+    return lbt;
+}
+
+int lbl_tail_cmp(void* a, void* b){
+    if(a && b){
+        lbl_tail_pair_t *lt_a = (lbl_tail_pair_t*) a;
+        lbl_tail_pair_t *lt_b = (lbl_tail_pair_t*) b;
+        return strcmp(lt_a->label, lt_b->label) == 0;
+    }
+    return 0;
+}
+
+void lbl_tail_print(void *a){
+    lbl_tail_pair_t *lt = (lbl_tail_pair_t*) a;
+    printf("<%s, ", lt->label);
+    c_print_tail(lt->tail);
+    printf(">\n");
+}
+
 lbl_blk_pair_t* new_lbl_blk_pair(label_t label, Block* blk){
     lbl_blk_pair_t *lbp = malloc_or_die(sizeof(lbl_blk_pair_t));
     lbp->label = label;

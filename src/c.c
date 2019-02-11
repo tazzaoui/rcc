@@ -1,4 +1,5 @@
 #include "utils.h"
+#include "pairs.h"
 #include "list.h"
 #include "c.h"
 
@@ -81,4 +82,77 @@ C_Add* new_c_add(C_Arg* left, C_Arg* right){
     ca->left = left;
     ca->right = right;
     return ca;
+}
+
+void c_print_smt(C_Smt *cs){
+    if(cs){
+        printf("(set! %s ", ((C_Var*)cs->var)->name);
+        c_print_expr(cs->expr);
+    }
+}
+
+void c_print_tail(C_Tail *ct){
+    if(ct)
+        switch(ct->type){
+            case C_TAIL_RET:
+                printf("ret ");
+                c_print_arg(((C_Ret*)ct->tail)->arg);
+                printf("\n");
+                break;
+            case C_TAIL_SEQ:
+                printf("(seq\n");
+                c_print_smt(((C_Seq*)ct->tail)->smt);
+                c_print_tail(((C_Seq*)ct->tail)->tail);
+                printf(")\n");
+                break;
+            default:
+                die("Invalid c_print_tail!");
+                break;
+        };
+}
+
+void c_print_arg(C_Arg* ca){
+    if(ca)
+        switch(ca->type){
+            case C_NUM:
+                printf("%d", ((C_Num*) ca->arg)->num);
+                break;
+            case C_VAR:
+                printf("%s", ((C_Var*)ca->arg)->name);
+                break;
+            default:
+                die("Invalid c_print_arg!");
+        }; 
+}
+
+void c_print_expr(C_Expr *ce){
+    if(ce)
+        switch(ce->type){
+            case C_ARG:
+                c_print_arg(ce->expr);
+                printf("\n");
+                break;
+            case C_READ:
+                printf("READ\n");
+                break;
+            case C_NEG:
+                printf("(- ");
+                c_print_arg(ce->expr);
+                printf(")\n");
+                break;
+            case C_ADD:
+                printf("(+ ");
+                c_print_arg(((C_Add*)ce->expr)->left);
+                printf(" ");
+                c_print_arg(((C_Add*)ce->expr)->right);
+                printf(")\n");
+                break;
+            default:
+                die("Invalid c_expr_print!");
+                break;
+        };
+}
+
+void c_print(C_Program *cp){
+    if(cp) list_print(cp->labels, lbl_tail_print);
 }

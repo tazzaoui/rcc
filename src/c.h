@@ -1,6 +1,8 @@
 #ifndef C_H
 #define C_H
 
+#include "list.h"
+
 typedef enum C_ARG_TYPE { C_NUM, C_VAR } C_ARG_TYPE;
 typedef enum C_TAIL_TYPE { C_TAIL_RET, C_TAIL_SEQ } C_TAIL_TYPE;
 typedef enum C_EXPR_TYPE { C_ARG, C_READ, C_NEG, C_ADD } C_EXPR_TYPE;
@@ -94,5 +96,20 @@ C_Neg* new_c_neg(C_Arg*);
 
 /* Return a new c add statement */
 C_Add* new_c_add(C_Arg*, C_Arg*);
+
+/* Print out a C_Smt */
+void c_print_smt(C_Smt*);
+
+/* Print out a C_Tail */
+void c_print_tail(C_Tail*);
+
+/* Print out a C_Arg */
+void c_print_arg(C_Arg*);
+
+/* Print out a C_Smt */
+void c_print_expr(C_Expr*);
+
+/* Print out a C_Program */
+void c_print(C_Program*);
 
 #endif /* C_H */
