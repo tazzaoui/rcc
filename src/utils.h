@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+typedef const char* label_t;
+
 static inline void *malloc_or_die(size_t size) {
   void *mem = malloc(size);
   if (mem == NULL) {

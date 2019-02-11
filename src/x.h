@@ -6,7 +6,6 @@
 #define NUM_REGS 16
 #define X_PRINT_ARG_ALLOW_VARS 1
 
-typedef const char* label_t;
 extern const char* registers[NUM_REGS];
 typedef enum ARG_TYPE { ARG_NUM, ARG_REG, ARG_MEM, ARG_VAR } ARG_TYPE;
 
