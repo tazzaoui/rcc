@@ -37,7 +37,7 @@ C_Arg* new_c_arg(C_ARG_TYPE type, void* arg){
   C_Arg *ca = malloc_or_die(sizeof(C_Arg));
   ca->type = type;
   ca->arg = arg;
-  return arg;
+  return ca;
 }
 
 C_Num* new_c_num(int n){
@@ -88,6 +88,7 @@ void c_print_smt(C_Smt *cs){
     if(cs){
         printf("(set! %s ", ((C_Var*)cs->var)->name);
         c_print_expr(cs->expr);
+        printf(")");
     }
 }
 
@@ -97,13 +98,13 @@ void c_print_tail(C_Tail *ct){
             case C_TAIL_RET:
                 printf("ret ");
                 c_print_arg(((C_Ret*)ct->tail)->arg);
-                printf("\n");
                 break;
             case C_TAIL_SEQ:
-                printf("(seq\n");
+                printf("(seq ");
                 c_print_smt(((C_Seq*)ct->tail)->smt);
+                printf(" ");
                 c_print_tail(((C_Seq*)ct->tail)->tail);
-                printf(")\n");
+                printf(")");
                 break;
             default:
                 die("Invalid c_print_tail!");
@@ -130,22 +131,22 @@ void c_print_expr(C_Expr *ce){
         switch(ce->type){
             case C_ARG:
                 c_print_arg(ce->expr);
-                printf("\n");
+                //printf("\n");
                 break;
             case C_READ:
-                printf("READ\n");
+                printf("READ");
                 break;
             case C_NEG:
                 printf("(- ");
                 c_print_arg(ce->expr);
-                printf(")\n");
+                printf(")");
                 break;
             case C_ADD:
                 printf("(+ ");
                 c_print_arg(((C_Add*)ce->expr)->left);
                 printf(" ");
                 c_print_arg(((C_Add*)ce->expr)->right);
-                printf(")\n");
+                printf(")");
                 break;
             default:
                 die("Invalid c_expr_print!");

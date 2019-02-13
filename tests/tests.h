@@ -28,4 +28,7 @@ void test_dozen_x0(void);
 /* Interp and output the result of an X0 program */
 void test_prog_interp(X_Program*, const char*, int);
 
+/* Test a dozen C0 programs */
+void test_dozen_c0();
+
 #endif /* TESTS_H */

@@ -34,7 +34,7 @@ typedef struct lbl_tail_pair_t {
 } lbl_tail_pair_t;
 
 /* Return a new lbl_tail_pair_t */
-lbl_tail_pair_t* new_lbl_tail_pair_t(label_t, C_Tail*);
+lbl_tail_pair_t* new_lbl_tail_pair(label_t, C_Tail*);
 
 /* Compare two lbl -> tail pairs */
 int lbl_tail_cmp(void*, void*);

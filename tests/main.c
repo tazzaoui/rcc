@@ -157,5 +157,11 @@ int main(int argc, char *argv[]) {
   test_dozen_x0();
 
   printf("===================================================\n");
+
+  printf("Testing a Dozen C0 Progs...\n");
+
+  test_dozen_c0();
+
+  printf("===================================================\n");
   return 0;
 }

@@ -594,3 +594,78 @@ void test_dozen_x0() {
   xp = new_prog(NULL, blks12);
   test_prog_interp(xp, "test12.s", 12);
 }
+
+void test_dozen_c0() {
+  C_Arg *cn_10 = new_c_arg(C_NUM, new_c_num(10));
+  C_Arg *cn_42 = new_c_arg(C_NUM, new_c_num(42));
+
+  C_Arg *cv_x = new_c_arg(C_VAR, new_c_var("X"));
+  C_Arg *cv_y = new_c_arg(C_VAR, new_c_var("Y"));
+
+  C_Tail *t = new_c_tail(C_TAIL_RET, new_c_ret(cn_10));
+
+  list_t labels = list_create();
+  list_insert(labels, new_lbl_tail_pair("main", t));
+  C_Program *cp = new_c_program(NULL, labels);
+
+  c_print(cp);
+
+  t = new_c_tail(C_TAIL_RET, new_c_ret(cn_42));
+  labels = list_create();
+  list_insert(labels, new_lbl_tail_pair("main", t));
+  cp = new_c_program(NULL, labels);
+  c_print(cp);
+
+  t = new_c_tail(C_TAIL_RET, new_c_ret(cv_x));
+  labels = list_create();
+  list_insert(labels, new_lbl_tail_pair("main", t));
+  cp = new_c_program(NULL, labels);
+  c_print(cp);
+
+  t = new_c_tail(C_TAIL_RET, new_c_ret(cv_y));
+  labels = list_create();
+  list_insert(labels, new_lbl_tail_pair("main", t));
+  cp = new_c_program(NULL, labels);
+  c_print(cp);
+
+  C_Smt *cs = new_c_smt(new_c_var("Y"), new_c_expr(C_ARG, cn_42));
+  C_Seq *cseq = new_c_seq(cs, t);
+  t = new_c_tail(C_TAIL_SEQ, cseq);
+  labels = list_create();
+  list_insert(labels, new_lbl_tail_pair("main", t));
+  cp = new_c_program(NULL, labels);
+  c_print(cp);
+
+  t = new_c_tail(C_TAIL_RET, new_c_ret(cv_x));
+  cs = new_c_smt(new_c_var("X"), new_c_expr(C_ARG, cn_10));
+  cseq = new_c_seq(cs, t);
+  t = new_c_tail(C_TAIL_SEQ, cseq);
+  labels = list_create();
+  list_insert(labels, new_lbl_tail_pair("main", t));
+  cp = new_c_program(NULL, labels);
+  c_print(cp);
+
+  C_Expr *add1 = new_c_expr(C_ADD, new_c_add(cn_10, cn_42));
+
+  t = new_c_tail(C_TAIL_RET, new_c_ret(cv_x));
+  cs = new_c_smt(new_c_var("X"), add1);
+  cseq = new_c_seq(cs, t);
+  t = new_c_tail(C_TAIL_SEQ, cseq);
+  labels = list_create();
+  list_insert(labels, new_lbl_tail_pair("main", t));
+  cp = new_c_program(NULL, labels);
+  c_print(cp);
+
+  C_Expr *add2 = new_c_expr(C_ADD, new_c_add(cn_42, cn_10));
+  C_Expr *add3 = new_c_expr(C_ADD, new_c_add(cv_x, cn_10));
+  t = new_c_tail(C_TAIL_RET, new_c_ret(cv_y));
+  cs = new_c_smt(new_c_var("Y"), add2);
+  C_Smt *cs2 = new_c_smt(new_c_var("X"), add3);
+  cseq = new_c_seq(cs, t);
+  t = new_c_tail(C_TAIL_SEQ, cseq);
+  C_Tail *t2 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs2, t));
+  labels = list_create();
+  list_insert(labels, new_lbl_tail_pair("main", t2));
+  cp = new_c_program(NULL, labels);
+  c_print(cp);
+}
