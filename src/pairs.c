@@ -56,9 +56,9 @@ int lbl_tail_cmp(void* a, void* b){
 
 void lbl_tail_print(void *a){
     lbl_tail_pair_t *lt = (lbl_tail_pair_t*) a;
-    printf("<%s, ", lt->label);
+    printf("%s:\n", lt->label);
     c_print_tail(lt->tail);
-    printf(">\n");
+    printf("\n");
 }
 
 lbl_blk_pair_t* new_lbl_blk_pair(label_t label, Block* blk){

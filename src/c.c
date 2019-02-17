@@ -98,13 +98,12 @@ void c_print_tail(C_Tail *ct){
             case C_TAIL_RET:
                 printf("ret ");
                 c_print_arg(((C_Ret*)ct->tail)->arg);
+                printf("\n");
                 break;
             case C_TAIL_SEQ:
-                printf("(seq ");
                 c_print_smt(((C_Seq*)ct->tail)->smt);
-                printf(" ");
+                printf("\n");
                 c_print_tail(((C_Seq*)ct->tail)->tail);
-                printf(")");
                 break;
             default:
                 die("Invalid c_print_tail!");
@@ -138,7 +137,7 @@ void c_print_expr(C_Expr *ce){
                 break;
             case C_NEG:
                 printf("(- ");
-                c_print_arg(ce->expr);
+                c_print_arg(((C_Neg*) ce->expr)->arg);
                 printf(")");
                 break;
             case C_ADD:
