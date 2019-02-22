@@ -157,13 +157,16 @@ void c_print(C_Program *cp){
     if(cp) list_print(cp->labels, lbl_tail_print);
 }
 
-/* Interp a C program */
 int c_p_interp(C_Program* cp){
-
-
+    if(cp){
+        Node *node = list_find(cp->labels, new_lbl_tail_pair("main", NULL), lbl_tail_cmp); 
+        if(node == NULL)
+            die("[C_P_INTERP] NO MAIN LABEL!");
+        return c_t_interp(((lbl_tail_pair_t*)node->data)->tail, list_create());
+    }
+    return I32MIN;
 }
 
-/* Interp a C tail */
 int c_t_interp(C_Tail* ct, list_t env){
     if(ct && env)
         switch(ct->type){
@@ -173,7 +176,7 @@ int c_t_interp(C_Tail* ct, list_t env){
                 c_s_interp(((C_Seq*)ct->tail)->smt, env);
                 return c_t_interp(((C_Seq*)ct->tail)->tail, env);
             default:
-                die("Invalid c_t_interp!");
+                die("INVALID c_t_interp!");
         }
     return I32MIN;
 }
@@ -224,6 +227,5 @@ int c_a_interp(C_Arg* ca, list_t env){
             default:
                 die("INVALID c_a_interp!");
         };
-
     return I32MIN;
 }
