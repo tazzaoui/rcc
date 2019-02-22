@@ -112,4 +112,18 @@ void c_print_expr(C_Expr*);
 /* Print out a C_Program */
 void c_print(C_Program*);
 
+/* Interp a C program */
+int c_p_interp(C_Program*);
+
+/* Interp a C tail */
+int c_t_interp(C_Tail*, list_t);
+
+/* Interp a C statement */
+int c_s_interp(C_Smt*, list_t);
+
+/* Interp a C expression */
+int c_e_interp(C_Expr*, list_t);
+
+/* Interp a C argument */
+int c_a_interp(C_Arg*, list_t);
 #endif /* C_H */

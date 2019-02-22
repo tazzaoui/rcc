@@ -5,6 +5,23 @@
 #include "x.h"
 #include "rcc.h"
 
+
+c_var_num_pair_t* new_c_var_num_pair(C_Var* cv, int num){
+    c_var_num_pair_t *p = malloc_or_die(sizeof(c_var_num_pair_t));
+    p->var = cv;
+    p->num = num;
+    return p;
+}
+
+int c_var_num_pair_cmp(void* a, void* b){
+    if(a && b){ 
+        C_Var* cv_a = ((c_var_num_pair_t*) a)->var;
+        C_Var* cv_b = ((c_var_num_pair_t*) b)->var;
+        return cv_a && cv_b && strcmp(cv_a->name, cv_b->name) == 0;
+    }
+    return 0;
+}
+
 env_pair_t *new_env_pair(R_Expr* var, R_Expr* val){
     env_pair_t *ep = malloc_or_die(sizeof(env_pair_t));
     ep->var = var;

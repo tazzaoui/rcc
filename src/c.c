@@ -156,3 +156,74 @@ void c_print_expr(C_Expr *ce){
 void c_print(C_Program *cp){
     if(cp) list_print(cp->labels, lbl_tail_print);
 }
+
+/* Interp a C program */
+int c_p_interp(C_Program* cp){
+
+
+}
+
+/* Interp a C tail */
+int c_t_interp(C_Tail* ct, list_t env){
+    if(ct && env)
+        switch(ct->type){
+            case C_TAIL_RET:
+                return c_a_interp(((C_Ret*)ct->tail)->arg, env);
+            case C_TAIL_SEQ:
+                c_s_interp(((C_Seq*)ct->tail)->smt, env);
+                return c_t_interp(((C_Seq*)ct->tail)->tail, env);
+            default:
+                die("Invalid c_t_interp!");
+        }
+    return I32MIN;
+}
+
+
+int c_s_interp(C_Smt* cs, list_t env){
+    int res = I32MIN;
+    if(cs && env){
+        Node* node = list_find(env, cs->var, c_var_num_pair_cmp);
+        res = c_e_interp(cs->expr, env);
+        c_var_num_pair_t *cvnp = new_c_var_num_pair(cs->var, res);
+        if(node) list_update(env, node->data, cvnp, c_var_num_pair_cmp);
+        else list_insert(env, cvnp);
+    }
+    return res; 
+}
+
+int c_e_interp(C_Expr* ce, list_t env){
+    int r;
+    if(ce && env)
+        switch(ce->type){
+            case C_ARG:
+                return c_a_interp((C_Arg*)ce->expr, env);
+            case C_READ:
+                if(QUIET_READ) return GET_RAND(); 
+                scanf("%d", &r);
+                return r;
+            case C_NEG: 
+                return -1 * c_a_interp(((C_Neg*)ce->expr)->arg, env);
+            case C_ADD:
+                return c_a_interp(((C_Add*)ce->expr)->left, env) + c_a_interp(((C_Add*)ce->expr)->right, env);
+            default:
+                die("INVALID c_e_interp!");
+        };
+    return I32MIN;
+}
+
+int c_a_interp(C_Arg* ca, list_t env){
+    Node *node;
+    if(ca && env)
+        switch(ca->type){
+            case C_NUM:
+                return ((C_Num*)ca->arg)->num;
+            case C_VAR:
+                node = list_find(env, (C_Var*)ca->arg, c_var_num_pair_cmp);
+                if( node == NULL) die("[C_A_INTERP] Unbound C_Variable!");
+                return ((c_var_num_pair_t*)node->data)->num;
+            default:
+                die("INVALID c_a_interp!");
+        };
+
+    return I32MIN;
+}

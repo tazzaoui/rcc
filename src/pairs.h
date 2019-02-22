@@ -9,6 +9,11 @@ typedef struct env_pair_t {
   R_Expr *var, *val;
 } env_pair_t;
 
+typedef struct c_var_num_pair_t {
+  C_Var* var;
+  int num;
+} c_var_num_pair_t;
+
 typedef struct lbl_blk_pair_t {
   label_t label;
   Block* block;
@@ -32,6 +37,12 @@ typedef struct lbl_tail_pair_t {
   label_t label;
   C_Tail* tail;
 } lbl_tail_pair_t;
+
+/* Return a new c_var -> num pair */
+c_var_num_pair_t* new_c_var_num_pair(C_Var*, int);
+
+/* Compare two c_var -> num pairs */
+int c_var_num_pair_cmp(void*, void*);
 
 /* Return a new lbl_tail_pair_t */
 lbl_tail_pair_t* new_lbl_tail_pair(label_t, C_Tail*);
