@@ -15,4 +15,10 @@ R_Expr* rename_var(R_Expr*);
 /* Helper function to append an int to a c_str */
 char* append_int(const char*, int);
 
+/* Wrapper around uniquify */
+static inline R_Expr* unique(R_Expr* e) {
+  int n = 0;
+  return uniquify(e, list_create(), &n);
+}
+
 #endif /* RCC_H */

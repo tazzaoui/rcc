@@ -26,7 +26,7 @@
 * Write an interpreter for C0 programs.
 * Write a few tests for uniquify that predict its output.
 * Implement the uniquify pass for R1 programs.
-Connect uniquify to your test suite.
+* Connect uniquify to your test suite.
 Write a half-dozen tests for resolve-complex that predict its output.
 Implement the resolve-complex pass for R1 programs.
 Connect resolve-complex to your test suite.

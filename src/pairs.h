@@ -80,8 +80,8 @@ int lbl_tail_cmp(void*, void*);
 /* Print a lbl -> tail pair */
 void lbl_tail_print(void*);
 
-/* (shallow) copy a label block pair*/
-void* ep_cpy(void* old);
+/* Compare two env pairs */
+int ep_cmp(void*, void*);
 
 /* Return a new environment pair */
 env_pair_t* new_env_pair(R_Expr*, R_Expr*);

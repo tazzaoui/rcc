@@ -18,8 +18,8 @@ static inline void print_optim(R_Expr *e) {
 }
 
 int main(int argc, char *argv[]) {
-  int count = 0, res, rand_depth, res_opt, full_count;
-  R_Expr *expr, *expr_opt;
+  int count = 0, res, rand_depth, res_opt, res_uniq, full_count;
+  R_Expr *expr, *expr_opt, *uniq;
   list_t vars = list_create();
   srand(time(0));
 
@@ -109,13 +109,16 @@ int main(int argc, char *argv[]) {
 
   printf("===================================================\n");
 
-  printf("General Optimizer Checks...\n");
+  printf("General R1 Checks...\n");
 
   count = full_count = 0;
   for (size_t i = 0; i < NUM_PROGS; ++i) {
     rand_depth = rand() % 20;
     expr = randp(vars, rand_depth);
+    uniq = unique(expr);
     res = r_interp(expr, NULL);
+    res_uniq = r_interp(uniq, NULL);
+    assert(res == res_uniq);
     if (DEBUG) {
       printf("Normal   : ");
       r_print_expr(expr);
@@ -128,12 +131,13 @@ int main(int argc, char *argv[]) {
       r_print_expr(expr_opt);
       printf("\n");
     }
+    assert(res_opt == res);
     count += (res_opt == res);
     full_count += (res_opt == res && expr_opt->type == R_EXPR_NUM);
   }
 
-  printf("%sSuccessfully optimized %d/%d programs.%s\n", GRN, count, NUM_PROGS,
-         NRM);
+  printf("%sSuccessfully optimized & uniquified %d/%d programs.%s\n", GRN,
+         count, NUM_PROGS, NRM);
 
   printf("Fully optimized %d/%d\n", count, NUM_PROGS);
   assert(count == NUM_PROGS);

@@ -29,6 +29,16 @@ env_pair_t *new_env_pair(R_Expr* var, R_Expr* val){
     return ep;
 }
 
+int ep_cmp(void* a, void* b){
+    if(a != NULL && b != NULL){
+        env_pair_t *ae = (env_pair_t*) a;
+        env_pair_t *be = (env_pair_t*) b;
+        return strcmp(((R_Var*)ae->var->expr)->name, ((R_Var*)be->var->expr)->name) == 0; 
+    }
+    return 0; 
+}
+
+
 int ep_var_cmp(void *a, void *b){
     if(a != NULL && b != NULL){
         R_Expr *a_expr = (R_Expr*) a; 

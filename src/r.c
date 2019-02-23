@@ -70,7 +70,11 @@ int r_interp(R_Expr* expr, list_t env) {
         val = r_interp(get_expr(expr), env); 
         ep = new_env_pair(get_var(expr), new_num(val));
         new_env = list_copy(env, ep_cpy);
-        list_insert(new_env, ep);
+        n = list_find(env, ep, ep_cmp);
+        if (n == NULL)
+            list_insert(new_env, ep);
+        else
+            list_update(new_env, new_env_pair(get_var(expr), 0), ep, ep_cmp);
         return r_interp(get_body(expr), new_env);
       case R_EXPR_NEG:
         return -1 * r_interp(((R_Neg*)expr->expr)->expr, env);
@@ -178,11 +182,19 @@ R_Expr* r_optimize(R_Expr* expr, list_t env) {
           new_env = list_copy(env, ep_cpy);
           if(is_simple(tmp)){     
               ep = new_env_pair(((R_Let*)expr->expr)->var, tmp);
-              list_insert(new_env, ep);
+              node = list_find(env, ep, ep_cmp);
+              if (node == NULL)
+                list_insert(new_env, ep);
+              else
+                list_update(new_env, new_env_pair(((R_Let*)expr->expr)->var, 0), ep, ep_cmp);
               return r_optimize(((R_Let*)expr->expr)->body, new_env);
           }else{
               ep = new_env_pair(((R_Let*)expr->expr)->var, ((R_Let*)expr->expr)->body);
-              list_insert(new_env, ep);
+              node = list_find(env, ep, ep_cmp);
+              if (node == NULL)
+                list_insert(new_env, ep);
+              else
+                list_update(new_env, new_env_pair(((R_Let*)expr->expr)->var, 0), ep, ep_cmp);
               e = r_optimize(((R_Let*)expr->expr)->body, new_env);
               return new_let(((R_Let*)expr->expr)->var, tmp, e);
           }
