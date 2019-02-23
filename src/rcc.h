@@ -6,4 +6,7 @@
 #include "utils.h"
 #include "x.h"
 
+/* Uniquify pass */
+R_Expr* uniquify(R_Expr*, list_t);
+
 #endif /* RCC_H */

@@ -186,3 +186,16 @@ void print_var_num_pair(void *vnp){
         printf("<%s, %d>", v->var->name, v->num);
     }
 }
+
+r_var_var_pair_t* new_r_var_var_pair(R_Var* v1, R_Var* v2){
+    r_var_var_pair_t *r = malloc_or_die(sizeof(r_var_var_pair_t));
+    r->v1 = v1;
+    r->v2 = v2;
+    return r;
+}
+
+int r_var_var_pair_cmp(void* r1, void* r2) {
+    r_var_var_pair_t *rvv_a = (r_var_var_pair_t*) r1;
+    r_var_var_pair_t *rvv_b = (r_var_var_pair_t*) r2;
+    return strcmp(rvv_a->v1->name, rvv_b->v1->name) == 0;
+}
