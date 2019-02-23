@@ -34,10 +34,10 @@ void test_dozen_c0();
 /* A few uniquify tests */
 void test_uniquify();
 
-/* A few rco tests */ 
+/* A few rco tests */
 void test_rco();
 
-/* A few econ tests */ 
+/* A few econ tests */
 void test_econ();
 
 #endif /* TESTS_H */

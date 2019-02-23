@@ -1,17 +1,24 @@
 #ifndef RCC_H
 #define RCC_H
 
+#include "c.h"
 #include "list.h"
 #include "r.h"
 #include "utils.h"
 #include "x.h"
-#include "c.h"
 
 /* Uniquify pass */
 R_Expr* uniquify(R_Expr*, list_t, int*);
 
-/* RCO Pass */ 
-R_Expr* rco_expr(R_Expr*, list_t*);
+/* RCO Pass */
+R_Expr* rco(R_Expr*, list_t*);
+
+C_Tail* econ_expr(R_Expr*);
+
+/* Turn an R_Arg to a C_Arg */
+C_Arg* econ_arg(R_Expr*);
+
+C_Expr* econ_cmplx(R_Expr*);
 
 /* Explicate Control Pass */
 C_Expr* explicate_control(R_Expr*, list_t*);

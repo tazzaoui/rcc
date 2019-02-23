@@ -861,13 +861,13 @@ void test_rco() {
   printf("\n");
 }
 
-void test_econ(){
+void test_econ() {
   R_Expr *x = new_var("x");
   R_Expr *let_1 = new_let(x, new_num(7), x);
   R_Expr *let_2 = new_let(x, new_add(x, new_num(1)), new_add(x, x));
   R_Expr *let_3 = new_let(x, new_num(8), let_2);
   R_Expr *add = new_add(let_1, let_3);
-  list_t new_vars = NULL; 
+  list_t new_vars = NULL;
 
   int n = 0;
   R_Expr *uniq = uniquify(add, list_create(), &n);

@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include <math.h>
-
+#include <math.h> 
 #include "utils.h"
 #include "list.h"
 #include "pairs.h"
@@ -117,5 +116,54 @@ R_Expr* resolve_complex_expr(R_Expr* expr, list_t env, list_t *new_vars, int *rc
                 return r2;
         };
     die("[RESOLVE_COMPLEX] NO RESOLUTION!");
+    return NULL;
+}
+
+C_Tail* econ_expr(R_Expr* r_expr){
+    C_Smt *st;
+    C_Seq *cs;
+    R_Var *rv;
+    if(r_expr)
+        switch(r_expr->type){
+            case R_EXPR_NUM:
+            case R_EXPR_VAR:
+                return new_c_tail(C_TAIL_RET, new_c_ret(econ_arg(r_expr->expr)));
+            case R_EXPR_LET:
+                rv = ((R_Let*)r_expr->expr)->var->expr;
+                st = new_c_smt(new_c_var(rv->name), econ_cmplx(((R_Let*)r_expr->expr)->expr));
+                cs = new_c_seq(st, econ_expr(((R_Let*)r_expr->expr)->body));
+                return new_c_tail(C_TAIL_SEQ, cs);
+            default:
+                break;
+        };
+    die("[econ_expr] INVALID EXPR"); 
+    return NULL;
+}
+
+C_Expr* econ_cmplx(R_Expr* r_expr){
+    if(r_expr)
+        switch(r_expr->type){
+            case R_EXPR_READ:
+                return new_c_expr(C_READ, new_c_read(NULL));
+            case R_EXPR_NEG:
+                return new_c_expr(C_NEG, new_c_neg(econ_arg(((R_Neg*)r_expr->expr)->expr)));
+            default:
+                break;
+        };
+    die("[econ_cmplx] INVALID EXPR"); 
+    return NULL;
+}
+
+C_Arg* econ_arg(R_Expr *r_expr){
+    if(r_expr)
+        switch(r_expr->type){
+            case R_EXPR_NUM:
+                return new_c_arg(C_NUM, new_c_num(((R_Num*)r_expr->expr)->num));
+            case R_EXPR_VAR:
+                return new_c_arg(C_VAR, new_c_var(((R_Var*)r_expr->expr)->name));
+            default:
+                break;
+        };
+    die("[econ_arg] INVALID EXPR"); 
     return NULL;
 }
