@@ -222,7 +222,7 @@ int c_a_interp(C_Arg* ca, list_t env){
                 return ((C_Num*)ca->arg)->num;
             case C_VAR:
                 node = list_find(env, (C_Var*)ca->arg, c_var_num_pair_cmp);
-                if( node == NULL) die("[C_A_INTERP] Unbound C_Variable!");
+                if(node == NULL) die("[C_A_INTERP] Unbound C_Variable!");
                 return ((c_var_num_pair_t*)node->data)->num;
             default:
                 die("INVALID c_a_interp!");

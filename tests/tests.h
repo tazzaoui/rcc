@@ -31,4 +31,7 @@ void test_prog_interp(X_Program*, const char*, int);
 /* Test a dozen C0 programs */
 void test_dozen_c0();
 
+/* A few uniquify tests */
+void test_uniquify();
+
 #endif /* TESTS_H */

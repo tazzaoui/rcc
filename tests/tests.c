@@ -731,3 +731,20 @@ void test_dozen_c0() {
   cp = new_c_program(NULL, labels);
   c_print(cp);
 }
+
+void test_uniquify() {
+  R_Expr *x = new_var("x");
+  R_Expr *let_1 = new_let(x, new_num(7), x);
+  R_Expr *let_2 = new_let(x, new_add(x, new_num(1)), new_add(x, x));
+  R_Expr *let_3 = new_let(x, new_num(8), let_2);
+  R_Expr *add = new_add(let_1, let_3);
+
+  r_print_expr(let_1);
+  printf("\n");
+  r_print_expr(let_2);
+  printf("\n");
+  r_print_expr(let_3);
+  printf("\n");
+  r_print_expr(add);
+  printf("\n");
+}

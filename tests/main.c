@@ -163,5 +163,12 @@ int main(int argc, char *argv[]) {
   test_dozen_c0();
 
   printf("===================================================\n");
+
+  printf("Testing Uniquify...\n");
+
+  test_uniquify();
+
+  printf("===================================================\n");
+
   return 0;
 }
