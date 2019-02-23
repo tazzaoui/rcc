@@ -1,15 +1,16 @@
 CC=gcc
 CFLAGS=-Wall -Werror -std=c99 -pedantic -g
+LFLAGS=-lm
 TESTS=test
 EXE=rcc $(TESTS) 
 
 all: $(EXE) 
 
 rcc: list.o utils.o pairs.o r.o x.o c.o rcc.o main.o
-	$(CC) main.o r.o x.o c.o rcc.o pairs.o utils.o list.o -o rcc
+	$(CC) main.o r.o x.o c.o rcc.o pairs.o utils.o list.o $(LFLAGS) -o rcc
 
 test: list.o utils.o pairs.o r.o x.o c.o rcc.o main_tests.o tests.o 
-	$(CC) main_tests.o tests.o pairs.o r.o x.o c.o rcc.o utils.o list.o -o test
+	$(CC) main_tests.o tests.o pairs.o r.o x.o c.o rcc.o utils.o list.o $(LFLAGS) -o test
 
 main.o: main.c
 	$(CC) -c $(CFLAGS) main.c -o main.o

@@ -164,7 +164,7 @@ int main(int argc, char *argv[]) {
 
   printf("===================================================\n");
 
-  printf("Testing Uniquify...\n");
+  printf("Testing Uniquify...\n\n");
 
   test_uniquify();
 

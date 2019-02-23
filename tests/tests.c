@@ -739,12 +739,33 @@ void test_uniquify() {
   R_Expr *let_3 = new_let(x, new_num(8), let_2);
   R_Expr *add = new_add(let_1, let_3);
 
-  r_print_expr(let_1);
-  printf("\n");
-  r_print_expr(let_2);
-  printf("\n");
-  r_print_expr(let_3);
-  printf("\n");
+  int n = 0;
+  R_Expr *uniq = uniquify(add, list_create(), &n);
   r_print_expr(add);
   printf("\n");
+  r_print_expr(uniq);
+  printf("\n\n");
+
+  let_1 = new_let(x, new_num(10), x);
+  add = new_add(let_1, x);
+  let_2 = new_let(x, new_num(32), add);
+
+  n = 0;
+  uniq = uniquify(let_2, list_create(), &n);
+  r_print_expr(let_2);
+  printf("\n");
+  r_print_expr(uniq);
+  printf("\n\n");
+
+  add = new_add(x, new_num(1));
+  let_1 = new_let(x, new_num(4), add);
+  R_Expr *add1 = new_add(x, new_num(2));
+  let_2 = new_let(x, let_1, add1);
+
+  n = 0;
+  uniq = uniquify(let_2, list_create(), &n);
+  r_print_expr(let_2);
+  printf("\n");
+  r_print_expr(uniq);
+  printf("\n\n");
 }

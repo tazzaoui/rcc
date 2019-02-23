@@ -38,12 +38,29 @@ typedef struct lbl_tail_pair_t {
   C_Tail* tail;
 } lbl_tail_pair_t;
 
+typedef struct r_var_int_pair_t {
+  R_Var* var;
+  int n;
+} r_var_int_pair_t;
+
 typedef struct r_var_var_pair_t {
   R_Var *v1, *v2;
 } r_var_var_pair_t;
 
-/* Return a new r_var -> r_var pair */
+/* Return a new r_var -> int pair  */
+r_var_int_pair_t* new_r_var_int_pair(R_Var*, int);
+
+/* Compare two r_var -> int pairs */
+int r_var_var_pair_cmp(void*, void*);
+
+/* Return a new r_var_int_pair_t -> r_var_int_pair_t pair */
 r_var_var_pair_t* new_r_var_var_pair(R_Var*, R_Var*);
+
+/* Print a r_var -> r_var pair */
+void r_var_var_print(void*);
+
+/* Deep copy an r_var_var pair */
+void* r_var_var_cpy(void* old);
 
 /* Compare two r_var -> r_var pairs */
 int r_var_var_pair_cmp(void*, void*);
