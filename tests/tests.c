@@ -810,6 +810,8 @@ void test_rco() {
 
   r_print_expr(let_2);
 
+  r_print_expr(let_1);
+
   add = new_add(new_num(2), new_num(3));
   R_Expr *add2 = new_add(x, x);
   R_Expr *let_3 = new_let(x, new_read(), add2);
@@ -835,4 +837,18 @@ void test_rco() {
   let_2 = new_let(x, new_num(32), add);
 
   r_print_expr(let_2);
+
+  add = new_add(new_num(2), new_num(3));
+
+  let_1 = new_add(add, new_let(x, new_read(), new_add(x, x)));
+
+  list_t res = NULL;
+  R_Expr *simple = rco_expr(let_1, &res);
+
+  r_print_expr(let_1);
+  printf("\n");
+  r_print_expr(simple);
+
+  printf("\n");
+  list_print(res, ep_print);
 }

@@ -61,7 +61,7 @@ void ep_print(void *data){
         r_print_expr(ep->var);
         printf(",");
         r_print_expr(ep->val);
-        printf(">");
+        printf(">\n");
     }
 }
 

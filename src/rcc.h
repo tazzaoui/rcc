@@ -9,6 +9,15 @@
 /* Uniquify pass */
 R_Expr* uniquify(R_Expr*, list_t, int*);
 
+/* Combine simple exprs into nested lets */
+R_Expr* combine_lets(Node*, R_Expr*);
+
+/* Wrapper around resolve_complex_expr */
+R_Expr* rco_expr(R_Expr*, list_t*);
+
+/* Resolve complex expressions */
+R_Expr* resolve_complex_expr(R_Expr*, list_t, list_t*, int*);
+
 /* Rename an R_Var */
 R_Expr* rename_var(R_Expr*);
 

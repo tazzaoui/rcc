@@ -18,6 +18,8 @@ static inline void print_optim(R_Expr *e) {
 }
 
 int main(int argc, char *argv[]) {
+  test_rco();
+  exit(-1);
   int count = 0, res, rand_depth, res_opt, res_uniq, full_count;
   R_Expr *expr, *expr_opt, *uniq;
   list_t vars = list_create();
@@ -176,7 +178,7 @@ int main(int argc, char *argv[]) {
 
   printf("testing rco...\n\n");
 
-  test_uniquify();
+  test_rco();
 
   printf("===================================================\n");
 

@@ -9,7 +9,6 @@
 #include "x.h"
 #include "rcc.h"
 
-
 char *append_int(const char* old, int n){
     int num_digits = n == 0 ? 1 : floor(log10(abs(n))) + 1; 
     char *new = malloc_or_die(strlen(old) + num_digits + 1); 
@@ -54,4 +53,69 @@ R_Expr* uniquify(R_Expr* expr, list_t env, int *cnt){
                 break;
         };
     return expr;
+}
+
+R_Expr* combine_lets(Node* head, R_Expr* var){
+    if(head == NULL) return var;
+    env_pair_t *ep = head->data;
+    return new_let(ep->var, ep->val, combine_lets(head->next, var)); 
+}
+
+
+R_Expr* rco_expr(R_Expr* expr, list_t* new_vars){
+    int var_seed = 0;
+    list_t env = list_create();
+    R_Expr* res = resolve_complex_expr(expr, env, new_vars, &var_seed);
+    return combine_lets(**new_vars, res);
+}
+
+R_Expr* resolve_complex_expr(R_Expr* expr, list_t env, list_t *new_vars, int *rco_calls){
+    char *c;
+    Node *n;
+    list_t l1 = list_create(), l2, l3;
+    R_Expr *r1, *r2, *r3, *r4;
+    if(expr)
+        switch(expr->type){
+            case R_EXPR_VAR:
+                *new_vars = l1;
+                n = list_find(env, new_env_pair(expr, NULL), ep_cmp);
+                if(n == NULL) die("[RESOLVE_COMPLEX] UNBOUND VAR!");
+                return ((env_pair_t*)n->data)->val;
+            case R_EXPR_NUM:
+                *new_vars = l1;
+                return expr;
+            case R_EXPR_ADD:
+                l2 = list_create();
+                r1 = resolve_complex_expr(((R_Add*)expr->expr)->left, env, &l1, rco_calls);
+                r2 = resolve_complex_expr(((R_Add*)expr->expr)->right, env, &l2, rco_calls);
+                r3 = new_add(r1, r2);
+                l3 = list_concat(l1, l2);
+                c = append_int("X", (*rco_calls)++);
+                r4 = new_var(c);
+                list_insert(l3, new_env_pair(r4, r3)); 
+                *new_vars = l3;
+                return r4;
+            case R_EXPR_NEG:
+                r1 = resolve_complex_expr(((R_Neg*)expr->expr)->expr, env, &l1, rco_calls);
+                c = append_int("X", (*rco_calls)++);
+                r2 = new_var(c);
+                list_insert(l1, new_env_pair(r2, new_neg(r1)));
+                *new_vars = l1;
+                return r2;
+            case R_EXPR_READ:
+                r1 = new_var(append_int("X", (*rco_calls)++));
+                list_insert(l1, new_env_pair(r1, new_read()));
+                *new_vars = l1;
+                return r1;
+            case R_EXPR_LET:
+                l3 = list_create();
+                r1 = resolve_complex_expr(((R_Let*)expr->expr)->expr, env, &l1, rco_calls);
+                l2 = list_copy(env, ep_cpy);
+                list_insert(l2, new_env_pair(((R_Let*)expr->expr)->var, r1));
+                r2 = resolve_complex_expr(((R_Let*)expr->expr)->body, l2, &l3, rco_calls); 
+                *new_vars = list_concat(l1, l3); 
+                return r2;
+        };
+    die("[RESOLVE_COMPLEX] NO RESOLUTION!");
+    return NULL;
 }

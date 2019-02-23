@@ -83,6 +83,9 @@ void lbl_tail_print(void*);
 /* Compare two env pairs */
 int ep_cmp(void*, void*);
 
+/* Print an env pair */
+void ep_print(void*);
+
 /* Return a new environment pair */
 env_pair_t* new_env_pair(R_Expr*, R_Expr*);
 
