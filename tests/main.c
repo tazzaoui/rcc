@@ -8,7 +8,7 @@
 #include "tests.h"
 
 #define DEBUG 0
-#define NUM_PROGS (1 << 10)
+#define NUM_PROGS 1024
 
 static inline void print_optim(R_Expr *e) {
   r_print_expr(e);
@@ -18,10 +18,8 @@ static inline void print_optim(R_Expr *e) {
 }
 
 int main(int argc, char *argv[]) {
-  test_rco();
-  exit(-1);
-  int count = 0, res, rand_depth, res_opt, res_uniq, full_count;
-  R_Expr *expr, *expr_opt, *uniq;
+  int count = 0, res, rand_depth, res_opt, res_uniq, res_rco, full_count;
+  R_Expr *expr, *expr_opt, *uniq, *simple;
   list_t vars = list_create();
   srand(time(0));
 
@@ -113,14 +111,18 @@ int main(int argc, char *argv[]) {
 
   printf("General R1 Checks...\n");
 
+  list_t new_vars;
   count = full_count = 0;
   for (size_t i = 0; i < NUM_PROGS; ++i) {
-    rand_depth = rand() % 20;
+    rand_depth = rand() % 12;
     expr = randp(vars, rand_depth);
     uniq = unique(expr);
+    new_vars = list_create();
+    simple = rco_expr(uniq, &new_vars);
     res = r_interp(expr, NULL);
     res_uniq = r_interp(uniq, NULL);
-    assert(res == res_uniq);
+    res_rco = r_interp(simple, NULL);
+    assert(res == res_uniq && res_uniq == res_rco);
     if (DEBUG) {
       printf("Normal   : ");
       r_print_expr(expr);

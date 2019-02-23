@@ -800,55 +800,63 @@ void test_rco() {
   R_Expr *add = new_add(n1, n2);
   R_Expr *x = new_var("x");
   R_Expr *y = new_var("y");
+  R_Expr *simple;
+  list_t res = NULL;
 
-  r_print_expr(n1);
+  simple = rco_expr(n1, &res);
+  r_print_expr(simple);
+  printf("\n");
 
-  r_print_expr(add);
+  res = NULL;
+  simple = rco_expr(add, &res);
+  r_print_expr(simple);
+  printf("\n");
 
   R_Expr *let_1 = new_let(y, x, y);
   R_Expr *let_2 = new_let(x, n2, let_1);
-
-  r_print_expr(let_2);
-
-  r_print_expr(let_1);
+  res = NULL;
+  simple = rco_expr(let_2, &res);
+  r_print_expr(simple);
+  printf("\n");
 
   add = new_add(new_num(2), new_num(3));
   R_Expr *add2 = new_add(x, x);
   R_Expr *let_3 = new_let(x, new_read(), add2);
-
-  r_print_expr(let_3);
+  res = NULL;
+  simple = rco_expr(let_3, &res);
+  r_print_expr(simple);
+  printf("\n");
 
   let_1 = new_let(x, new_num(7), x);
   let_2 = new_let(x, new_add(x, new_num(1)), new_add(x, x));
   let_3 = new_let(x, new_num(8), let_2);
   add = new_add(let_1, let_3);
-
-  r_print_expr(add);
+  res = NULL;
+  simple = rco_expr(add, &res);
+  r_print_expr(simple);
+  printf("\n");
 
   add = new_add(x, new_num(1));
   let_1 = new_let(x, new_num(4), add);
   R_Expr *add1 = new_add(x, new_num(2));
   let_2 = new_let(x, let_1, add1);
-
-  r_print_expr(let_2);
+  res = NULL;
+  simple = rco_expr(let_2, &res);
+  r_print_expr(simple);
+  printf("\n");
 
   let_1 = new_let(x, new_num(10), x);
   add = new_add(let_1, x);
   let_2 = new_let(x, new_num(32), add);
-
-  r_print_expr(let_2);
+  res = NULL;
+  simple = rco_expr(let_2, &res);
+  r_print_expr(simple);
+  printf("\n");
 
   add = new_add(new_num(2), new_num(3));
-
   let_1 = new_add(add, new_let(x, new_read(), new_add(x, x)));
-
-  list_t res = NULL;
-  R_Expr *simple = rco_expr(let_1, &res);
-
-  r_print_expr(let_1);
-  printf("\n");
+  res = NULL;
+  simple = rco_expr(let_1, &res);
   r_print_expr(simple);
-
   printf("\n");
-  list_print(res, ep_print);
 }

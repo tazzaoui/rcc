@@ -47,7 +47,7 @@ R_Expr* new_num(int num) {
 
 R_Expr* new_read() {
   R_Read* r = malloc_or_die(sizeof(R_Read));
-  r->num = QUIET_READ ? GET_RAND() : 0;
+  r->num = QUIET_READ ? 7 : 0;
   r->read = QUIET_READ;
   return new_expr(r, R_EXPR_READ);
 }
