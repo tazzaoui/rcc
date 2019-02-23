@@ -41,8 +41,11 @@ Node *list_find(const list_t, void *, cmp_func_t);
 /* Return a node at a given index */
 Node *list_get(const list_t, size_t);
 
-/*Return a copy of the list*/
+/* Return a copy of the list */
 list_t list_copy(const list_t, deep_cpy_t);
+
+/* Combine two lists into one */
+list_t list_concat(list_t, list_t);
 
 /*Print the list*/
 void list_print(const list_t, print_func_t);

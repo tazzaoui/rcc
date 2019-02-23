@@ -268,6 +268,30 @@ void test_list() {
     Node *temp = list_find(list, nums + i, cmp_nodes);
     assert(temp == NULL);
   }
+
+  // Test list concat
+  list = list_create(), copy = list_create();
+  int *j, *x;
+  for (int i = 0; i < NUM; ++i) {
+    j = malloc(sizeof(int));
+    x = malloc(sizeof(int));
+    *j = i;
+    list_insert(list, j);
+    *x = NUM + i;
+    list_insert(copy, x);
+  }
+
+  int size_sum = list_size(list) + list_size(copy);
+  list_t combined = list_concat(list, copy);
+
+  assert(list_size(combined) == size_sum);
+
+  for (int i = 0; i < NUM; ++i) {
+    Node *n1 = list_find(combined, &i, cmp_nodes);
+    *x = NUM + i;
+    Node *n2 = list_find(combined, x, cmp_nodes);
+    assert(n1 != NULL && n2 != NULL);
+  }
 }
 
 void test_x0_emit() {

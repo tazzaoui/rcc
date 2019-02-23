@@ -83,6 +83,16 @@ list_t list_copy(const list_t list, deep_cpy_t dc){
 }
 
 
+list_t list_concat(list_t left, list_t right){
+    if(left && right){
+        Node *l_head = *left;
+        while(l_head && l_head->next != NULL)
+            l_head = l_head->next;
+        l_head->next = *right;
+    }
+    return left;
+}
+
 size_t list_size(const list_t list){
     size_t size = 0;
     if(list){
