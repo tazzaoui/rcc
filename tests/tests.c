@@ -860,3 +860,42 @@ void test_rco() {
   r_print_expr(simple);
   printf("\n");
 }
+
+void test_econ(){
+  R_Expr *x = new_var("x");
+  R_Expr *let_1 = new_let(x, new_num(7), x);
+  R_Expr *let_2 = new_let(x, new_add(x, new_num(1)), new_add(x, x));
+  R_Expr *let_3 = new_let(x, new_num(8), let_2);
+  R_Expr *add = new_add(let_1, let_3);
+  list_t new_vars = NULL; 
+
+  int n = 0;
+  R_Expr *uniq = uniquify(add, list_create(), &n);
+  R_Expr *simple = rco_expr(uniq, &new_vars);
+
+  let_1 = new_let(x, new_num(10), x);
+  add = new_add(let_1, x);
+  let_2 = new_let(x, new_num(32), add);
+
+  n = 0;
+  new_vars = NULL;
+  uniq = uniquify(let_2, list_create(), &n);
+  simple = rco_expr(uniq, &new_vars);
+
+  add = new_add(x, new_num(1));
+  let_1 = new_let(x, new_num(4), add);
+  R_Expr *add1 = new_add(x, new_num(2));
+  let_2 = new_let(x, let_1, add1);
+
+  n = 0;
+  new_vars = NULL;
+  uniq = uniquify(let_2, list_create(), &n);
+  simple = rco_expr(uniq, &new_vars);
+
+  n = 0;
+  new_vars = NULL;
+  add = new_add(new_num(2), new_num(3));
+  let_1 = new_add(add, new_let(x, new_read(), new_add(x, x)));
+  uniq = uniquify(let_1, list_create(), &n);
+  simple = rco_expr(uniq, &new_vars);
+}

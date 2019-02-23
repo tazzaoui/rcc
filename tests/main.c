@@ -184,5 +184,11 @@ int main(int argc, char *argv[]) {
 
   printf("===================================================\n");
 
+  printf("testing econs...\n\n");
+
+  test_econ();
+
+  printf("===================================================\n");
+
   return 0;
 }

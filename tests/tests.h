@@ -34,7 +34,10 @@ void test_dozen_c0();
 /* A few uniquify tests */
 void test_uniquify();
 
-/* Test the resolve complex pass */
+/* A few rco tests */ 
 void test_rco();
+
+/* A few econ tests */ 
+void test_econ();
 
 #endif /* TESTS_H */
