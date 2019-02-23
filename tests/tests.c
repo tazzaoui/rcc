@@ -769,3 +769,46 @@ void test_uniquify() {
   r_print_expr(uniq);
   printf("\n\n");
 }
+
+void test_rco() {
+  R_Expr *n1 = new_neg(new_num(10));
+  R_Expr *n2 = new_num(52);
+  R_Expr *add = new_add(n1, n2);
+  R_Expr *x = new_var("x");
+  R_Expr *y = new_var("y");
+
+  r_print_expr(n1);
+
+  r_print_expr(add);
+
+  R_Expr *let_1 = new_let(y, x, y);
+  R_Expr *let_2 = new_let(x, n2, let_1);
+
+  r_print_expr(let_2);
+
+  add = new_add(new_num(2), new_num(3));
+  R_Expr *add2 = new_add(x, x);
+  R_Expr *let_3 = new_let(x, new_read(), add2);
+
+  r_print_expr(let_3);
+
+  let_1 = new_let(x, new_num(7), x);
+  let_2 = new_let(x, new_add(x, new_num(1)), new_add(x, x));
+  let_3 = new_let(x, new_num(8), let_2);
+  add = new_add(let_1, let_3);
+
+  r_print_expr(add);
+
+  add = new_add(x, new_num(1));
+  let_1 = new_let(x, new_num(4), add);
+  R_Expr *add1 = new_add(x, new_num(2));
+  let_2 = new_let(x, let_1, add1);
+
+  r_print_expr(let_2);
+
+  let_1 = new_let(x, new_num(10), x);
+  add = new_add(let_1, x);
+  let_2 = new_let(x, new_num(32), add);
+
+  r_print_expr(let_2);
+}
