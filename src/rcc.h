@@ -5,15 +5,19 @@
 #include "r.h"
 #include "utils.h"
 #include "x.h"
+#include "c.h"
 
 /* Uniquify pass */
 R_Expr* uniquify(R_Expr*, list_t, int*);
 
+/* RCO Pass */ 
+R_Expr* rco_expr(R_Expr*, list_t*);
+
+/* Explicate Control Pass */
+C_Expr* explicate_control(R_Expr*, list_t*);
+
 /* Combine simple exprs into nested lets */
 R_Expr* combine_lets(Node*, R_Expr*);
-
-/* Wrapper around resolve_complex_expr */
-R_Expr* rco_expr(R_Expr*, list_t*);
 
 /* Resolve complex expressions */
 R_Expr* resolve_complex_expr(R_Expr*, list_t, list_t*, int*);
