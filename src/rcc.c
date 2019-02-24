@@ -174,12 +174,11 @@ C_Arg* econ_arg(R_Expr *r_expr){
 
 C_Program* uncover_locals(C_Program* cp){
     if(cp){
-        Node *node = list_find(cp->labels, new_lbl_tail_pair("body", NULL), lbl_tail_cmp);
-        if(node == NULL) die("[UNCOVER_LOCALS] NO BODY LABEL!");
+        Node *node = list_find(cp->labels, new_lbl_tail_pair("main", NULL), lbl_tail_cmp);
+        if(node == NULL) die("[UNCOVER_LOCALS] NO MAIN LABEL!");
         C_Tail *tail = ((lbl_tail_pair_t*)node->data)->tail;
         list_t vars = list_create();
         c_tail_extract_vars(tail, vars);
-        list_print(vars, c_var_print);
         return new_c_program(new_c_info(vars), cp->labels); 
     }
     return cp;
