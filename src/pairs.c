@@ -5,12 +5,17 @@
 #include "x.h"
 #include "rcc.h"
 
-
 c_var_num_pair_t* new_c_var_num_pair(C_Var* cv, int num){
     c_var_num_pair_t *p = malloc_or_die(sizeof(c_var_num_pair_t));
     p->var = cv;
     p->num = num;
     return p;
+}
+
+C_Info* new_c_info(list_t vars){
+    C_Info *info = malloc_or_die(sizeof(C_Info));
+    info->vars = vars;
+    info;
 }
 
 int c_var_num_pair_cmp(void* a, void* b){
@@ -20,6 +25,19 @@ int c_var_num_pair_cmp(void* a, void* b){
         return cv_a && cv_b && strcmp(cv_a->name, cv_b->name) == 0;
     }
     return 0;
+}
+
+int c_var_cmp(void* a, void* b){
+    C_Var *cv_a = (C_Var*)a;
+    C_Var *cv_b = (C_Var*)b;
+    return cv_a && cv_b && strcmp(cv_a->name, cv_b->name) == 0;
+}
+
+void c_var_print(void *a){
+    if(a){
+        C_Var *cv_a = (C_Var*)a;
+        printf("%s\n", cv_a->name);
+    }
 }
 
 env_pair_t *new_env_pair(R_Expr* var, R_Expr* val){

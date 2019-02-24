@@ -37,6 +37,9 @@ R_Expr* resolve_complex_expr(R_Expr*, list_t, list_t*, int*);
 /* Rename an R_Var */
 R_Expr* rename_var(R_Expr*);
 
+/* Extract the set of variables used in a C_Tail */
+void c_tail_extract_vars(C_Tail*, list_t);
+
 /* Helper function to append an int to a c_str */
 char* append_int(const char*, int);
 

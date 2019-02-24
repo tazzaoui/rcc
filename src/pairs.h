@@ -143,4 +143,10 @@ void* var_num_pair_cpy(void*);
 /* Printing function for var->num pairs*/
 void print_var_num_pair(void*);
 
+/* Compare two C_Vars */
+int c_var_cmp(void*, void*);
+
+/* Print a C_Var */
+void c_var_print(void*);
+
 #endif /* PAIRS_H */

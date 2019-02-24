@@ -171,3 +171,26 @@ C_Arg* econ_arg(R_Expr *r_expr){
     die("[econ_arg] INVALID EXPR"); 
     return NULL;
 }
+
+C_Program* uncover_locals(C_Program* cp){
+    if(cp){
+        Node *node = list_find(cp->labels, new_lbl_tail_pair("body", NULL), lbl_tail_cmp);
+        if(node == NULL) die("[UNCOVER_LOCALS] NO BODY LABEL!");
+        C_Tail *tail = ((lbl_tail_pair_t*)node->data)->tail;
+        list_t vars = list_create();
+        c_tail_extract_vars(tail, vars);
+        list_print(vars, c_var_print);
+        return new_c_program(new_c_info(vars), cp->labels); 
+    }
+    return cp;
+}
+
+void c_tail_extract_vars(C_Tail* tail, list_t vars){
+    if(tail && tail->type == C_TAIL_SEQ){
+        C_Seq *cs = tail->tail;
+        C_Var *cv = cs->smt->var;
+        Node* node = list_find(vars, cv, c_var_cmp);
+        if(node == NULL) list_insert(vars, cv);
+        c_tail_extract_vars(cs->tail, vars);
+    }
+}

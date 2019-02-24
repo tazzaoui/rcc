@@ -12,6 +12,10 @@ typedef struct C_Program {
   list_t labels;  // labels: label -> tail
 } C_Program;
 
+typedef struct C_Info {
+  list_t vars;
+} C_Info;
+
 typedef struct C_Tail {
   C_TAIL_TYPE type;
   void* tail;
@@ -63,6 +67,9 @@ typedef struct C_Seq {
 
 /* Return a new c program */
 C_Program* new_c_program(void*, list_t);
+
+/* Return a new C_Info */
+C_Info* new_c_info(list_t);
 
 /* Return a new tail */
 C_Tail* new_c_tail(C_TAIL_TYPE, void*);
