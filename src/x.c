@@ -227,10 +227,15 @@ int x_blk_interp(label_t lbl, X_State **ms){
         Node *n = list_find((*ms)->lbls, new_lbl_blk_pair(lbl, NULL), lbl_blk_pair_cmp);
         if(n){
             X_Block *b = ((lbl_blk_pair_t*) n->data)->block;
-            list_t instrs = b->instrs;
-            if(n) return x_instrs_interp(instrs, ms); 
-        } else die("x_blk_interp: label not found!");
+            list_t instrs = b->instrs; 
+            return x_instrs_interp(instrs, ms); 
+        } else{
+            printf("\n%s\n", lbl);
+            die("x_blk_interp: label not found!");
+        }
     }
+
+    die("x_blk_interp: NULL ms");
     return I32MIN;
 }
 
@@ -242,7 +247,7 @@ int x_instrs_interp(list_t instrs, X_State **ms){
         while(ins_node != NULL){
             instr = (X_Instr*) ins_node->data;
             val = x_instr_interp(instr, ms);
-            if(instr->type == RETQ) return val;
+            if(instr->type == RETQ || instr->type == JMP) return val;
             ins_node = ins_node->next;
         }
     }
@@ -298,7 +303,7 @@ int x_instr_interp(X_Instr *instr, X_State **ms){
                 return lookup_state(s, new_x_arg(X_ARG_REG, new_x_arg_reg(RAX)));
              case CALLQ: 
                 lbl = ((X_Callq*)instr->instr)->label; 
-                lval = GET_RAND();
+                lval = 7;
                 if(strcmp(lbl, "_read_int") == 0){
                     if(!QUIET_READ)
                         scanf("%d", &lval);
@@ -306,10 +311,11 @@ int x_instr_interp(X_Instr *instr, X_State **ms){
                 }
                 return lval;
              default:
-                die("Invalid x_instr_interp!");
+               break; 
         };
     }
-    return -1;
+    die("Invalid x_instr_interp!");
+    return I32MIN;
 }
 
 int update_state(X_State** s, X_Arg* arg, int val){
@@ -351,9 +357,11 @@ int update_state(X_State** s, X_Arg* arg, int val){
                     return old;
                 }
             default:
-                die("Invalid State Update!");
+                break;
         };
     }
+
+    die("Invalid State Lookup!");
     return I32MIN;
 }
 
@@ -379,8 +387,9 @@ int lookup_state(X_State* ms, X_Arg* arg){
                     return ((var_num_pair_t*)n->data)->num;
                 return I32MIN;
             default:
-                die("Invalid State Lookup!");
+               break;
         };
     }
+    die("Invalid State Lookup!");
     return I32MIN;
 }

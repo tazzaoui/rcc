@@ -20,7 +20,7 @@ static inline void print_optim(R_Expr *e) {
 
 int main(int argc, char *argv[]) {
   int count = 0, res, rand_depth, res_opt, res_uniq, res_rco, res_econ, res_ul,
-      full_count;
+      res_si, full_count;
   R_Expr *expr, *expr_opt, *uniq, *simple;
   C_Tail *c_tail;
   list_t vars = list_create();
@@ -102,6 +102,7 @@ int main(int argc, char *argv[]) {
   printf("R1 Specific Optimizer Checks...\n");
 
   C_Program *cp, *cp_uncovered;
+  X_Program *xp;
   R_Expr *x = new_var("x");
   R_Expr *z = new_var("z");
   R_Expr *l1 = new_let(x, new_num(7), new_add(x, x));
@@ -113,7 +114,7 @@ int main(int argc, char *argv[]) {
 
   printf("===================================================\n");
 
-  printf("General R1 Checks...\n");
+  printf("General Checks...\n");
 
   list_t new_vars, labels;
   count = full_count = 0;
@@ -128,15 +129,18 @@ int main(int argc, char *argv[]) {
     list_insert(labels, new_lbl_tail_pair("main", c_tail));
     cp = new_c_program(NULL, labels);
     cp_uncovered = uncover_locals(cp);
+    xp = select_instr(cp_uncovered);
     res = r_interp(expr, NULL);
     res_uniq = r_interp(uniq, NULL);
     res_rco = r_interp(simple, NULL);
     res_econ = c_t_interp(c_tail, list_create());
     res_ul = c_p_interp(cp_uncovered);
+    res_si = x_interp(xp);
     assert(res == res_uniq);
     assert(res_uniq == res_rco);
     assert(res_rco == res_econ);
     assert(res_econ == res_ul);
+    assert(res_ul == res_si);
     if (DEBUG) {
       printf("Normal   : ");
       r_print_expr(expr);

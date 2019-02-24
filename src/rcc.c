@@ -200,8 +200,12 @@ X_Program* select_instr(C_Program* cp){
     C_Tail *ct = ((lbl_tail_pair_t*)node->data)->tail; 
     list_t x_instrs = select_instr_tail(ct);
     list_t lbls = list_create();
-    lbl_blk_pair_t *lbl = new_lbl_blk_pair("BODY", new_x_block(NULL, x_instrs));  
+    lbl_blk_pair_t *lbl = new_lbl_blk_pair("main", new_x_block(NULL, x_instrs));  
     list_insert(lbls, lbl);
+    list_t ret_instr = list_create();
+    list_insert(ret_instr, new_x_instr(RETQ, new_x_retq()));
+    lbl_blk_pair_t *end_lbl = new_lbl_blk_pair("end", new_x_block(NULL, ret_instr)); 
+    list_insert(lbls, end_lbl);
     return new_x_prog(NULL, lbls);
 }
 
@@ -210,11 +214,13 @@ list_t select_instr_tail(C_Tail* ct){
     X_Arg *rax;
     if(ct)
         switch(ct->type){
-            case C_TAIL_RET:
+            case C_TAIL_RET: 
                instrs_smt = list_create();
                rax = new_x_arg(X_ARG_REG, new_x_arg_reg(RAX));
-               list_insert(instrs_smt, new_x_instr(MOVQ, new_x_movq(select_instr_arg(((C_Ret*)ct->tail)->arg), rax)));
-               list_insert(instrs_smt, new_x_instr(JMP, new_x_jmp("END")));
+               list_insert(instrs_smt, 
+                       new_x_instr(MOVQ, new_x_movq(select_instr_arg(((C_Ret*)ct->tail)->arg), rax)));
+               list_insert(instrs_smt, new_x_instr(JMP, new_x_jmp("end")));
+               //list_insert(instrs_smt, new_x_instr(RETQ, new_x_retq()));
                return instrs_smt;
             case C_TAIL_SEQ:
                instrs_smt = select_instr_smt(((C_Seq*)ct->tail)->smt);
@@ -247,7 +253,7 @@ list_t select_instr_expr(C_Expr* ce, X_Arg* dst){
                list_insert(instrs, new_x_instr(MOVQ, new_x_movq(rax, dst)));
                break;
             case C_NEG:
-               list_insert(instrs, new_x_instr(MOVQ, new_x_movq(select_instr_arg(ce->expr), dst))); 
+               list_insert(instrs, new_x_instr(MOVQ, new_x_movq(select_instr_arg(((C_Neg*)ce->expr)->arg), dst))); 
                list_insert(instrs, new_x_instr(NEGQ, new_x_negq(dst)));
                break;
             case C_ADD:
