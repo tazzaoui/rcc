@@ -13,15 +13,20 @@ R_Expr* uniquify(R_Expr*, list_t, int*);
 /* RCO Pass */
 R_Expr* rco(R_Expr*, list_t*);
 
+/* Turn an R_Expr to a C_Tail */
 C_Tail* econ_expr(R_Expr*);
 
 /* Turn an R_Arg to a C_Arg */
 C_Arg* econ_arg(R_Expr*);
 
+/* Turn an R_Expr to a C_Expr */
 C_Expr* econ_cmplx(R_Expr*);
 
 /* Explicate Control Pass */
 C_Expr* explicate_control(R_Expr*, list_t*);
+
+/* Uncover Locals Pass */
+C_Program* uncover_locals(C_Program*);
 
 /* Combine simple exprs into nested lets */
 R_Expr* combine_lets(Node*, R_Expr*);

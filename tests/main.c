@@ -196,5 +196,11 @@ int main(int argc, char *argv[]) {
 
   printf("===================================================\n");
 
+  printf("testing uncover-locals...\n\n");
+
+  test_uncover_locals();
+
+  printf("===================================================\n");
+
   return 0;
 }

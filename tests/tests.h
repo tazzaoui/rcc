@@ -40,4 +40,7 @@ void test_rco();
 /* A few econ tests */
 void test_econ();
 
+/* A few tests for uncover-locals */
+void test_uncover_locals();
+
 #endif /* TESTS_H */
