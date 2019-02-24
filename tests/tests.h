@@ -46,4 +46,7 @@ void test_uncover_locals();
 /* A few tests for select-instr */
 void test_select_instr();
 
+/* A few tests for assign-homes */
+void test_assign_homes();
+
 #endif /* TESTS_H */

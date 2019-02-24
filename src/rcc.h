@@ -28,8 +28,11 @@ C_Expr* explicate_control(R_Expr*, list_t*);
 /* Uncover Locals Pass */
 C_Program* uncover_locals(C_Program*);
 
-/* The select instructions pass */
+/* Select Instructions pass */
 X_Program* select_instr(C_Program*);
+
+/* Assign Homes Pass (register allocation) */
+X_Program* assign_homes(X_Program*);
 
 /* C_Tail -> list of X instructions */
 list_t select_instr_tail(C_Tail*);

@@ -220,7 +220,6 @@ list_t select_instr_tail(C_Tail* ct){
                list_insert(instrs_smt, 
                        new_x_instr(MOVQ, new_x_movq(select_instr_arg(((C_Ret*)ct->tail)->arg), rax)));
                list_insert(instrs_smt, new_x_instr(JMP, new_x_jmp("end")));
-               //list_insert(instrs_smt, new_x_instr(RETQ, new_x_retq()));
                return instrs_smt;
             case C_TAIL_SEQ:
                instrs_smt = select_instr_smt(((C_Seq*)ct->tail)->smt);
