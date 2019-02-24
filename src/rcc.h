@@ -31,6 +31,15 @@ C_Program* uncover_locals(C_Program*);
 /* The select instructions pass */
 X_Program* select_instr(C_Program*);
 
+/* C_Tail -> list of X instructions */
+void select_instr_tail(C_Tail*, list_t);
+
+/* C_Expr + dst -> list of X instructions */
+void select_instr_expr(C_Expr*, X_Arg*);
+
+/* C_Arg -> X_Arg */
+X_Arg* select_instr_arg(C_Arg*);
+
 /* Combine simple exprs into nested lets */
 R_Expr* combine_lets(Node*, R_Expr*);
 

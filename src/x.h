@@ -7,9 +7,14 @@
 #define X_PRINT_ARG_ALLOW_VARS 1
 
 extern const char* registers[NUM_REGS];
-typedef enum ARG_TYPE { ARG_NUM, ARG_REG, ARG_MEM, ARG_VAR } ARG_TYPE;
+typedef enum X_ARG_TYPE {
+  X_ARG_NUM,
+  X_ARG_REG,
+  X_ARG_MEM,
+  X_ARG_VAR
+} X_ARG_TYPE;
 
-typedef enum INSTR_TYPE {
+typedef enum X_INSTR_TYPE {
   ADDQ,
   SUBQ,
   MOVQ,
@@ -19,7 +24,7 @@ typedef enum INSTR_TYPE {
   JMP,
   PUSHQ,
   POPQ
-} INSTR_TYPE;
+} X_INSTR_TYPE;
 
 typedef enum REGISTER {
   RSP,
@@ -45,134 +50,134 @@ typedef struct X_Program {
   list_t labels;  // labels: label -> block
 } X_Program;
 
-typedef struct Block {
+typedef struct X_Block {
   void* info;
   list_t instrs;
-} Block;
+} X_Block;
 
-typedef struct Instr {
-  INSTR_TYPE type;
+typedef struct X_Instr {
+  X_INSTR_TYPE type;
   void* instr;
-} Instr;
+} X_Instr;
 
-typedef struct Arg {
-  ARG_TYPE type;
+typedef struct X_Arg {
+  X_ARG_TYPE type;
   void* arg;
-} Arg;
+} X_Arg;
 
-typedef struct State {
+typedef struct X_State {
   int regs[NUM_REGS];  // (register -> num)
   list_t nums;         // (num -> num)
   list_t vars;         // (var -> num)
   list_t lbls;         // (lbl - >blks)
-} State;
+} X_State;
 
-typedef struct Addq {
-  Arg *left, *right;
-} Addq;
+typedef struct X_Addq {
+  X_Arg *left, *right;
+} X_Addq;
 
-typedef struct Subq {
-  Arg *left, *right;
-} Subq;
+typedef struct X_Subq {
+  X_Arg *left, *right;
+} X_Subq;
 
-typedef struct Movq {
-  Arg *left, *right;
-} Movq;
+typedef struct X_Movq {
+  X_Arg *left, *right;
+} X_Movq;
 
-typedef struct Retq {
+typedef struct X_Retq {
   void* ret;
-} Retq;
+} X_Retq;
 
-typedef struct Negq {
-  Arg* arg;
-} Negq;
+typedef struct X_Negq {
+  X_Arg* arg;
+} X_Negq;
 
-typedef struct Callq {
+typedef struct X_Callq {
   label_t label;
-} Callq;
+} X_Callq;
 
-typedef struct Jmp {
+typedef struct X_Jmp {
   label_t label;
-} Jmp;
+} X_Jmp;
 
-typedef struct Pushq {
-  Arg* arg;
-} Pushq;
+typedef struct X_Pushq {
+  X_Arg* arg;
+} X_Pushq;
 
-typedef struct Popq {
-  Arg* arg;
-} Popq;
+typedef struct X_Popq {
+  X_Arg* arg;
+} X_Popq;
 
-typedef struct Arg_Num {
+typedef struct X_Arg_Num {
   int num;
-} Arg_Num;
+} X_Arg_Num;
 
-typedef struct Arg_Reg {
+typedef struct X_Arg_Reg {
   REGISTER reg;
-} Arg_Reg;
+} X_Arg_Reg;
 
-typedef struct Arg_Mem {
+typedef struct X_Arg_Mem {
   REGISTER reg;
   int offset;
-} Arg_Mem;
+} X_Arg_Mem;
 
-typedef struct Arg_Var {
+typedef struct X_Arg_Var {
   const char* name;
-} Arg_Var;
+} X_Arg_Var;
 
 /* Return a new program */
-X_Program* new_prog(void*, list_t);
+X_Program* new_x_prog(void*, list_t);
 
 /* Return a new block */
-Block* new_block(void*, list_t);
+X_Block* new_x_block(void*, list_t);
 
 /* Return a new instruction */
-Instr* new_instr(INSTR_TYPE, void*);
+X_Instr* new_x_instr(X_INSTR_TYPE, void*);
 
 /* Return an empty machine state */
-State* new_state(list_t);
+X_State* new_x_state(list_t);
 
 /* Return a new arg */
-Arg* new_arg(ARG_TYPE, void*);
+X_Arg* new_x_arg(X_ARG_TYPE, void*);
 
 /* Return a new addq instruction */
-Addq* new_addq(Arg*, Arg*);
+X_Addq* new_x_addq(X_Arg*, X_Arg*);
 
 /* Return a new addq instruction */
-Subq* new_subq(Arg*, Arg*);
+X_Subq* new_x_subq(X_Arg*, X_Arg*);
 
 /* Return a new movq instruction */
-Movq* new_movq(Arg*, Arg*);
+X_Movq* new_x_movq(X_Arg*, X_Arg*);
 
 /* Return a new retq instruction */
-Retq* new_retq(void);
+X_Retq* new_x_retq(void);
 
 /* Return a new negq instruction */
-Negq* new_negq(Arg*);
+X_Negq* new_x_negq(X_Arg*);
 
 /* Return a new callq instruction */
-Callq* new_callq(label_t);
+X_Callq* new_x_callq(label_t);
 
 /* Return a new jmp instruction */
-Jmp* new_jmp(label_t);
+X_Jmp* new_x_jmp(label_t);
 
 /* Return a new pushq instruction */
-Pushq* new_pushq(Arg*);
+X_Pushq* new_x_pushq(X_Arg*);
 
 /* Return a new popq instruction */
-Popq* new_popq(Arg*);
+X_Popq* new_x_popq(X_Arg*);
 
 /* Return a new num arg */
-Arg_Num* new_arg_num(int);
+X_Arg_Num* new_x_arg_num(int);
 
 /* Return a new register arg */
-Arg_Reg* new_arg_reg(REGISTER);
+X_Arg_Reg* new_x_arg_reg(REGISTER);
 
 /* Return a new memory ref arg */
-Arg_Mem* new_arg_mem(REGISTER, int);
+X_Arg_Mem* new_x_arg_mem(REGISTER, int);
 
 /* Return a new variable arg */
-Arg_Var* new_arg_var(const char*);
+X_Arg_Var* new_x_arg_var(const char*);
 
 /* Emit an X Program */
 void x_emit(X_Program*, const char*);
@@ -181,26 +186,26 @@ void x_emit(X_Program*, const char*);
 void print_lbl_blk_pair(void*);
 
 /* Print a single instruction */
-void print_instr(void*);
+void print_x_instr(void*);
 
 /* Print a single argument */
-void x_print_arg(Arg*);
+void x_print_arg(X_Arg*);
 
 /* Interp an X Program */
 int x_interp(X_Program*);
 
 /* Interp a block */
-int x_blk_interp(label_t, State**);
+int x_blk_interp(label_t, X_State**);
 
 /* Interpret a list of instructions */
-int x_instrs_interp(list_t, State**);
+int x_instrs_interp(list_t, X_State**);
 
 /* Interpret a single instruction */
-int x_instr_interp(Instr*, State**);
+int x_instr_interp(X_Instr*, X_State**);
 
 /* Update the Machine State */
-int update_state(State**, Arg*, int);
+int update_state(X_State**, X_Arg*, int);
 
 /* Returns an element from the machine state*/
-int lookup_state(State*, Arg*);
+int lookup_state(X_State*, X_Arg*);
 #endif /* X_H */

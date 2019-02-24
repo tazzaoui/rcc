@@ -9,7 +9,7 @@ const char* registers[NUM_REGS] = {
     "%r8", "%r9", "%r10", "%r11", "%r12", "%r13", "%r14", "%r15"
 };
 
-X_Program* new_prog(void* info, list_t labels) {
+X_Program* new_x_prog(void* info, list_t labels) {
   X_Program* xp = malloc_or_die(sizeof(X_Program));
   xp->info = info;
   if(labels == NULL)
@@ -18,8 +18,8 @@ X_Program* new_prog(void* info, list_t labels) {
   return xp;
 }
 
-Block* new_block(void* info, list_t instrs){
-  Block* b = malloc_or_die(sizeof(Block));
+X_Block* new_x_block(void* info, list_t instrs){
+  X_Block* b = malloc_or_die(sizeof(X_Block));
   b->info = info;
   if(instrs == NULL)
       instrs = list_create();
@@ -27,15 +27,15 @@ Block* new_block(void* info, list_t instrs){
   return b;
 }
 
-Instr* new_instr(INSTR_TYPE type, void* instr){
-    Instr *i = malloc_or_die(sizeof(Instr));
+X_Instr* new_x_instr(X_INSTR_TYPE type, void* instr){
+    X_Instr *i = malloc_or_die(sizeof(X_Instr));
     i->type = type;
     i->instr = instr;
     return i;
 }
 
-State* new_state(list_t lbls){
-    State *s = malloc_or_die(sizeof(State));
+X_State* new_x_state(list_t lbls){
+    X_State *s = malloc_or_die(sizeof(X_State));
     for(int i = 0; i < NUM_REGS; ++i)
         s->regs[i] = 0;
     
@@ -45,90 +45,90 @@ State* new_state(list_t lbls){
     return s;
 }
 
-Arg* new_arg(ARG_TYPE type, void* arg){
-    Arg* a = malloc_or_die(sizeof(Arg));
+X_Arg* new_x_arg(X_ARG_TYPE type, void* arg){
+    X_Arg* a = malloc_or_die(sizeof(X_Arg));
     a->type = type;
     a->arg = arg;
     return a;
 }
 
-Addq* new_addq(Arg* left, Arg* right){
-    Addq *a = malloc_or_die(sizeof(Addq));
+X_Addq* new_x_addq(X_Arg* left, X_Arg* right){
+    X_Addq *a = malloc_or_die(sizeof(X_Addq));
     a->left = left;
     a->right = right;
     return a;
 }
 
-Subq* new_subq(Arg* left, Arg* right){
-    Subq *s = malloc_or_die(sizeof(Subq));
+X_Subq* new_x_subq(X_Arg* left, X_Arg* right){
+    X_Subq *s = malloc_or_die(sizeof(X_Subq));
     s->left = left;
     s->right = right;
     return s;
 }
 
-Movq* new_movq(Arg* left, Arg* right){
-    Movq *m = malloc_or_die(sizeof(Movq));
+X_Movq* new_x_movq(X_Arg* left, X_Arg* right){
+    X_Movq *m = malloc_or_die(sizeof(X_Movq));
     m->left = left;
     m->right = right;
     return m;
 }
 
-Retq* new_retq(){
-    return malloc_or_die(sizeof(Retq));
+X_Retq* new_x_retq(){
+    return malloc_or_die(sizeof(X_Retq));
 }
 
-Negq* new_negq(Arg* arg){
-    Negq *n = malloc_or_die(sizeof(Negq));
+X_Negq* new_x_negq(X_Arg* arg){
+    X_Negq *n = malloc_or_die(sizeof(X_Negq));
     n->arg = arg;
     return n;
 }
 
-Callq* new_callq(label_t label){
-    Callq *c = malloc_or_die(sizeof(Callq));
+X_Callq* new_x_callq(label_t label){
+    X_Callq *c = malloc_or_die(sizeof(X_Callq));
     c->label = label;
     return c;
 }
 
-Jmp* new_jmp(label_t label){
-   Jmp *j = malloc_or_die(sizeof(Jmp));
+X_Jmp* new_x_jmp(label_t label){
+   X_Jmp *j = malloc_or_die(sizeof(X_Jmp));
    j->label = label;
    return j;
 }
 
-Pushq* new_pushq(Arg* arg){
-    Pushq *p = malloc_or_die(sizeof(Pushq));
+X_Pushq* new_x_pushq(X_Arg* arg){
+    X_Pushq *p = malloc_or_die(sizeof(X_Pushq));
     p->arg = arg;
     return p;
 }
 
-Popq* new_popq(Arg* arg){
-    Popq *p = malloc_or_die(sizeof(Popq));
+X_Popq* new_x_popq(X_Arg* arg){
+    X_Popq *p = malloc_or_die(sizeof(X_Popq));
     p->arg = arg;
     return p;
 }
 
-Arg_Num* new_arg_num(int n){
-    Arg_Num *an = malloc_or_die(sizeof(Arg_Num));
+X_Arg_Num* new_x_arg_num(int n){
+    X_Arg_Num *an = malloc_or_die(sizeof(X_Arg_Num));
     an->num = n;
     return an;
 }
 
 
-Arg_Reg* new_arg_reg(REGISTER reg){
-    Arg_Reg *ar = malloc_or_die(sizeof(Arg_Reg));
+X_Arg_Reg* new_x_arg_reg(REGISTER reg){
+    X_Arg_Reg *ar = malloc_or_die(sizeof(X_Arg_Reg));
     ar->reg = reg;
     return ar;
 }
 
-Arg_Mem* new_arg_mem(REGISTER reg, int offset){
-    Arg_Mem *am = malloc_or_die(sizeof(Arg_Mem));
+X_Arg_Mem* new_x_arg_mem(REGISTER reg, int offset){
+    X_Arg_Mem *am = malloc_or_die(sizeof(X_Arg_Mem));
     am->reg = reg;
     am->offset = offset;
     return am;
 }
 
-Arg_Var* new_arg_var(const char* name){
-    Arg_Var *av = malloc_or_die(sizeof(Arg_Var));
+X_Arg_Var* new_x_arg_var(const char* name){
+    X_Arg_Var *av = malloc_or_die(sizeof(X_Arg_Var));
     av->name = name;
     return av;
 }
@@ -144,48 +144,48 @@ void x_emit(X_Program *xp, const char* file_name){
     }
 }
 
-void print_instr(void *instr){
+void print_x_instr(void *instr){
     if(instr){
-        Instr *i = (Instr*) instr;
+        X_Instr *i = (X_Instr*) instr;
         switch (i->type){
             case ADDQ:
                 printf("\taddq\t");
-                x_print_arg(((Addq*)i->instr)->left);
+                x_print_arg(((X_Addq*)i->instr)->left);
                 printf(", ");
-                x_print_arg(((Addq*)i->instr)->right);
+                x_print_arg(((X_Addq*)i->instr)->right);
                 break;
             case SUBQ:
                 printf("\tsubq\t");
-                x_print_arg(((Subq*)i->instr)->left);
+                x_print_arg(((X_Subq*)i->instr)->left);
                 printf(", ");
-                x_print_arg(((Subq*)i->instr)->right);
+                x_print_arg(((X_Subq*)i->instr)->right);
                 break;
             case MOVQ:
                 printf("\tmovq\t");
-                x_print_arg(((Movq*)i->instr)->left);
+                x_print_arg(((X_Movq*)i->instr)->left);
                 printf(", ");
-                x_print_arg(((Movq*)i->instr)->right);
+                x_print_arg(((X_Movq*)i->instr)->right);
                 break;
             case RETQ:
                 printf("\tretq\t");
                 break;
             case NEGQ:
                 printf("\tnegq\t");
-                x_print_arg(((Negq*)i->instr)->arg);
+                x_print_arg(((X_Negq*)i->instr)->arg);
                 break;
             case CALLQ:
-                printf("\tcallq\t%s", ((Callq*)i->instr)->label);
+                printf("\tcallq\t%s", ((X_Callq*)i->instr)->label);
                 break;
              case JMP:
-                printf("\tjmp\t%s", ((Jmp*)i->instr)->label);
+                printf("\tjmp\t%s", ((X_Jmp*)i->instr)->label);
                 break; 
             case PUSHQ:
                 printf("\tpushq\t");
-                x_print_arg(((Pushq*)i->instr)->arg);
+                x_print_arg(((X_Pushq*)i->instr)->arg);
                 break;
             case POPQ:
                 printf("\tpopq\t");
-                x_print_arg(((Popq*)i->instr)->arg);
+                x_print_arg(((X_Popq*)i->instr)->arg);
                 break; 
             default:
                 die("Invalid Instruction!");
@@ -194,22 +194,22 @@ void print_instr(void *instr){
     }
 }
 
-void x_print_arg(Arg* arg){
+void x_print_arg(X_Arg* arg){
     if(arg){
         switch(arg->type){
-            case ARG_NUM:
-                printf("$%d", ((Arg_Num*)arg->arg)->num);
+            case X_ARG_NUM:
+                printf("$%d", ((X_Arg_Num*)arg->arg)->num);
                 break;
-            case ARG_REG:
-                printf("%s", registers[((Arg_Reg*)arg->arg)->reg]);
+            case X_ARG_REG:
+                printf("%s", registers[((X_Arg_Reg*)arg->arg)->reg]);
                 break; 
-            case ARG_MEM:
-                printf("%d(%s)", ((Arg_Mem*)arg->arg)->offset, 
-                                 registers[((Arg_Mem*)arg->arg)->reg]);
+            case X_ARG_MEM:
+                printf("%d(%s)", ((X_Arg_Mem*)arg->arg)->offset, 
+                                 registers[((X_Arg_Mem*)arg->arg)->reg]);
                 break; 
-            case ARG_VAR:
+            case X_ARG_VAR:
                 if(X_PRINT_ARG_ALLOW_VARS)
-                    printf("!%s", ((Arg_Var*)arg->arg)->name);
+                    printf("!%s", ((X_Arg_Var*)arg->arg)->name);
                 break;
             default:
                 die("Invalid Arg!");
@@ -218,15 +218,15 @@ void x_print_arg(Arg* arg){
 }
 
 int x_interp(X_Program *xp){
-    State *ms = new_state(xp->labels);
+    X_State *ms = new_x_state(xp->labels);
     return x_blk_interp("main", &ms);
 }
 
-int x_blk_interp(label_t lbl, State **ms){
+int x_blk_interp(label_t lbl, X_State **ms){
     if(ms){
         Node *n = list_find((*ms)->lbls, new_lbl_blk_pair(lbl, NULL), lbl_blk_pair_cmp);
         if(n){
-            Block *b = ((lbl_blk_pair_t*) n->data)->block;
+            X_Block *b = ((lbl_blk_pair_t*) n->data)->block;
             list_t instrs = b->instrs;
             if(n) return x_instrs_interp(instrs, ms); 
         } else die("x_blk_interp: label not found!");
@@ -234,71 +234,70 @@ int x_blk_interp(label_t lbl, State **ms){
     return I32MIN;
 }
 
-int x_instrs_interp(list_t instrs, State **ms){
+int x_instrs_interp(list_t instrs, X_State **ms){
     if(instrs && ms){ 
         int val;
-        Instr *instr;
+        X_Instr *instr;
         Node *ins_node =  *instrs;
         while(ins_node != NULL){
-            instr = (Instr*) ins_node->data;
+            instr = (X_Instr*) ins_node->data;
             val = x_instr_interp(instr, ms);
-            if(instr->type == RETQ)
-                return val;
+            if(instr->type == RETQ) return val;
             ins_node = ins_node->next;
         }
     }
     return I32MIN;
 }
 
-int x_instr_interp(Instr *instr, State **ms){ 
+int x_instr_interp(X_Instr *instr, X_State **ms){ 
     if(instr && ms){
         int lval, rval;
-        State *s = *ms;
+        X_State *s = *ms;
         label_t lbl;
-        Arg *mem_rsp = new_arg(ARG_MEM, new_arg_mem(RSP, 0)); 
-        Arg *rsp = new_arg(ARG_REG, new_arg_reg(RSP));
+        X_Arg *mem_rsp = new_x_arg(X_ARG_MEM, new_x_arg_mem(RSP, 0)); 
+        X_Arg *rsp = new_x_arg(X_ARG_REG, new_x_arg_reg(RSP));
         switch(instr->type){
             case ADDQ:
-                lval = lookup_state(s, ((Addq*)instr->instr)->left);
-                rval = lookup_state(s, ((Addq*)instr->instr)->right);
+                lval = lookup_state(s, ((X_Addq*)instr->instr)->left);
+                rval = lookup_state(s, ((X_Addq*)instr->instr)->right);
                 rval += lval;
-                update_state(ms, ((Addq*)instr->instr)->right, rval);
+                update_state(ms, ((X_Addq*)instr->instr)->right, rval);
                 return rval;
             case SUBQ:
-                lval = lookup_state(s, ((Subq*)instr->instr)->left);
-                rval = lookup_state(s, ((Subq*)instr->instr)->right);
+                lval = lookup_state(s, ((X_Subq*)instr->instr)->left);
+                rval = lookup_state(s, ((X_Subq*)instr->instr)->right);
                 rval -= lval;
-                update_state(ms, ((Subq*)instr->instr)->right, rval);
+                update_state(ms, ((X_Subq*)instr->instr)->right, rval);
                 return rval;
             case NEGQ:
-                lval = lookup_state(s, ((Negq*)instr->instr)->arg);
+                lval = lookup_state(s, ((X_Negq*)instr->instr)->arg);
                 lval *= -1;
-                update_state(ms, ((Negq*)instr->instr)->arg, lval);
+                update_state(ms, ((X_Negq*)instr->instr)->arg, lval);
                 return lval;
             case MOVQ:
-                lval = lookup_state(s, ((Movq*)instr->instr)->left);
-                update_state(ms, ((Movq*)instr->instr)->right, lval);
-                rval = lookup_state(s, ((Movq*)instr->instr)->right);
+                lval = lookup_state(s, ((X_Movq*)instr->instr)->left);
+                update_state(ms, ((X_Movq*)instr->instr)->right, lval);
+                rval = lookup_state(s, ((X_Movq*)instr->instr)->right);
                 return rval;
             case PUSHQ:
                 lval = lookup_state(s, rsp);
-                rval = lookup_state(s, ((Pushq*)instr->instr)->arg);
+                rval = lookup_state(s, ((X_Pushq*)instr->instr)->arg);
                 update_state(ms, rsp, lval - 8);
                 update_state(ms, mem_rsp , rval);
                 return rval; 
             case POPQ:
                 lval = lookup_state(s, rsp);
                 rval = lookup_state(s, mem_rsp);
-                update_state(ms, ((Popq*)instr->instr)->arg, rval);
+                update_state(ms, ((X_Popq*)instr->instr)->arg, rval);
                 update_state(ms, rsp, lval + 8);
                 return rval;
              case JMP:
-                lbl = ((Jmp*)instr->instr)->label; 
+                lbl = ((X_Jmp*)instr->instr)->label; 
                 return x_blk_interp(lbl, ms);
              case RETQ:
-                return lookup_state(s, new_arg(ARG_REG, new_arg_reg(RAX)));
+                return lookup_state(s, new_x_arg(X_ARG_REG, new_x_arg_reg(RAX)));
              case CALLQ: 
-                lbl = ((Callq*)instr->instr)->label; 
+                lbl = ((X_Callq*)instr->instr)->label; 
                 lval = GET_RAND();
                 if(strcmp(lbl, "_read_int") == 0){
                     if(!QUIET_READ)
@@ -313,23 +312,23 @@ int x_instr_interp(Instr *instr, State **ms){
     return -1;
 }
 
-int update_state(State** s, Arg* arg, int val){
+int update_state(X_State** s, X_Arg* arg, int val){
     if(s && arg){
         int old, addr; 
         Node *n;
-        State *ms = *s;  
+        X_State *ms = *s;  
         num_pair_t *new_np;
         var_num_pair_t  *new_vnp;
         switch(arg->type){
-            case ARG_NUM:
-                return ((Arg_Num*)arg->arg)->num; 
-            case ARG_REG:
-                old = ms->regs[((Arg_Reg*)arg->arg)->reg];
-                ms->regs[((Arg_Reg*)arg->arg)->reg] = val;
+            case X_ARG_NUM:
+                return ((X_Arg_Num*)arg->arg)->num; 
+            case X_ARG_REG:
+                old = ms->regs[((X_Arg_Reg*)arg->arg)->reg];
+                ms->regs[((X_Arg_Reg*)arg->arg)->reg] = val;
                 return old;
-            case ARG_MEM:
-                addr = ms->regs[((Arg_Mem*)arg->arg)->reg] + 
-                     ((Arg_Mem*)arg->arg)->offset;
+            case X_ARG_MEM:
+                addr = ms->regs[((X_Arg_Mem*)arg->arg)->reg] + 
+                     ((X_Arg_Mem*)arg->arg)->offset;
                 new_np = new_num_pair(addr, val);
                 n = list_find(ms->nums, new_np, num_pair_cmp);
                 if(n == NULL){
@@ -340,8 +339,8 @@ int update_state(State** s, Arg* arg, int val){
                     list_update(ms->nums, n, new_np, num_pair_cmp);
                     return old;
                 }
-            case ARG_VAR:
-                new_vnp = new_var_num_pair(((Arg_Var*)arg->arg), val);
+            case X_ARG_VAR:
+                new_vnp = new_var_num_pair(((X_Arg_Var*)arg->arg), val);
                 n = list_find(ms->vars, new_vnp, var_num_pair_cmp);
                 if(n == NULL){
                     list_insert(ms->vars, new_vnp);
@@ -358,23 +357,23 @@ int update_state(State** s, Arg* arg, int val){
     return I32MIN;
 }
 
-int lookup_state(State* ms, Arg* arg){
+int lookup_state(X_State* ms, X_Arg* arg){
     if(ms && arg){
         int val;
         Node *n;
         switch(arg->type){
-            case ARG_NUM:
-                return ((Arg_Num*)arg->arg)->num;
-            case ARG_REG:
-                return ms->regs[((Arg_Reg*)arg->arg)->reg];
-            case ARG_MEM:
-                val = ms->regs[((Arg_Mem*)arg->arg)->reg] + 
-                     ((Arg_Mem*)arg->arg)->offset;
+            case X_ARG_NUM:
+                return ((X_Arg_Num*)arg->arg)->num;
+            case X_ARG_REG:
+                return ms->regs[((X_Arg_Reg*)arg->arg)->reg];
+            case X_ARG_MEM:
+                val = ms->regs[((X_Arg_Mem*)arg->arg)->reg] + 
+                     ((X_Arg_Mem*)arg->arg)->offset;
                 n = list_find(ms->nums, new_num_pair(val, 0), num_pair_cmp);
                 if(n != NULL)
                     return ((num_pair_t*)n->data)->n2;
                 return I32MIN; 
-            case ARG_VAR:
+            case X_ARG_VAR:
                 n = list_find(ms->vars, new_var_num_pair(arg->arg, 0), var_num_pair_cmp);
                 if(n != NULL)
                     return ((var_num_pair_t*)n->data)->num;

@@ -106,7 +106,7 @@ void lbl_tail_print(void *a){
     printf("\n");
 }
 
-lbl_blk_pair_t* new_lbl_blk_pair(label_t label, Block* blk){
+lbl_blk_pair_t* new_lbl_blk_pair(label_t label, X_Block* blk){
     lbl_blk_pair_t *lbp = malloc_or_die(sizeof(lbl_blk_pair_t));
     lbp->label = label;
     lbp->block = blk;
@@ -125,9 +125,9 @@ int lbl_blk_pair_cmp(void *a, void *b){
 void print_lbl_blk_pair(void* l){
     if(l){
         lbl_blk_pair_t *lbp = (lbl_blk_pair_t*)l;
-        Block* blk = (Block*) lbp->block; 
+        X_Block* blk = (X_Block*) lbp->block; 
         printf("%s:\n", lbp->label);
-        list_print(blk->instrs, print_instr); 
+        list_print(blk->instrs, print_x_instr); 
     }
 }
 
@@ -187,7 +187,7 @@ void print_num_pair(void *np){
     }
 }
 
-var_num_pair_t* new_var_num_pair(Arg_Var* var, int num){
+var_num_pair_t* new_var_num_pair(X_Arg_Var* var, int num){
     var_num_pair_t *vnp = malloc_or_die(sizeof(var_num_pair_t*));
     vnp->var = var;
     vnp->num = num;

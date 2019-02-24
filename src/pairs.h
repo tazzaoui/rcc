@@ -16,7 +16,7 @@ typedef struct c_var_num_pair_t {
 
 typedef struct lbl_blk_pair_t {
   label_t label;
-  Block* block;
+  X_Block* block;
 } lbl_blk_pair_t;
 
 typedef struct reg_num_pair_t {
@@ -29,7 +29,7 @@ typedef struct num_pair_t {
 } num_pair_t;
 
 typedef struct var_num_pair_t {
-  Arg_Var* var;
+  X_Arg_Var* var;
   int num;
 } var_num_pair_t;
 
@@ -99,7 +99,7 @@ int ep_expr_cmp(void*, void*);
 void* ep_cpy(void* old);
 
 /* Return a new label-block pair */
-lbl_blk_pair_t* new_lbl_blk_pair(label_t, Block*);
+lbl_blk_pair_t* new_lbl_blk_pair(label_t, X_Block*);
 
 /* Compare a label with a lbl_blk_pair_t pair */
 int lbl_blk_pair_cmp(void*, void*);
@@ -114,7 +114,7 @@ reg_num_pair_t* new_reg_num_pair(REGISTER, int);
 num_pair_t* new_num_pair(int, int);
 
 /* Return new var -> num pair */
-var_num_pair_t* new_var_num_pair(Arg_Var*, int);
+var_num_pair_t* new_var_num_pair(X_Arg_Var*, int);
 
 /* Comparison function for reg->num pairs */
 int reg_num_pair_cmp(void*, void*);

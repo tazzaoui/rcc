@@ -298,16 +298,16 @@ void test_x0_emit() {
   list_t instrs = list_create();
   list_t blks = list_create();
 
-  Arg *left = new_arg(ARG_NUM, new_arg_num(10));
-  Arg *right = new_arg(ARG_NUM, new_arg_num(42));
-  Arg *rbx = new_arg(ARG_REG, new_arg_reg(RBX));
-  Arg *rdi = new_arg(ARG_REG, new_arg_reg(RDI));
+  X_Arg *left = new_x_arg(X_ARG_NUM, new_x_arg_num(10));
+  X_Arg *right = new_x_arg(X_ARG_NUM, new_x_arg_num(42));
+  X_Arg *rbx = new_x_arg(X_ARG_REG, new_x_arg_reg(RBX));
+  X_Arg *rdi = new_x_arg(X_ARG_REG, new_x_arg_reg(RDI));
 
-  Instr *i1 = new_instr(ADDQ, new_addq(left, right));
-  Instr *i2 = new_instr(SUBQ, new_subq(right, left));
-  Instr *i3 = new_instr(MOVQ, new_movq(rbx, rdi));
-  Instr *i4 = new_instr(NEGQ, new_negq(left));
-  Instr *i5 = new_instr(NEGQ, new_negq(rbx));
+  X_Instr *i1 = new_x_instr(ADDQ, new_x_addq(left, right));
+  X_Instr *i2 = new_x_instr(SUBQ, new_x_subq(right, left));
+  X_Instr *i3 = new_x_instr(MOVQ, new_x_movq(rbx, rdi));
+  X_Instr *i4 = new_x_instr(NEGQ, new_x_negq(left));
+  X_Instr *i5 = new_x_instr(NEGQ, new_x_negq(rbx));
 
   list_insert(instrs, i1);
   list_insert(instrs, i2);
@@ -315,11 +315,11 @@ void test_x0_emit() {
   list_insert(instrs, i4);
   list_insert(instrs, i5);
 
-  Block *b = new_block(NULL, instrs);
+  X_Block *b = new_x_block(NULL, instrs);
   lbl_blk_pair_t *lbp = new_lbl_blk_pair("main", b);
 
   list_insert(blks, lbp);
-  X_Program *xp = new_prog("hi", blks);
+  X_Program *xp = new_x_prog("hi", blks);
 
   x_emit(xp, NULL);
   printf("\n");
@@ -339,18 +339,18 @@ void test_prog_interp(X_Program *xp, const char *file_name, int test_num) {
 }
 
 void test_dozen_x0() {
-  Arg *n_10 = new_arg(ARG_NUM, new_arg_num(10));
-  Arg *n_42 = new_arg(ARG_NUM, new_arg_num(42));
+  X_Arg *n_10 = new_x_arg(X_ARG_NUM, new_x_arg_num(10));
+  X_Arg *n_42 = new_x_arg(X_ARG_NUM, new_x_arg_num(42));
 
-  Arg *rax = new_arg(ARG_REG, new_arg_reg(RAX));
-  Arg *rbx = new_arg(ARG_REG, new_arg_reg(RBX));
-  Arg *am, *v_x, *v_y;
+  X_Arg *rax = new_x_arg(X_ARG_REG, new_x_arg_reg(RAX));
+  X_Arg *rbx = new_x_arg(X_ARG_REG, new_x_arg_reg(RBX));
+  X_Arg *am, *v_x, *v_y;
 
-  Instr *i1, *i2, *i3, *i4, *i5, *i6, *i7;
+  X_Instr *i1, *i2, *i3, *i4, *i5, *i6, *i7;
 
-  i1 = new_instr(MOVQ, new_movq(n_10, rax));
-  i2 = new_instr(ADDQ, new_addq(n_42, rax));
-  i3 = new_instr(RETQ, new_retq());
+  i1 = new_x_instr(MOVQ, new_x_movq(n_10, rax));
+  i2 = new_x_instr(ADDQ, new_x_addq(n_42, rax));
+  i3 = new_x_instr(RETQ, new_x_retq());
 
   list_t instrs = list_create(), blks = list_create();
 
@@ -358,56 +358,56 @@ void test_dozen_x0() {
   list_insert(instrs, i2);
   list_insert(instrs, i3);
 
-  Block *b = new_block(NULL, instrs);
+  X_Block *b = new_x_block(NULL, instrs);
   lbl_blk_pair_t *lbp = new_lbl_blk_pair("main", b);
 
   list_insert(blks, lbp);
-  X_Program *xp = new_prog(NULL, blks);
+  X_Program *xp = new_x_prog(NULL, blks);
   test_prog_interp(xp, "test0.s", 0);
 
   list_t instrs1 = list_create(), blks1 = list_create();
 
-  i1 = new_instr(MOVQ, new_movq(n_42, rax));
-  i2 = new_instr(SUBQ, new_subq(n_10, rax));
-  i3 = new_instr(RETQ, new_retq());
+  i1 = new_x_instr(MOVQ, new_x_movq(n_42, rax));
+  i2 = new_x_instr(SUBQ, new_x_subq(n_10, rax));
+  i3 = new_x_instr(RETQ, new_x_retq());
 
   list_insert(instrs1, i1);
   list_insert(instrs1, i2);
   list_insert(instrs1, i3);
 
-  b = new_block(NULL, instrs1);
+  b = new_x_block(NULL, instrs1);
   lbp = new_lbl_blk_pair("main", b);
 
   list_insert(blks1, lbp);
-  xp = new_prog(NULL, blks1);
+  xp = new_x_prog(NULL, blks1);
   test_prog_interp(xp, "test1.s", 1);
 
   list_t instrs2 = list_create(), blks2 = list_create();
 
-  i1 = new_instr(MOVQ, new_movq(n_42, rax));
-  i2 = new_instr(SUBQ, new_subq(n_10, rax));
-  i3 = new_instr(RETQ, new_retq());
-  i4 = new_instr(NEGQ, new_negq(rax));
+  i1 = new_x_instr(MOVQ, new_x_movq(n_42, rax));
+  i2 = new_x_instr(SUBQ, new_x_subq(n_10, rax));
+  i3 = new_x_instr(RETQ, new_x_retq());
+  i4 = new_x_instr(NEGQ, new_x_negq(rax));
 
   list_insert(instrs2, i1);
   list_insert(instrs2, i2);
   list_insert(instrs2, i4);
   list_insert(instrs2, i3);
 
-  b = new_block(NULL, instrs2);
+  b = new_x_block(NULL, instrs2);
   lbp = new_lbl_blk_pair("main", b);
 
   list_insert(blks2, lbp);
-  xp = new_prog(NULL, blks2);
+  xp = new_x_prog(NULL, blks2);
   test_prog_interp(xp, "test2.s", 2);
 
   list_t instrs3 = list_create(), blks3 = list_create();
 
-  i1 = new_instr(MOVQ, new_movq(n_42, rax));
-  i2 = new_instr(SUBQ, new_subq(n_10, rax));
-  i3 = new_instr(PUSHQ, new_pushq(rax));
-  i4 = new_instr(POPQ, new_popq(rax));
-  i5 = new_instr(RETQ, new_retq());
+  i1 = new_x_instr(MOVQ, new_x_movq(n_42, rax));
+  i2 = new_x_instr(SUBQ, new_x_subq(n_10, rax));
+  i3 = new_x_instr(PUSHQ, new_x_pushq(rax));
+  i4 = new_x_instr(POPQ, new_x_popq(rax));
+  i5 = new_x_instr(RETQ, new_x_retq());
 
   list_insert(instrs3, i1);
   list_insert(instrs3, i2);
@@ -415,21 +415,21 @@ void test_dozen_x0() {
   list_insert(instrs3, i4);
   list_insert(instrs3, i5);
 
-  b = new_block(NULL, instrs3);
+  b = new_x_block(NULL, instrs3);
   lbp = new_lbl_blk_pair("main", b);
 
   list_insert(blks3, lbp);
-  xp = new_prog(NULL, blks3);
+  xp = new_x_prog(NULL, blks3);
   test_prog_interp(xp, "test3.s", 3);
 
   list_t instrs4 = list_create(), blks4 = list_create();
 
-  i1 = new_instr(PUSHQ, new_pushq(n_42));
-  i2 = new_instr(PUSHQ, new_pushq(n_10));
-  i3 = new_instr(POPQ, new_popq(rax));
-  i4 = new_instr(POPQ, new_popq(rbx));
-  i5 = new_instr(ADDQ, new_addq(rbx, rax));
-  i6 = new_instr(RETQ, new_retq());
+  i1 = new_x_instr(PUSHQ, new_x_pushq(n_42));
+  i2 = new_x_instr(PUSHQ, new_x_pushq(n_10));
+  i3 = new_x_instr(POPQ, new_x_popq(rax));
+  i4 = new_x_instr(POPQ, new_x_popq(rbx));
+  i5 = new_x_instr(ADDQ, new_x_addq(rbx, rax));
+  i6 = new_x_instr(RETQ, new_x_retq());
 
   list_insert(instrs4, i1);
   list_insert(instrs4, i2);
@@ -438,39 +438,39 @@ void test_dozen_x0() {
   list_insert(instrs4, i5);
   list_insert(instrs4, i6);
 
-  b = new_block(NULL, instrs4);
+  b = new_x_block(NULL, instrs4);
   lbp = new_lbl_blk_pair("main", b);
 
   list_insert(blks4, lbp);
-  xp = new_prog(NULL, blks4);
+  xp = new_x_prog(NULL, blks4);
   test_prog_interp(xp, "test4.s", 4);
 
   list_t instrs5 = list_create(), blks5 = list_create();
 
-  i1 = new_instr(MOVQ, new_movq(n_42, rax));
-  i2 = new_instr(NEGQ, new_negq(rax));
-  i3 = new_instr(NEGQ, new_negq(rax));
-  i4 = new_instr(RETQ, new_retq());
+  i1 = new_x_instr(MOVQ, new_x_movq(n_42, rax));
+  i2 = new_x_instr(NEGQ, new_x_negq(rax));
+  i3 = new_x_instr(NEGQ, new_x_negq(rax));
+  i4 = new_x_instr(RETQ, new_x_retq());
 
   list_insert(instrs5, i1);
   list_insert(instrs5, i2);
   list_insert(instrs5, i3);
   list_insert(instrs5, i4);
 
-  b = new_block(NULL, instrs5);
+  b = new_x_block(NULL, instrs5);
   lbp = new_lbl_blk_pair("main", b);
 
   list_insert(blks5, lbp);
-  xp = new_prog(NULL, blks5);
+  xp = new_x_prog(NULL, blks5);
   test_prog_interp(xp, "test5.s", 5);
 
   list_t instrs6 = list_create(), blks6 = list_create();
 
-  i1 = new_instr(MOVQ, new_movq(n_10, rbx));
-  i2 = new_instr(MOVQ, new_movq(rbx, rax));
-  i3 = new_instr(NEGQ, new_negq(rax));
-  i4 = new_instr(NEGQ, new_negq(rax));
-  i5 = new_instr(RETQ, new_retq());
+  i1 = new_x_instr(MOVQ, new_x_movq(n_10, rbx));
+  i2 = new_x_instr(MOVQ, new_x_movq(rbx, rax));
+  i3 = new_x_instr(NEGQ, new_x_negq(rax));
+  i4 = new_x_instr(NEGQ, new_x_negq(rax));
+  i5 = new_x_instr(RETQ, new_x_retq());
 
   list_insert(instrs6, i1);
   list_insert(instrs6, i2);
@@ -478,21 +478,21 @@ void test_dozen_x0() {
   list_insert(instrs6, i4);
   list_insert(instrs6, i5);
 
-  b = new_block(NULL, instrs6);
+  b = new_x_block(NULL, instrs6);
   lbp = new_lbl_blk_pair("main", b);
 
   list_insert(blks6, lbp);
-  xp = new_prog(NULL, blks6);
+  xp = new_x_prog(NULL, blks6);
   test_prog_interp(xp, "test6.s", 6);
 
   list_t instrs7 = list_create(), blks7 = list_create();
 
-  i1 = new_instr(MOVQ, new_movq(n_10, rbx));
-  i2 = new_instr(MOVQ, new_movq(rbx, rax));
-  i3 = new_instr(NEGQ, new_negq(rax));
-  i4 = new_instr(NEGQ, new_negq(rax));
-  i5 = new_instr(SUBQ, new_subq(rbx, rax));
-  i6 = new_instr(RETQ, new_retq());
+  i1 = new_x_instr(MOVQ, new_x_movq(n_10, rbx));
+  i2 = new_x_instr(MOVQ, new_x_movq(rbx, rax));
+  i3 = new_x_instr(NEGQ, new_x_negq(rax));
+  i4 = new_x_instr(NEGQ, new_x_negq(rax));
+  i5 = new_x_instr(SUBQ, new_x_subq(rbx, rax));
+  i6 = new_x_instr(RETQ, new_x_retq());
 
   list_insert(instrs7, i1);
   list_insert(instrs7, i2);
@@ -501,59 +501,59 @@ void test_dozen_x0() {
   list_insert(instrs7, i5);
   list_insert(instrs7, i6);
 
-  b = new_block(NULL, instrs7);
+  b = new_x_block(NULL, instrs7);
   lbp = new_lbl_blk_pair("main", b);
 
   list_insert(blks7, lbp);
-  xp = new_prog(NULL, blks7);
+  xp = new_x_prog(NULL, blks7);
   test_prog_interp(xp, "test7.s", 7);
 
   list_t instrs8 = list_create(), blks8 = list_create();
 
-  am = new_arg(ARG_MEM, new_arg_mem(RSP, 0));
-  i1 = new_instr(MOVQ, new_movq(n_10, rbx));
-  i2 = new_instr(PUSHQ, new_pushq(rbx));
-  i3 = new_instr(MOVQ, new_movq(am, rax));
-  i4 = new_instr(RETQ, new_retq());
+  am = new_x_arg(X_ARG_MEM, new_x_arg_mem(RSP, 0));
+  i1 = new_x_instr(MOVQ, new_x_movq(n_10, rbx));
+  i2 = new_x_instr(PUSHQ, new_x_pushq(rbx));
+  i3 = new_x_instr(MOVQ, new_x_movq(am, rax));
+  i4 = new_x_instr(RETQ, new_x_retq());
 
   list_insert(instrs8, i1);
   list_insert(instrs8, i2);
   list_insert(instrs8, i3);
   list_insert(instrs8, i4);
 
-  b = new_block(NULL, instrs8);
+  b = new_x_block(NULL, instrs8);
   lbp = new_lbl_blk_pair("main", b);
 
   list_insert(blks8, lbp);
-  xp = new_prog(NULL, blks8);
+  xp = new_x_prog(NULL, blks8);
   test_prog_interp(xp, "test8.s", 8);
 
   list_t instrs9 = list_create(), blks9 = list_create();
 
-  i1 = new_instr(MOVQ, new_movq(n_42, rbx));
-  i2 = new_instr(MOVQ, new_movq(rbx, am));
-  i3 = new_instr(POPQ, new_popq(rax));
-  i4 = new_instr(RETQ, new_retq());
+  i1 = new_x_instr(MOVQ, new_x_movq(n_42, rbx));
+  i2 = new_x_instr(MOVQ, new_x_movq(rbx, am));
+  i3 = new_x_instr(POPQ, new_x_popq(rax));
+  i4 = new_x_instr(RETQ, new_x_retq());
 
   list_insert(instrs9, i1);
   list_insert(instrs9, i2);
   list_insert(instrs9, i3);
   list_insert(instrs9, i4);
 
-  b = new_block(NULL, instrs9);
+  b = new_x_block(NULL, instrs9);
   lbp = new_lbl_blk_pair("main", b);
 
   list_insert(blks9, lbp);
-  xp = new_prog(NULL, blks9);
+  xp = new_x_prog(NULL, blks9);
   test_prog_interp(xp, "test9.s", 9);
 
   list_t instrs10 = list_create(), blks10 = list_create();
 
-  i1 = new_instr(MOVQ, new_movq(n_10, rbx));
-  i2 = new_instr(ADDQ, new_addq(n_42, rbx));
-  i3 = new_instr(MOVQ, new_movq(n_10, rax));
-  i4 = new_instr(SUBQ, new_subq(rbx, rax));
-  i5 = new_instr(RETQ, new_retq());
+  i1 = new_x_instr(MOVQ, new_x_movq(n_10, rbx));
+  i2 = new_x_instr(ADDQ, new_x_addq(n_42, rbx));
+  i3 = new_x_instr(MOVQ, new_x_movq(n_10, rax));
+  i4 = new_x_instr(SUBQ, new_x_subq(rbx, rax));
+  i5 = new_x_instr(RETQ, new_x_retq());
 
   list_insert(instrs10, i1);
   list_insert(instrs10, i2);
@@ -561,23 +561,23 @@ void test_dozen_x0() {
   list_insert(instrs10, i4);
   list_insert(instrs10, i5);
 
-  b = new_block(NULL, instrs10);
+  b = new_x_block(NULL, instrs10);
   lbp = new_lbl_blk_pair("main", b);
 
   list_insert(blks10, lbp);
-  xp = new_prog(NULL, blks10);
+  xp = new_x_prog(NULL, blks10);
   test_prog_interp(xp, "test10.s", 10);
 
   list_t instrs11 = list_create(), blks11 = list_create();
 
-  v_x = new_arg(ARG_VAR, new_arg_var("X"));
-  v_y = new_arg(ARG_VAR, new_arg_var("Y"));
+  v_x = new_x_arg(X_ARG_VAR, new_x_arg_var("X"));
+  v_y = new_x_arg(X_ARG_VAR, new_x_arg_var("Y"));
 
-  i1 = new_instr(MOVQ, new_movq(n_42, v_x));
-  i2 = new_instr(MOVQ, new_movq(n_10, v_y));
-  i3 = new_instr(SUBQ, new_addq(v_x, v_y));
-  i4 = new_instr(MOVQ, new_movq(v_y, rax));
-  i5 = new_instr(RETQ, new_retq());
+  i1 = new_x_instr(MOVQ, new_x_movq(n_42, v_x));
+  i2 = new_x_instr(MOVQ, new_x_movq(n_10, v_y));
+  i3 = new_x_instr(SUBQ, new_x_addq(v_x, v_y));
+  i4 = new_x_instr(MOVQ, new_x_movq(v_y, rax));
+  i5 = new_x_instr(RETQ, new_x_retq());
 
   list_insert(instrs11, i1);
   list_insert(instrs11, i2);
@@ -585,23 +585,23 @@ void test_dozen_x0() {
   list_insert(instrs11, i4);
   list_insert(instrs11, i5);
 
-  b = new_block(NULL, instrs11);
+  b = new_x_block(NULL, instrs11);
   lbp = new_lbl_blk_pair("main", b);
 
   list_insert(blks11, lbp);
-  xp = new_prog(NULL, blks11);
+  xp = new_x_prog(NULL, blks11);
   test_prog_interp(xp, "test11.s", 11);
 
   list_t instrs12 = list_create(), blks12 = list_create();
 
-  am = new_arg(ARG_MEM, new_arg_mem(RSP, 8));
-  i1 = new_instr(MOVQ, new_movq(n_42, v_x));
-  i2 = new_instr(MOVQ, new_movq(n_10, v_y));
-  i3 = new_instr(PUSHQ, new_pushq(v_x));
-  i4 = new_instr(PUSHQ, new_pushq(v_y));
-  i5 = new_instr(MOVQ, new_movq(am, v_y));
-  i6 = new_instr(MOVQ, new_movq(v_y, rax));
-  i7 = new_instr(RETQ, new_retq());
+  am = new_x_arg(X_ARG_MEM, new_x_arg_mem(RSP, 8));
+  i1 = new_x_instr(MOVQ, new_x_movq(n_42, v_x));
+  i2 = new_x_instr(MOVQ, new_x_movq(n_10, v_y));
+  i3 = new_x_instr(PUSHQ, new_x_pushq(v_x));
+  i4 = new_x_instr(PUSHQ, new_x_pushq(v_y));
+  i5 = new_x_instr(MOVQ, new_x_movq(am, v_y));
+  i6 = new_x_instr(MOVQ, new_x_movq(v_y, rax));
+  i7 = new_x_instr(RETQ, new_x_retq());
 
   list_insert(instrs12, i1);
   list_insert(instrs12, i2);
@@ -611,11 +611,11 @@ void test_dozen_x0() {
   list_insert(instrs12, i6);
   list_insert(instrs12, i7);
 
-  b = new_block(NULL, instrs12);
+  b = new_x_block(NULL, instrs12);
   lbp = new_lbl_blk_pair("main", b);
 
   list_insert(blks12, lbp);
-  xp = new_prog(NULL, blks12);
+  xp = new_x_prog(NULL, blks12);
   test_prog_interp(xp, "test12.s", 12);
 }
 

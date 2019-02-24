@@ -177,7 +177,7 @@ int main(int argc, char *argv[]) {
   printf("Testing a Dozen X0 Progs...\n");
 
   test_dozen_x0();
-
+  exit(1);
   printf("===================================================\n");
 
   printf("Testing a Dozen C0 Progs...\n");

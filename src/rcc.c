@@ -15,6 +15,16 @@ char *append_int(const char* old, int n){
     return new;
 }
 
+void c_tail_extract_vars(C_Tail* tail, list_t vars){
+    if(tail && tail->type == C_TAIL_SEQ){
+        C_Seq *cs = tail->tail;
+        C_Var *cv = cs->smt->var;
+        Node* node = list_find(vars, cv, c_var_cmp);
+        if(node == NULL) list_insert(vars, cv);
+        c_tail_extract_vars(cs->tail, vars);
+    }
+}
+
 R_Expr* uniquify(R_Expr* expr, list_t env, int *cnt){
     Node *node;
     list_t env_p;
@@ -183,13 +193,12 @@ C_Program* uncover_locals(C_Program* cp){
     }
     return cp;
 }
-
-void c_tail_extract_vars(C_Tail* tail, list_t vars){
-    if(tail && tail->type == C_TAIL_SEQ){
-        C_Seq *cs = tail->tail;
-        C_Var *cv = cs->smt->var;
-        Node* node = list_find(vars, cv, c_var_cmp);
-        if(node == NULL) list_insert(vars, cv);
-        c_tail_extract_vars(cs->tail, vars);
-    }
+/*
+X_Arg* select_instr_arg(C_Arg* ca){
+    if(ca)
+        switch(ca->type){
+            case C_NUM:
+                return new_arg(ARG_NUM, new_arg_num(((C_Num*)ca->arg)->num)); 
+        };
 }
+*/
