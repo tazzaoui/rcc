@@ -32,7 +32,7 @@
 * Connect resolve-complex to your test suite.
 * Write a half-dozen tests for explicate-control that predict its output.
 * Implement the explicate-control pass for R1 programs.
-Connect explicate-control to your test suite.
+* Connect explicate-control to your test suite.
 Write a few tests for uncover-locals that predict its output.
 Implement the uncover-locals pass for C0 programs.
 Connect uncover-locals to your test suite.

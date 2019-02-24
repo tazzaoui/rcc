@@ -18,8 +18,10 @@ static inline void print_optim(R_Expr *e) {
 }
 
 int main(int argc, char *argv[]) {
-  int count = 0, res, rand_depth, res_opt, res_uniq, res_rco, full_count;
+  int count = 0, res, rand_depth, res_opt, res_uniq, res_rco, res_econ,
+      full_count;
   R_Expr *expr, *expr_opt, *uniq, *simple;
+  C_Tail *c_tail;
   list_t vars = list_create();
   srand(time(0));
 
@@ -118,11 +120,15 @@ int main(int argc, char *argv[]) {
     expr = randp(vars, rand_depth);
     uniq = unique(expr);
     new_vars = list_create();
-    simple = rco_expr(uniq, &new_vars);
+    simple = rco(uniq, &new_vars);
+    c_tail = econ_expr(simple);
     res = r_interp(expr, NULL);
     res_uniq = r_interp(uniq, NULL);
     res_rco = r_interp(simple, NULL);
-    assert(res == res_uniq && res_uniq == res_rco);
+    res_econ = c_t_interp(c_tail, list_create());
+    assert(res == res_uniq);
+    assert(res_uniq == res_rco);
+    assert(res_rco == res_econ);
     if (DEBUG) {
       printf("Normal   : ");
       r_print_expr(expr);

@@ -160,8 +160,7 @@ void c_print(C_Program *cp){
 int c_p_interp(C_Program* cp){
     if(cp){
         Node *node = list_find(cp->labels, new_lbl_tail_pair("main", NULL), lbl_tail_cmp); 
-        if(node == NULL)
-            die("[C_P_INTERP] NO MAIN LABEL!");
+        if(node == NULL) die("[C_P_INTERP] NO MAIN LABEL!");
         return c_t_interp(((lbl_tail_pair_t*)node->data)->tail, list_create());
     }
     return I32MIN;
@@ -185,13 +184,13 @@ int c_t_interp(C_Tail* ct, list_t env){
 int c_s_interp(C_Smt* cs, list_t env){
     int res = I32MIN;
     if(cs && env){
-        Node* node = list_find(env, cs->var, c_var_num_pair_cmp);
+        Node* node = list_find(env, new_c_var_num_pair(cs->var, 0), c_var_num_pair_cmp);
         res = c_e_interp(cs->expr, env);
         c_var_num_pair_t *cvnp = new_c_var_num_pair(cs->var, res);
         if(node) list_update(env, node->data, cvnp, c_var_num_pair_cmp);
         else list_insert(env, cvnp);
     }
-    return res; 
+    return res;
 }
 
 int c_e_interp(C_Expr* ce, list_t env){
@@ -201,7 +200,7 @@ int c_e_interp(C_Expr* ce, list_t env){
             case C_ARG:
                 return c_a_interp((C_Arg*)ce->expr, env);
             case C_READ:
-                if(QUIET_READ) return GET_RAND(); 
+                if(QUIET_READ) return 7;
                 scanf("%d", &r);
                 return r;
             case C_NEG: 
@@ -221,7 +220,7 @@ int c_a_interp(C_Arg* ca, list_t env){
             case C_NUM:
                 return ((C_Num*)ca->arg)->num;
             case C_VAR:
-                node = list_find(env, (C_Var*)ca->arg, c_var_num_pair_cmp);
+                node = list_find(env, new_c_var_num_pair((C_Var*)ca->arg, 0), c_var_num_pair_cmp);
                 if(node == NULL) die("[C_A_INTERP] Unbound C_Variable!");
                 return ((c_var_num_pair_t*)node->data)->num;
             default:

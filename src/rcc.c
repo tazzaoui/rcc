@@ -61,7 +61,7 @@ R_Expr* combine_lets(Node* head, R_Expr* var){
 }
 
 
-R_Expr* rco_expr(R_Expr* expr, list_t* new_vars){
+R_Expr* rco(R_Expr* expr, list_t* new_vars){
     int var_seed = 0;
     list_t env = list_create();
     R_Expr* res = resolve_complex_expr(expr, env, new_vars, &var_seed);
@@ -127,9 +127,9 @@ C_Tail* econ_expr(R_Expr* r_expr){
         switch(r_expr->type){
             case R_EXPR_NUM:
             case R_EXPR_VAR:
-                return new_c_tail(C_TAIL_RET, new_c_ret(econ_arg(r_expr->expr)));
+                return new_c_tail(C_TAIL_RET, new_c_ret(econ_arg(r_expr)));
             case R_EXPR_LET:
-                rv = ((R_Let*)r_expr->expr)->var->expr;
+                rv = ((R_Let*)r_expr->expr)->var->expr; 
                 st = new_c_smt(new_c_var(rv->name), econ_cmplx(((R_Let*)r_expr->expr)->expr));
                 cs = new_c_seq(st, econ_expr(((R_Let*)r_expr->expr)->body));
                 return new_c_tail(C_TAIL_SEQ, cs);
@@ -141,12 +141,16 @@ C_Tail* econ_expr(R_Expr* r_expr){
 }
 
 C_Expr* econ_cmplx(R_Expr* r_expr){
+    R_Add *ra;
     if(r_expr)
         switch(r_expr->type){
             case R_EXPR_READ:
                 return new_c_expr(C_READ, new_c_read(NULL));
             case R_EXPR_NEG:
                 return new_c_expr(C_NEG, new_c_neg(econ_arg(((R_Neg*)r_expr->expr)->expr)));
+            case R_EXPR_ADD:
+                ra = r_expr->expr;
+                return new_c_expr(C_ADD, new_c_add(econ_arg(ra->left), econ_arg(ra->right)));
             default:
                 break;
         };
@@ -159,7 +163,7 @@ C_Arg* econ_arg(R_Expr *r_expr){
         switch(r_expr->type){
             case R_EXPR_NUM:
                 return new_c_arg(C_NUM, new_c_num(((R_Num*)r_expr->expr)->num));
-            case R_EXPR_VAR:
+            case R_EXPR_VAR: 
                 return new_c_arg(C_VAR, new_c_var(((R_Var*)r_expr->expr)->name));
             default:
                 break;
