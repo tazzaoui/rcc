@@ -193,12 +193,79 @@ C_Program* uncover_locals(C_Program* cp){
     }
     return cp;
 }
-/*
+
+X_Program* select_instr(C_Program* cp){
+    Node *node = list_find(cp->labels, new_lbl_tail_pair("main", NULL), lbl_tail_cmp);
+    if(node == NULL) die("[SELECT_INSTR] NO MAIN LABEL!");
+    C_Tail *ct = ((lbl_tail_pair_t*)node->data)->tail; 
+    list_t x_instrs = select_instr_tail(ct);
+    list_t lbls = list_create();
+    lbl_blk_pair_t *lbl = new_lbl_blk_pair("BODY", new_x_block(NULL, x_instrs));  
+    list_insert(lbls, lbl);
+    return new_x_prog(NULL, lbls);
+}
+
+list_t select_instr_tail(C_Tail* ct){
+    list_t instrs_smt, instrs_tail; 
+    X_Arg *rax;
+    if(ct)
+        switch(ct->type){
+            case C_TAIL_RET:
+               instrs_smt = list_create();
+               rax = new_x_arg(X_ARG_REG, new_x_arg_reg(RAX));
+               list_insert(instrs_smt, new_x_instr(MOVQ, new_x_movq(select_instr_arg(((C_Ret*)ct->tail)->arg), rax)));
+               list_insert(instrs_smt, new_x_instr(JMP, new_x_jmp("END")));
+               return instrs_smt;
+            case C_TAIL_SEQ:
+               instrs_smt = select_instr_smt(((C_Seq*)ct->tail)->smt);
+               instrs_tail = select_instr_tail(((C_Seq*)ct->tail)->tail);
+               return list_concat(instrs_smt, instrs_tail); 
+        }
+    return list_create();
+}
+
+list_t select_instr_smt(C_Smt* cs){
+    list_t res;
+    if(cs){
+        C_Arg *ca = new_c_arg(C_VAR, cs->var); 
+        res = select_instr_expr(cs->expr, select_instr_arg(ca)); 
+    }
+    return res;
+}
+
+list_t select_instr_expr(C_Expr* ce, X_Arg* dst){
+    X_Arg *rax;
+    list_t instrs = list_create();
+    if(ce)
+        switch(ce->type){
+            case C_ARG:
+               list_insert(instrs, new_x_instr(MOVQ, new_x_movq(select_instr_arg(ce->expr), dst))); 
+               break;
+            case C_READ:
+               rax = new_x_arg(X_ARG_REG, new_x_arg_reg(RAX));
+               list_insert(instrs, new_x_instr(CALLQ, new_x_callq("_read_int"))); 
+               list_insert(instrs, new_x_instr(MOVQ, new_x_movq(rax, dst)));
+               break;
+            case C_NEG:
+               list_insert(instrs, new_x_instr(MOVQ, new_x_movq(select_instr_arg(ce->expr), dst))); 
+               list_insert(instrs, new_x_instr(NEGQ, new_x_negq(dst)));
+               break;
+            case C_ADD:
+               list_insert(instrs, new_x_instr(MOVQ, new_x_movq(select_instr_arg(((C_Add*)ce->expr)->right), dst))); 
+               list_insert(instrs, new_x_instr(ADDQ, new_x_addq(select_instr_arg(((C_Add*)ce->expr)->left), dst))); 
+               break;
+        };
+    return instrs;
+}
+
 X_Arg* select_instr_arg(C_Arg* ca){
     if(ca)
         switch(ca->type){
             case C_NUM:
-                return new_arg(ARG_NUM, new_arg_num(((C_Num*)ca->arg)->num)); 
+                return new_x_arg(X_ARG_NUM, new_x_arg_num(((C_Num*)ca->arg)->num)); 
+            case C_VAR:
+                return new_x_arg(X_ARG_VAR, new_x_arg_var(((C_Var*)ca->arg)->name));
         };
+    die("[SELECT_INSTR_ARG] INVALID CA");
+    return NULL;
 }
-*/
