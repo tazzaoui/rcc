@@ -28,6 +28,9 @@ C_Expr* explicate_control(R_Expr*, list_t*);
 /* Uncover Locals Pass */
 C_Program* uncover_locals(C_Program*);
 
+/* The select instructions pass */
+X_Program* select_instr(C_Program*);
+
 /* Combine simple exprs into nested lets */
 R_Expr* combine_lets(Node*, R_Expr*);
 

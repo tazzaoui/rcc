@@ -43,4 +43,7 @@ void test_econ();
 /* A few tests for uncover-locals */
 void test_uncover_locals();
 
+/* A few tests for select-instr */
+void test_select_instr();
+
 #endif /* TESTS_H */

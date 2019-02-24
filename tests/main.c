@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "../src/pairs.h"
 #include "../src/rcc.h"
 #include "../src/utils.h"
-#include "../src/pairs.h"
 #include "tests.h"
 
 #define DEBUG 0
@@ -19,8 +19,8 @@ static inline void print_optim(R_Expr *e) {
 }
 
 int main(int argc, char *argv[]) {
-  int count = 0, res, rand_depth, res_opt, res_uniq, res_rco, res_econ,
-      res_ul, full_count;
+  int count = 0, res, rand_depth, res_opt, res_uniq, res_rco, res_econ, res_ul,
+      full_count;
   R_Expr *expr, *expr_opt, *uniq, *simple;
   C_Tail *c_tail;
   list_t vars = list_create();
@@ -207,6 +207,12 @@ int main(int argc, char *argv[]) {
   printf("testing uncover-locals...\n\n");
 
   test_uncover_locals();
+
+  printf("===================================================\n");
+
+  printf("testing select-instr...\n\n");
+
+  test_select_instr();
 
   printf("===================================================\n");
 
