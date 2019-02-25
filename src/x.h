@@ -46,12 +46,12 @@ typedef enum REGISTER {
 } REGISTER;
 
 typedef struct X_Program {
-  void* info;
+  Info* info;
   list_t labels;  // labels: label -> block
 } X_Program;
 
 typedef struct X_Block {
-  void* info;
+  Info* info;
   list_t instrs;
 } X_Block;
 

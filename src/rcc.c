@@ -45,8 +45,7 @@ R_Expr* uniquify(R_Expr* expr, list_t env, int *cnt){
                 node = list_find(env, new_r_var_var_pair(re->expr, NULL), r_var_var_pair_cmp);
                 if (node == NULL)
                     list_insert(env_p, new_r_var_var_pair(re->expr, nv->expr));
-                else
-                    list_update(env_p, new_r_var_var_pair(re->expr, NULL), 
+                else list_update(env_p, new_r_var_var_pair(re->expr, NULL), 
                             new_r_var_var_pair(re->expr, nv->expr), r_var_var_pair_cmp);
                 ne = uniquify(((R_Let*)expr->expr)->expr, env, cnt);
                 nb = uniquify(((R_Let*)expr->expr)->body, env_p, cnt);
@@ -69,7 +68,6 @@ R_Expr* combine_lets(Node* head, R_Expr* var){
     env_pair_t *ep = head->data;
     return new_let(ep->var, ep->val, combine_lets(head->next, var)); 
 }
-
 
 R_Expr* rco(R_Expr* expr, list_t* new_vars){
     int var_seed = 0;
@@ -189,7 +187,7 @@ C_Program* uncover_locals(C_Program* cp){
         C_Tail *tail = ((lbl_tail_pair_t*)node->data)->tail;
         list_t vars = list_create();
         c_tail_extract_vars(tail, vars);
-        return new_c_program(new_c_info(vars), cp->labels); 
+        return new_c_program(new_info(vars), cp->labels); 
     }
     return cp;
 }
@@ -207,6 +205,89 @@ X_Program* select_instr(C_Program* cp){
     lbl_blk_pair_t *end_lbl = new_lbl_blk_pair("end", new_x_block(NULL, ret_instr)); 
     list_insert(lbls, end_lbl);
     return new_x_prog(NULL, lbls);
+}
+
+X_Program* assign_homes(X_Program* xp){
+    list_t new_instrs = list_create(); 
+    if(xp){
+        int offset = 1, variable_count;
+        Info *info = xp->info;
+        list_t bi = list_create(), ei = list_create(), 
+               var_to_num = list_create(), lbls = list_create();
+        
+        lbl_blk_pair_t *begin_lbp = new_lbl_blk_pair("begin", new_x_block(NULL, bi));
+        lbl_blk_pair_t *end_lbp = new_lbl_blk_pair("end", new_x_block(NULL, ei));
+        lbl_blk_pair_t *main_lbp = new_lbl_blk_pair("main", new_x_block(NULL, new_instrs));
+
+        list_insert(lbls, begin_lbp);
+        list_insert(lbls, end_lbp);
+        list_insert(lbls, main_lbp);
+
+        variable_count = list_size(info->vars) * 8;
+        variable_count = (variable_count % 16 == 0) ? variable_count : variable_count + 8;
+
+        X_Arg *rbp = new_x_arg(X_ARG_REG, new_x_arg_reg(RBP));
+        X_Arg *rsp = new_x_arg(X_ARG_REG, new_x_arg_reg(RSP));
+        X_Arg *vc = new_x_arg(X_ARG_NUM, new_x_arg_num(list_size(info->vars)));
+        
+        list_insert(bi, new_x_instr(PUSHQ, new_x_pushq(rbp)));
+        list_insert(bi, new_x_instr(MOVQ, new_x_movq(rsp, rbp)));
+        list_insert(bi, new_x_instr(SUBQ, new_x_subq(vc, rbp)));
+        list_insert(bi, new_x_instr(JMP, new_x_jmp("main")));
+        
+        list_insert(ei, new_x_instr(ADDQ, new_x_addq(vc, rbp)));
+        list_insert(ei, new_x_instr(POPQ, new_x_popq(rbp)));
+        list_insert(ei, new_x_instr(RETQ, new_x_retq()));
+        
+        Node *node = list_find(xp->labels, new_lbl_blk_pair("main", NULL), lbl_blk_pair_cmp);
+        if(node == NULL) die("[SELECT_INSTR] NO MAIN LABEL!");
+        X_Block *xb = ((lbl_blk_pair_t*)node->data)->block;
+
+        node = *(info->vars); 
+        while(node != NULL){
+            list_insert(var_to_num, new_var_num_pair(node->data, offset++));
+            node = node->next;
+        }
+
+        node = *(xb->instrs);
+        while(node != NULL){
+            list_insert(new_instrs, assign_instr(node->data, var_to_num));
+            node = node->next;
+        }
+        return new_x_prog(NULL, lbls);
+    }
+    return NULL;
+}
+
+X_Instr* assign_instr(X_Instr *xi, list_t map){
+    if(xi)
+        switch(xi->type){
+            case ADDQ:
+                return new_x_instr(ADDQ, new_x_addq(assign_arg(((X_Addq*)xi->instr)->left, map),
+                                                    assign_arg(((X_Addq*)xi->instr)->right, map)));
+            case SUBQ:
+                return new_x_instr(SUBQ, new_x_subq(assign_arg(((X_Subq*)xi->instr)->left, map),
+                                                    assign_arg(((X_Subq*)xi->instr)->right, map)));
+            case MOVQ:
+                return new_x_instr(MOVQ, new_x_movq(assign_arg(((X_Movq*)xi->instr)->left, map),
+                                                    assign_arg(((X_Movq*)xi->instr)->right, map)));
+            case CALLQ:
+            case JMP:
+                return xi;
+        };
+}
+
+X_Arg* assign_arg(X_Arg* xa, list_t map){
+    Node *node;
+    if(xa)
+        switch(xa->type){
+            case X_ARG_NUM:
+                return xa;
+            case X_ARG_VAR:
+                node = list_find(map, new_var_num_pair(xa->arg, 0), var_num_pair_cmp);
+                if(node == NULL) die("[ASSIGN_ARG] VARIABLE MAPPING NOT FOUND!");
+                return new_x_arg(X_ARG_MEM, new_x_arg_mem(RSP, 8 * ((var_num_pair_t*)node->data)->num));
+        };
 }
 
 list_t select_instr_tail(C_Tail* ct){

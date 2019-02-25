@@ -10,8 +10,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "list.h"
 
 typedef const char *label_t;
+
+/* Program Info */
+typedef struct Info {
+  list_t vars;
+} Info;
 
 static inline void *malloc_or_die(size_t size) {
   void *mem = malloc(size);

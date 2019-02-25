@@ -2,19 +2,16 @@
 #define C_H
 
 #include "list.h"
+#include "utils.h"
 
 typedef enum C_ARG_TYPE { C_NUM, C_VAR } C_ARG_TYPE;
 typedef enum C_TAIL_TYPE { C_TAIL_RET, C_TAIL_SEQ } C_TAIL_TYPE;
 typedef enum C_EXPR_TYPE { C_ARG, C_READ, C_NEG, C_ADD } C_EXPR_TYPE;
 
 typedef struct C_Program {
-  void* info;
+  Info* info;
   list_t labels;  // labels: label -> tail
 } C_Program;
-
-typedef struct C_Info {
-  list_t vars;
-} C_Info;
 
 typedef struct C_Tail {
   C_TAIL_TYPE type;
@@ -67,9 +64,6 @@ typedef struct C_Seq {
 
 /* Return a new c program */
 C_Program* new_c_program(void*, list_t);
-
-/* Return a new C_Info */
-C_Info* new_c_info(list_t);
 
 /* Return a new tail */
 C_Tail* new_c_tail(C_TAIL_TYPE, void*);

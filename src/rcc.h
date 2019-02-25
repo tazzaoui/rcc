@@ -7,6 +7,9 @@
 #include "utils.h"
 #include "x.h"
 
+/* Return a new C_Info */
+Info* new_info(list_t);
+
 /* Uniquify pass */
 R_Expr* uniquify(R_Expr*, list_t, int*);
 
@@ -33,6 +36,12 @@ X_Program* select_instr(C_Program*);
 
 /* Assign Homes Pass (register allocation) */
 X_Program* assign_homes(X_Program*);
+
+/* Single X_Instr Register Alloc */
+X_Instr* assign_instr(X_Instr*, list_t);
+
+/* Single X_Arg Register Alloc */
+X_Arg* assign_arg(X_Arg*, list_t);
 
 /* C_Tail -> list of X instructions */
 list_t select_instr_tail(C_Tail*);

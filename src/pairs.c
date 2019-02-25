@@ -12,12 +12,6 @@ c_var_num_pair_t* new_c_var_num_pair(C_Var* cv, int num){
     return p;
 }
 
-C_Info* new_c_info(list_t vars){
-    C_Info *info = malloc_or_die(sizeof(C_Info));
-    info->vars = vars;
-    return info;
-}
-
 int c_var_num_pair_cmp(void* a, void* b){
     if(a && b){ 
         C_Var* cv_a = ((c_var_num_pair_t*) a)->var;
