@@ -1186,12 +1186,15 @@ void test_assign_homes() {
   C_Program *cp = new_c_program(NULL, labels);
 
   X_Program *xp = select_instr(cp);
+  X_Program *ah;
 
   t = new_c_tail(C_TAIL_RET, new_c_ret(cn_42));
   labels = list_create();
   list_insert(labels, new_lbl_tail_pair("main", t));
   cp = new_c_program(NULL, labels);
+  cp = uncover_locals(cp);
   xp = select_instr(cp);
+  ah = assign_homes(xp);
 
   C_Smt *cs = new_c_smt(new_c_var("Y"), new_c_expr(C_ARG, cn_42));
   C_Seq *cseq = new_c_seq(cs, t);
@@ -1199,7 +1202,9 @@ void test_assign_homes() {
   labels = list_create();
   list_insert(labels, new_lbl_tail_pair("main", t));
   cp = new_c_program(NULL, labels);
+  cp = uncover_locals(cp);
   xp = select_instr(cp);
+  ah = assign_homes(xp);
 
   t = new_c_tail(C_TAIL_RET, new_c_ret(cv_x));
   cs = new_c_smt(new_c_var("X"), new_c_expr(C_ARG, cn_10));
@@ -1208,7 +1213,9 @@ void test_assign_homes() {
   labels = list_create();
   list_insert(labels, new_lbl_tail_pair("main", t));
   cp = new_c_program(NULL, labels);
+  cp = uncover_locals(cp);
   xp = select_instr(cp);
+  ah = assign_homes(xp);
 
   C_Expr *add1 = new_c_expr(C_ADD, new_c_add(cn_10, cn_42));
 
@@ -1219,7 +1226,9 @@ void test_assign_homes() {
   labels = list_create();
   list_insert(labels, new_lbl_tail_pair("main", t));
   cp = new_c_program(NULL, labels);
+  cp = uncover_locals(cp);
   xp = select_instr(cp);
+  ah = assign_homes(xp);
 
   C_Expr *add2 = new_c_expr(C_ADD, new_c_add(cn_42, cn_10));
   C_Expr *add3 = new_c_expr(C_ADD, new_c_add(cv_x, cn_10));
@@ -1235,7 +1244,9 @@ void test_assign_homes() {
   labels = list_create();
   list_insert(labels, new_lbl_tail_pair("main", t2));
   cp = new_c_program(NULL, labels);
+  cp = uncover_locals(cp);
   xp = select_instr(cp);
+  ah = assign_homes(xp);
 
   add2 = new_c_expr(C_ADD, new_c_add(cn_n42, cn_10));
   add3 = new_c_expr(C_ADD, new_c_add(cv_x, cn_10));
@@ -1251,7 +1262,9 @@ void test_assign_homes() {
   labels = list_create();
   list_insert(labels, new_lbl_tail_pair("main", t3));
   cp = new_c_program(NULL, labels);
+  cp = uncover_locals(cp);
   xp = select_instr(cp);
+  ah = assign_homes(xp);
 
   t = new_c_tail(C_TAIL_RET, new_c_ret(cv_z));
   cs = new_c_smt(new_c_var("Y"), add3);
@@ -1264,7 +1277,9 @@ void test_assign_homes() {
   labels = list_create();
   list_insert(labels, new_lbl_tail_pair("main", t3));
   cp = new_c_program(NULL, labels);
+  cp = uncover_locals(cp);
   xp = select_instr(cp);
+  ah = assign_homes(xp);
 
   add5 = new_c_expr(C_ADD, new_c_add(cn_10, cn_42));
   t = new_c_tail(C_TAIL_RET, new_c_ret(cv_z));
@@ -1278,7 +1293,9 @@ void test_assign_homes() {
   labels = list_create();
   list_insert(labels, new_lbl_tail_pair("main", t3));
   cp = new_c_program(NULL, labels);
+  cp = uncover_locals(cp);
   xp = select_instr(cp);
+  ah = assign_homes(xp);
 
   add5 = new_c_expr(C_ADD, new_c_add(cn_10, cn_42));
   t = new_c_tail(C_TAIL_RET, new_c_ret(cv_z));
@@ -1292,7 +1309,8 @@ void test_assign_homes() {
   labels = list_create();
   list_insert(labels, new_lbl_tail_pair("main", t3));
   cp = new_c_program(NULL, labels);
+  cp = uncover_locals(cp);
   xp = select_instr(cp);
-
-  x_emit(xp, NULL);
+  ah = assign_homes(xp);
+  x_emit(ah, NULL);
 }

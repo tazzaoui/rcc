@@ -320,9 +320,9 @@ int x_instr_interp(X_Instr *instr, X_State **ms){
 
 int update_state(X_State** s, X_Arg* arg, int val){
     if(s && arg){
-        int old, addr; 
+        int old, addr;
         Node *n;
-        X_State *ms = *s;  
+        X_State *ms = *s;
         num_pair_t *new_np;
         var_num_pair_t  *new_vnp;
         switch(arg->type){
@@ -342,7 +342,7 @@ int update_state(X_State** s, X_Arg* arg, int val){
                     return 0;
                 }else {
                     old = ((num_pair_t*)n->data)->n2;
-                    list_update(ms->nums, n, new_np, num_pair_cmp);
+                    list_update(ms->nums, n->data, new_np, num_pair_cmp);
                     return old;
                 }
             case X_ARG_VAR:

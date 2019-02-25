@@ -204,15 +204,14 @@ X_Program* select_instr(C_Program* cp){
     list_insert(ret_instr, new_x_instr(RETQ, new_x_retq()));
     lbl_blk_pair_t *end_lbl = new_lbl_blk_pair("end", new_x_block(NULL, ret_instr)); 
     list_insert(lbls, end_lbl);
-    return new_x_prog(NULL, lbls);
+    return new_x_prog(cp->info, lbls);
 }
 
 X_Program* assign_homes(X_Program* xp){
-    list_t new_instrs = list_create(); 
-    if(xp){
+    if(xp && xp->info){
         int offset = 1, variable_count;
         Info *info = xp->info;
-        list_t bi = list_create(), ei = list_create(), 
+        list_t bi = list_create(), ei = list_create(), new_instrs = list_create(),
                var_to_num = list_create(), lbls = list_create();
         
         lbl_blk_pair_t *begin_lbp = new_lbl_blk_pair("begin", new_x_block(NULL, bi));
@@ -220,15 +219,15 @@ X_Program* assign_homes(X_Program* xp){
         lbl_blk_pair_t *main_lbp = new_lbl_blk_pair("main", new_x_block(NULL, new_instrs));
 
         list_insert(lbls, begin_lbp);
-        list_insert(lbls, end_lbp);
         list_insert(lbls, main_lbp);
+        list_insert(lbls, end_lbp);
 
         variable_count = list_size(info->vars) * 8;
         variable_count = (variable_count % 16 == 0) ? variable_count : variable_count + 8;
 
         X_Arg *rbp = new_x_arg(X_ARG_REG, new_x_arg_reg(RBP));
         X_Arg *rsp = new_x_arg(X_ARG_REG, new_x_arg_reg(RSP));
-        X_Arg *vc = new_x_arg(X_ARG_NUM, new_x_arg_num(list_size(info->vars)));
+        X_Arg *vc = new_x_arg(X_ARG_NUM, new_x_arg_num(variable_count));
         
         list_insert(bi, new_x_instr(PUSHQ, new_x_pushq(rbp)));
         list_insert(bi, new_x_instr(MOVQ, new_x_movq(rsp, rbp)));
@@ -256,6 +255,7 @@ X_Program* assign_homes(X_Program* xp){
         }
         return new_x_prog(NULL, lbls);
     }
+    die("[assign_homes] XP OR INFO IS NULL!");
     return NULL;
 }
 
@@ -271,10 +271,12 @@ X_Instr* assign_instr(X_Instr *xi, list_t map){
             case MOVQ:
                 return new_x_instr(MOVQ, new_x_movq(assign_arg(((X_Movq*)xi->instr)->left, map),
                                                     assign_arg(((X_Movq*)xi->instr)->right, map)));
-            case CALLQ:
-            case JMP:
+            case NEGQ:
+                return new_x_instr(NEGQ, new_x_negq(assign_arg(((X_Negq*)xi->instr)->arg, map)));
+            default: 
                 return xi;
         };
+    return NULL;
 }
 
 X_Arg* assign_arg(X_Arg* xa, list_t map){
@@ -287,7 +289,10 @@ X_Arg* assign_arg(X_Arg* xa, list_t map){
                 node = list_find(map, new_var_num_pair(xa->arg, 0), var_num_pair_cmp);
                 if(node == NULL) die("[ASSIGN_ARG] VARIABLE MAPPING NOT FOUND!");
                 return new_x_arg(X_ARG_MEM, new_x_arg_mem(RSP, 8 * ((var_num_pair_t*)node->data)->num));
+            default:
+                return xa;
         };
+    return NULL;
 }
 
 list_t select_instr_tail(C_Tail* ct){
