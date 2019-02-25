@@ -24,7 +24,11 @@ typedef const char *label_t;
 /* Program Info */
 typedef struct Info {
   list_t vars;
+  list_t live;
 } Info;
+
+/* Return a new Info */
+Info *new_info(list_t, list_t);
 
 static inline void *malloc_or_die(size_t size) {
   void *mem = malloc(size);

@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <math.h> 
 #include "utils.h"
@@ -202,7 +201,7 @@ C_Program* uncover_locals(C_Program* cp){
         C_Tail *tail = ((lbl_tail_pair_t*)node->data)->tail;
         list_t vars = list_create();
         c_tail_extract_vars(tail, vars);
-        return new_c_program(new_info(vars), cp->labels); 
+        return new_c_program(new_info(vars, NULL), cp->labels); 
     }
     return cp;
 }

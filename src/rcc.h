@@ -7,9 +7,6 @@
 #include "utils.h"
 #include "x.h"
 
-/* Return a new C_Info */
-Info* new_info(list_t);
-
 /* Uniquify pass */
 R_Expr* uniquify(R_Expr*, list_t, int*);
 
@@ -43,7 +40,7 @@ X_Program* patch_instrs(X_Program*);
 /* Main Pass */
 X_Program* main_pass(X_Program*);
 
-/* Compile and verify output */
+/* Compile an X_Program with system assembler */
 int x_compile(X_Program*);
 
 /* Patch a single instruction */

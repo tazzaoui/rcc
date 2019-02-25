@@ -242,5 +242,11 @@ int main(int argc, char *argv[]) {
 
   printf("===================================================\n");
 
+  printf("testing uncover-live...\n\n");
+
+  test_patch_instrs();
+
+  printf("===================================================\n");
+
   return 0;
 }

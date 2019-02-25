@@ -52,4 +52,7 @@ void test_assign_homes();
 /* A few tests for patch-instrs */
 void test_patch_instrs();
 
+/* A few tests for uncover-live */
+void test_uncover_live();
+
 #endif /* TESTS_H */
