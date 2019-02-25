@@ -127,7 +127,7 @@ int main(int argc, char *argv[]) {
     simple = rco(uniq, &new_vars);
     c_tail = econ_expr(simple);
     labels = list_create();
-    list_insert(labels, new_lbl_tail_pair("main", c_tail));
+    list_insert(labels, new_lbl_tail_pair("body", c_tail));
     cp = new_c_program(NULL, labels);
     cp_uncovered = uncover_locals(cp);
     xp = select_instr(cp_uncovered);

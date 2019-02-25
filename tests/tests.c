@@ -316,7 +316,7 @@ void test_x0_emit() {
   list_insert(instrs, i5);
 
   X_Block *b = new_x_block(NULL, instrs);
-  lbl_blk_pair_t *lbp = new_lbl_blk_pair("main", b);
+  lbl_blk_pair_t *lbp = new_lbl_blk_pair("body", b);
 
   list_insert(blks, lbp);
   X_Program *xp = new_x_prog("hi", blks);
@@ -927,7 +927,7 @@ void test_uncover_locals() {
   C_Tail *t = new_c_tail(C_TAIL_RET, new_c_ret(cn_10));
 
   list_t labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t));
+  list_insert(labels, new_lbl_tail_pair("body", t));
   C_Program *cp = new_c_program(NULL, labels);
 
   c_print(cp);
@@ -937,7 +937,7 @@ void test_uncover_locals() {
   C_Seq *cseq = new_c_seq(cs, t);
   t = new_c_tail(C_TAIL_SEQ, cseq);
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t));
+  list_insert(labels, new_lbl_tail_pair("body", t));
   cp = new_c_program(NULL, labels);
   c_print(cp);
   uncover_locals(cp);
@@ -947,7 +947,7 @@ void test_uncover_locals() {
   cseq = new_c_seq(cs, t);
   t = new_c_tail(C_TAIL_SEQ, cseq);
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t));
+  list_insert(labels, new_lbl_tail_pair("body", t));
   cp = new_c_program(NULL, labels);
   c_print(cp);
   uncover_locals(cp);
@@ -959,7 +959,7 @@ void test_uncover_locals() {
   cseq = new_c_seq(cs, t);
   t = new_c_tail(C_TAIL_SEQ, cseq);
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t));
+  list_insert(labels, new_lbl_tail_pair("body", t));
   cp = new_c_program(NULL, labels);
   c_print(cp);
   uncover_locals(cp);
@@ -976,7 +976,7 @@ void test_uncover_locals() {
   t = new_c_tail(C_TAIL_SEQ, cseq);
   C_Tail *t2 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs2, t));
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t2));
+  list_insert(labels, new_lbl_tail_pair("body", t2));
   cp = new_c_program(NULL, labels);
   c_print(cp);
   uncover_locals(cp);
@@ -993,7 +993,7 @@ void test_uncover_locals() {
   t2 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs, t));
   C_Tail *t3 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs2, t2));
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t3));
+  list_insert(labels, new_lbl_tail_pair("body", t3));
   cp = new_c_program(NULL, labels);
   c_print(cp);
   uncover_locals(cp);
@@ -1007,7 +1007,7 @@ void test_uncover_locals() {
   t2 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs, t));
   t3 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs2, t2));
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t3));
+  list_insert(labels, new_lbl_tail_pair("body", t3));
   cp = new_c_program(NULL, labels);
   c_print(cp);
   uncover_locals(cp);
@@ -1022,7 +1022,7 @@ void test_uncover_locals() {
   t2 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs, t));
   t3 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs2, t2));
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t3));
+  list_insert(labels, new_lbl_tail_pair("body", t3));
   cp = new_c_program(NULL, labels);
   c_print(cp);
   uncover_locals(cp);
@@ -1037,7 +1037,7 @@ void test_uncover_locals() {
   t2 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs, t));
   t3 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs2, t2));
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t3));
+  list_insert(labels, new_lbl_tail_pair("body", t3));
   cp = new_c_program(NULL, labels);
   c_print(cp);
   uncover_locals(cp);
@@ -1055,14 +1055,14 @@ void test_select_instr() {
   C_Tail *t = new_c_tail(C_TAIL_RET, new_c_ret(cn_10));
 
   list_t labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t));
+  list_insert(labels, new_lbl_tail_pair("body", t));
   C_Program *cp = new_c_program(NULL, labels);
 
   X_Program *xp = select_instr(cp);
 
   t = new_c_tail(C_TAIL_RET, new_c_ret(cn_42));
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t));
+  list_insert(labels, new_lbl_tail_pair("body", t));
   cp = new_c_program(NULL, labels);
   xp = select_instr(cp);
 
@@ -1070,7 +1070,7 @@ void test_select_instr() {
   C_Seq *cseq = new_c_seq(cs, t);
   t = new_c_tail(C_TAIL_SEQ, cseq);
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t));
+  list_insert(labels, new_lbl_tail_pair("body", t));
   cp = new_c_program(NULL, labels);
   xp = select_instr(cp);
 
@@ -1079,7 +1079,7 @@ void test_select_instr() {
   cseq = new_c_seq(cs, t);
   t = new_c_tail(C_TAIL_SEQ, cseq);
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t));
+  list_insert(labels, new_lbl_tail_pair("body", t));
   cp = new_c_program(NULL, labels);
   xp = select_instr(cp);
 
@@ -1090,7 +1090,7 @@ void test_select_instr() {
   cseq = new_c_seq(cs, t);
   t = new_c_tail(C_TAIL_SEQ, cseq);
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t));
+  list_insert(labels, new_lbl_tail_pair("body", t));
   cp = new_c_program(NULL, labels);
   xp = select_instr(cp);
 
@@ -1106,7 +1106,7 @@ void test_select_instr() {
   t = new_c_tail(C_TAIL_SEQ, cseq);
   C_Tail *t2 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs2, t));
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t2));
+  list_insert(labels, new_lbl_tail_pair("body", t2));
   cp = new_c_program(NULL, labels);
   xp = select_instr(cp);
 
@@ -1122,7 +1122,7 @@ void test_select_instr() {
   t2 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs, t));
   C_Tail *t3 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs2, t2));
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t3));
+  list_insert(labels, new_lbl_tail_pair("body", t3));
   cp = new_c_program(NULL, labels);
   xp = select_instr(cp);
 
@@ -1135,7 +1135,7 @@ void test_select_instr() {
   t2 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs, t));
   t3 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs2, t2));
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t3));
+  list_insert(labels, new_lbl_tail_pair("body", t3));
   cp = new_c_program(NULL, labels);
   xp = select_instr(cp);
 
@@ -1149,7 +1149,7 @@ void test_select_instr() {
   t2 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs, t));
   t3 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs2, t2));
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t3));
+  list_insert(labels, new_lbl_tail_pair("body", t3));
   cp = new_c_program(NULL, labels);
   xp = select_instr(cp);
 
@@ -1163,7 +1163,7 @@ void test_select_instr() {
   t2 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs, t));
   t3 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs2, t2));
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t3));
+  list_insert(labels, new_lbl_tail_pair("body", t3));
   cp = new_c_program(NULL, labels);
   xp = select_instr(cp);
 
@@ -1182,7 +1182,7 @@ void test_assign_homes() {
   C_Tail *t = new_c_tail(C_TAIL_RET, new_c_ret(cn_10));
 
   list_t labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t));
+  list_insert(labels, new_lbl_tail_pair("body", t));
   C_Program *cp = new_c_program(NULL, labels);
 
   X_Program *xp = select_instr(cp);
@@ -1190,7 +1190,7 @@ void test_assign_homes() {
 
   t = new_c_tail(C_TAIL_RET, new_c_ret(cn_42));
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t));
+  list_insert(labels, new_lbl_tail_pair("body", t));
   cp = new_c_program(NULL, labels);
   cp = uncover_locals(cp);
   xp = select_instr(cp);
@@ -1200,7 +1200,7 @@ void test_assign_homes() {
   C_Seq *cseq = new_c_seq(cs, t);
   t = new_c_tail(C_TAIL_SEQ, cseq);
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t));
+  list_insert(labels, new_lbl_tail_pair("body", t));
   cp = new_c_program(NULL, labels);
   cp = uncover_locals(cp);
   xp = select_instr(cp);
@@ -1211,7 +1211,7 @@ void test_assign_homes() {
   cseq = new_c_seq(cs, t);
   t = new_c_tail(C_TAIL_SEQ, cseq);
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t));
+  list_insert(labels, new_lbl_tail_pair("body", t));
   cp = new_c_program(NULL, labels);
   cp = uncover_locals(cp);
   xp = select_instr(cp);
@@ -1224,7 +1224,7 @@ void test_assign_homes() {
   cseq = new_c_seq(cs, t);
   t = new_c_tail(C_TAIL_SEQ, cseq);
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t));
+  list_insert(labels, new_lbl_tail_pair("body", t));
   cp = new_c_program(NULL, labels);
   cp = uncover_locals(cp);
   xp = select_instr(cp);
@@ -1242,7 +1242,7 @@ void test_assign_homes() {
   t = new_c_tail(C_TAIL_SEQ, cseq);
   C_Tail *t2 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs2, t));
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t2));
+  list_insert(labels, new_lbl_tail_pair("body", t2));
   cp = new_c_program(NULL, labels);
   cp = uncover_locals(cp);
   xp = select_instr(cp);
@@ -1260,7 +1260,7 @@ void test_assign_homes() {
   t2 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs, t));
   C_Tail *t3 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs2, t2));
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t3));
+  list_insert(labels, new_lbl_tail_pair("body", t3));
   cp = new_c_program(NULL, labels);
   cp = uncover_locals(cp);
   xp = select_instr(cp);
@@ -1275,7 +1275,7 @@ void test_assign_homes() {
   t2 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs, t));
   t3 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs2, t2));
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t3));
+  list_insert(labels, new_lbl_tail_pair("body", t3));
   cp = new_c_program(NULL, labels);
   cp = uncover_locals(cp);
   xp = select_instr(cp);
@@ -1291,7 +1291,7 @@ void test_assign_homes() {
   t2 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs, t));
   t3 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs2, t2));
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t3));
+  list_insert(labels, new_lbl_tail_pair("body", t3));
   cp = new_c_program(NULL, labels);
   cp = uncover_locals(cp);
   xp = select_instr(cp);
@@ -1307,7 +1307,7 @@ void test_assign_homes() {
   t2 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs, t));
   t3 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs2, t2));
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t3));
+  list_insert(labels, new_lbl_tail_pair("body", t3));
   cp = new_c_program(NULL, labels);
   cp = uncover_locals(cp);
   xp = select_instr(cp);
@@ -1327,14 +1327,14 @@ void test_patch_instrs() {
   C_Tail *t = new_c_tail(C_TAIL_RET, new_c_ret(cn_10));
 
   list_t labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t));
+  list_insert(labels, new_lbl_tail_pair("body", t));
   C_Program *cp = new_c_program(NULL, labels);
 
   X_Program *ah, *pi, *xp = select_instr(cp);
 
   t = new_c_tail(C_TAIL_RET, new_c_ret(cn_42));
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t));
+  list_insert(labels, new_lbl_tail_pair("body", t));
   cp = new_c_program(NULL, labels);
   cp = uncover_locals(cp);
   xp = select_instr(cp);
@@ -1345,7 +1345,7 @@ void test_patch_instrs() {
   C_Seq *cseq = new_c_seq(cs, t);
   t = new_c_tail(C_TAIL_SEQ, cseq);
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t));
+  list_insert(labels, new_lbl_tail_pair("body", t));
   cp = new_c_program(NULL, labels);
   cp = uncover_locals(cp);
   xp = select_instr(cp);
@@ -1357,7 +1357,7 @@ void test_patch_instrs() {
   cseq = new_c_seq(cs, t);
   t = new_c_tail(C_TAIL_SEQ, cseq);
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t));
+  list_insert(labels, new_lbl_tail_pair("body", t));
   cp = new_c_program(NULL, labels);
   cp = uncover_locals(cp);
   xp = select_instr(cp);
@@ -1371,7 +1371,7 @@ void test_patch_instrs() {
   cseq = new_c_seq(cs, t);
   t = new_c_tail(C_TAIL_SEQ, cseq);
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t));
+  list_insert(labels, new_lbl_tail_pair("body", t));
   cp = new_c_program(NULL, labels);
   cp = uncover_locals(cp);
   xp = select_instr(cp);
@@ -1390,7 +1390,7 @@ void test_patch_instrs() {
   t = new_c_tail(C_TAIL_SEQ, cseq);
   C_Tail *t2 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs2, t));
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t2));
+  list_insert(labels, new_lbl_tail_pair("body", t2));
   cp = new_c_program(NULL, labels);
   cp = uncover_locals(cp);
   xp = select_instr(cp);
@@ -1409,7 +1409,7 @@ void test_patch_instrs() {
   t2 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs, t));
   C_Tail *t3 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs2, t2));
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t3));
+  list_insert(labels, new_lbl_tail_pair("body", t3));
   cp = new_c_program(NULL, labels);
   cp = uncover_locals(cp);
   xp = select_instr(cp);
@@ -1425,7 +1425,7 @@ void test_patch_instrs() {
   t2 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs, t));
   t3 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs2, t2));
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t3));
+  list_insert(labels, new_lbl_tail_pair("body", t3));
   cp = new_c_program(NULL, labels);
   cp = uncover_locals(cp);
   xp = select_instr(cp);
@@ -1442,7 +1442,7 @@ void test_patch_instrs() {
   t2 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs, t));
   t3 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs2, t2));
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t3));
+  list_insert(labels, new_lbl_tail_pair("body", t3));
   cp = new_c_program(NULL, labels);
   cp = uncover_locals(cp);
   xp = select_instr(cp);
@@ -1459,7 +1459,7 @@ void test_patch_instrs() {
   t2 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs, t));
   t3 = new_c_tail(C_TAIL_SEQ, new_c_seq(cs2, t2));
   labels = list_create();
-  list_insert(labels, new_lbl_tail_pair("main", t3));
+  list_insert(labels, new_lbl_tail_pair("body", t3));
   cp = new_c_program(NULL, labels);
   cp = uncover_locals(cp);
   xp = select_instr(cp);

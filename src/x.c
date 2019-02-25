@@ -219,7 +219,10 @@ void x_print_arg(X_Arg* arg){
 
 int x_interp(X_Program *xp){
     X_State *ms = new_x_state(xp->labels);
-    return x_blk_interp("main", &ms);
+    Node *main_node = list_find(ms->lbls, new_lbl_blk_pair("main", NULL), lbl_blk_pair_cmp);
+    Node *body_node = list_find(ms->lbls, new_lbl_blk_pair("body", NULL), lbl_blk_pair_cmp);
+    if(main_node == NULL && body_node == NULL) die("[X_INTERP] NO MAIN OR BODY BLOCK!");
+    return x_blk_interp(main_node == NULL ? "body" : "main", &ms);
 }
 
 int x_blk_interp(label_t lbl, X_State **ms){

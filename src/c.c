@@ -159,9 +159,10 @@ void c_print(C_Program *cp){
 
 int c_p_interp(C_Program* cp){
     if(cp){
-        Node *node = list_find(cp->labels, new_lbl_tail_pair("main", NULL), lbl_tail_cmp); 
-        if(node == NULL) die("[C_P_INTERP] NO MAIN LABEL!");
-        return c_t_interp(((lbl_tail_pair_t*)node->data)->tail, list_create());
+        Node *node_main = list_find(cp->labels, new_lbl_tail_pair("main", NULL), lbl_tail_cmp); 
+        Node *node_body = list_find(cp->labels, new_lbl_tail_pair("body", NULL), lbl_tail_cmp); 
+        if(node_main == NULL && node_body == NULL) die("[C_P_INTERP] NO MAIN OR BODY LABEL!");
+        return c_t_interp(node_main == NULL ? ((lbl_tail_pair_t*)node_body->data)->tail : ((lbl_tail_pair_t*)node_main->data)->tail, list_create());
     }
     return I32MIN;
 }

@@ -184,8 +184,8 @@ C_Arg* econ_arg(R_Expr *r_expr){
 
 C_Program* uncover_locals(C_Program* cp){
     if(cp){
-        Node *node = list_find(cp->labels, new_lbl_tail_pair("main", NULL), lbl_tail_cmp);
-        if(node == NULL) die("[UNCOVER_LOCALS] NO MAIN LABEL!");
+        Node *node = list_find(cp->labels, new_lbl_tail_pair("body", NULL), lbl_tail_cmp);
+        if(node == NULL) die("[UNCOVER_LOCALS] NO BODY LABEL!");
         C_Tail *tail = ((lbl_tail_pair_t*)node->data)->tail;
         list_t vars = list_create();
         c_tail_extract_vars(tail, vars);
@@ -195,12 +195,12 @@ C_Program* uncover_locals(C_Program* cp){
 }
 
 X_Program* select_instr(C_Program* cp){
-    Node *node = list_find(cp->labels, new_lbl_tail_pair("main", NULL), lbl_tail_cmp);
-    if(node == NULL) die("[SELECT_INSTR] NO MAIN LABEL!");
+    Node *node = list_find(cp->labels, new_lbl_tail_pair("body", NULL), lbl_tail_cmp);
+    if(node == NULL) die("[SELECT_INSTR] NO BODY LABEL!");
     C_Tail *ct = ((lbl_tail_pair_t*)node->data)->tail; 
     list_t x_instrs = select_instr_tail(ct);
     list_t lbls = list_create();
-    lbl_blk_pair_t *lbl = new_lbl_blk_pair("main", new_x_block(NULL, x_instrs));  
+    lbl_blk_pair_t *lbl = new_lbl_blk_pair("body", new_x_block(NULL, x_instrs));  
     list_insert(lbls, lbl);
     list_t ret_instr = list_create();
     list_insert(ret_instr, new_x_instr(RETQ, new_x_retq()));
@@ -218,10 +218,10 @@ X_Program* assign_homes(X_Program* xp){
         
         lbl_blk_pair_t *begin_lbp = new_lbl_blk_pair("begin", new_x_block(NULL, bi));
         lbl_blk_pair_t *end_lbp = new_lbl_blk_pair("end", new_x_block(NULL, ei));
-        lbl_blk_pair_t *main_lbp = new_lbl_blk_pair("main", new_x_block(NULL, new_instrs));
+        lbl_blk_pair_t *body_lbp = new_lbl_blk_pair("body", new_x_block(NULL, new_instrs));
 
         list_insert(lbls, begin_lbp);
-        list_insert(lbls, main_lbp);
+        list_insert(lbls, body_lbp);
         list_insert(lbls, end_lbp);
 
         variable_count = list_size(info->vars) * 8;
@@ -234,14 +234,14 @@ X_Program* assign_homes(X_Program* xp){
         list_insert(bi, new_x_instr(PUSHQ, new_x_pushq(rbp)));
         list_insert(bi, new_x_instr(MOVQ, new_x_movq(rsp, rbp)));
         list_insert(bi, new_x_instr(SUBQ, new_x_subq(vc, rbp)));
-        list_insert(bi, new_x_instr(JMP, new_x_jmp("main")));
+        list_insert(bi, new_x_instr(JMP, new_x_jmp("body")));
         
         list_insert(ei, new_x_instr(ADDQ, new_x_addq(vc, rbp)));
         list_insert(ei, new_x_instr(POPQ, new_x_popq(rbp)));
         list_insert(ei, new_x_instr(RETQ, new_x_retq()));
         
-        Node *node = list_find(xp->labels, new_lbl_blk_pair("main", NULL), lbl_blk_pair_cmp);
-        if(node == NULL) die("[SELECT_INSTR] NO MAIN LABEL!");
+        Node *node = list_find(xp->labels, new_lbl_blk_pair("body", NULL), lbl_blk_pair_cmp);
+        if(node == NULL) die("[SELECT_INSTR] NO BODY LABEL!");
         X_Block *xb = ((lbl_blk_pair_t*)node->data)->block;
 
         node = *(info->vars); 
@@ -262,8 +262,8 @@ X_Program* assign_homes(X_Program* xp){
 }
 
 X_Program* patch_instrs(X_Program *xp){
-    Node *head, *node = list_find(xp->labels, new_lbl_blk_pair("main", NULL), lbl_blk_pair_cmp);
-    if(node == NULL) die("PATCH_INSTRS] NO MAIN LABEL!"); 
+    Node *head, *node = list_find(xp->labels, new_lbl_blk_pair("body", NULL), lbl_blk_pair_cmp);
+    if(node == NULL) die("PATCH_INSTRS] NO BODY LABEL!"); 
     list_t new_instrs = list_create(), lbls = list_create();
     head = *(((lbl_blk_pair_t*)node->data)->block->instrs);
 
@@ -276,7 +276,7 @@ X_Program* patch_instrs(X_Program *xp){
     if(node == NULL) die("PATCH_INSTRS] NO BEGIN LABEL!");
     
     list_insert(lbls, node->data);
-    list_insert(lbls, new_lbl_blk_pair("main", new_x_block(NULL, new_instrs)));
+    list_insert(lbls, new_lbl_blk_pair("body", new_x_block(NULL, new_instrs)));
     
     node = list_find(xp->labels, new_lbl_blk_pair("end", NULL), lbl_blk_pair_cmp);
     if(node == NULL) die("PATCH_INSTRS] NO END LABEL!");
@@ -284,6 +284,20 @@ X_Program* patch_instrs(X_Program *xp){
     list_insert(lbls, node->data);
     
     return new_x_prog(NULL, lbls);
+}
+
+X_Program* main_pass(X_Program* xp){
+    X_Arg *rax = new_x_arg(X_ARG_REG, new_x_arg_reg(RAX));
+    X_Arg *rdi = new_x_arg(X_ARG_REG, new_x_arg_reg(RDI));
+    
+    list_t main_instrs = list_create();
+    list_insert(main_instrs, new_x_instr(CALLQ, new_x_callq("begin")));
+    list_insert(main_instrs, new_x_instr(MOVQ, new_x_movq(rax, rdi)));
+    list_insert(main_instrs, new_x_instr(CALLQ, new_x_callq("print_int")));
+    list_insert(main_instrs, new_x_instr(RETQ, new_x_retq()));
+  
+    list_insert(xp->labels, new_lbl_blk_pair("main", new_x_block(NULL, main_instrs)));
+    return xp;
 }
 
 void patch_instr(X_Instr *xp, list_t instrs){
