@@ -262,18 +262,53 @@ X_Program* assign_homes(X_Program* xp){
 }
 
 X_Program* patch_instrs(X_Program *xp){
+    Node *head, *node = list_find(xp->labels, new_lbl_blk_pair("main", NULL), lbl_blk_pair_cmp);
+    if(node == NULL) die("PATCH_INSTRS] NO MAIN LABEL!"); 
+    list_t new_instrs = list_create(), lbls = list_create();
+    head = *(xp->labels);
 
-
+    while(head != NULL){
+        patch_instr(head->data, new_instrs);
+        head = head->next; 
+    }
+    
+    node = list_find(xp->labels, new_lbl_blk_pair("begin", NULL), lbl_blk_pair_cmp);
+    if(node == NULL) die("PATCH_INSTRS] NO BEGIN LABEL!");
+    
+    list_insert(lbls, node->data);
+    list_insert(lbls, new_lbl_blk_pair("main", new_x_block(NULL, new_instrs)));
+    
+    node = list_find(xp->labels, new_lbl_blk_pair("end", NULL), lbl_blk_pair_cmp);
+    if(node == NULL) die("PATCH_INSTRS] NO END LABEL!");
+    
+    list_insert(lbls, node->data);
+    
+    return new_x_prog(NULL, lbls);
 }
 
 void patch_instr(X_Instr *xp, list_t instrs){
-/*
+    X_Arg *left, *right, *tmp = new_x_arg(X_ARG_REG, new_x_arg_reg(TMP_REG));
     if(xp)
         switch(xp->type){
             case ADDQ:
-                if( ((X_Addq*)xp->instr)->left->type == 
-        }
-*/
+                left = ((X_Addq*)xp->instr)->left;
+                right = ((X_Addq*)xp->instr)->right;
+                if(left->type == X_ARG_MEM && right->type == X_ARG_MEM){
+                    list_insert(instrs, new_x_instr(MOVQ, new_x_movq(left, tmp))); 
+                    list_insert(instrs, new_x_instr(ADDQ, new_x_addq(tmp, right))); 
+                } else list_insert(instrs, xp);
+                break;
+            case MOVQ:
+                left = ((X_Movq*)xp->instr)->left;
+                right = ((X_Movq*)xp->instr)->right;
+                if(left->type == X_ARG_MEM && right->type == X_ARG_MEM){
+                    list_insert(instrs, new_x_instr(MOVQ, new_x_movq(left, tmp))); 
+                    list_insert(instrs, new_x_instr(MOVQ, new_x_movq(tmp, right))); 
+                } else list_insert(instrs, xp);
+                break;
+            default:
+                list_insert(instrs, xp);
+        };
 }
 
 X_Instr* assign_instr(X_Instr *xi, list_t map){

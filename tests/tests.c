@@ -1330,8 +1330,7 @@ void test_patch_instrs() {
   list_insert(labels, new_lbl_tail_pair("main", t));
   C_Program *cp = new_c_program(NULL, labels);
 
-  X_Program *xp = select_instr(cp);
-  X_Program *ah;
+  X_Program *ah, *pi, *xp = select_instr(cp);
 
   t = new_c_tail(C_TAIL_RET, new_c_ret(cn_42));
   labels = list_create();
@@ -1457,5 +1456,7 @@ void test_patch_instrs() {
   cp = uncover_locals(cp);
   xp = select_instr(cp);
   ah = assign_homes(xp);
+  pi = patch_instrs(ah);
   x_emit(ah, NULL);
+  x_emit(pi, NULL);
 }
