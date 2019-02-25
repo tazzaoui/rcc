@@ -43,6 +43,9 @@ X_Program* patch_instrs(X_Program*);
 /* Main Pass */
 X_Program* main_pass(X_Program*);
 
+/* Compile and verify output */
+int x_compile(X_Program*);
+
 /* Patch a single instruction */
 void patch_instr(X_Instr*, list_t);
 

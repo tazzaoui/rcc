@@ -6,6 +6,10 @@ int read_int() {
   return x;
 }
 
+int read_int_debug() {
+  return 7;
+}
+
 int print_int(int x) {
   printf("%d\n", x);
   return 0;

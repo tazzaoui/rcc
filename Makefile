@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -Werror -std=c99 -pedantic -g
+CFLAGS=-Wall -Werror -std=gnu99 -pedantic -g
 LFLAGS=-lm
 TESTS=test
 EXE=rcc $(TESTS) 
@@ -43,7 +43,7 @@ list.o: src/list.c src/list.h
 	$(CC) -c $(CFLAGS) src/list.c -o list.o
 
 clean:
-	rm -f *.o *~ a.out test*.s $(EXE) 
+	rm -f *.o *~ a.out *.s *.bin $(EXE) 
 
 format:
 	clang-format -i -style=google main.c src/*.h src/*.h tests/*.c tests/*.h 

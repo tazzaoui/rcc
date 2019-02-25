@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <math.h> 
 #include "utils.h"
@@ -25,6 +26,18 @@ void c_tail_extract_vars(C_Tail* tail, list_t vars){
         if(node == NULL) list_insert(vars, cv);
         c_tail_extract_vars(cs->tail, vars);
     }
+}
+
+int x_compile(X_Program *xp){
+    FILE *fp;
+    int cc_result;
+    x_emit(xp, "test_compile.s");
+    system("cc src/runtime.c test_compile.s -o test.bin");
+    if ((fp = popen("./test.bin", "r")) == NULL)
+        die("[compile_and_check] Failed to run test_bin!");
+    fscanf(fp, "%d", &cc_result);
+    pclose(fp);
+    return cc_result;
 }
 
 R_Expr* uniquify(R_Expr* expr, list_t env, int *cnt){
@@ -233,10 +246,10 @@ X_Program* assign_homes(X_Program* xp){
         
         list_insert(bi, new_x_instr(PUSHQ, new_x_pushq(rbp)));
         list_insert(bi, new_x_instr(MOVQ, new_x_movq(rsp, rbp)));
-        list_insert(bi, new_x_instr(SUBQ, new_x_subq(vc, rbp)));
+        list_insert(bi, new_x_instr(SUBQ, new_x_subq(vc, rsp)));
         list_insert(bi, new_x_instr(JMP, new_x_jmp("body")));
         
-        list_insert(ei, new_x_instr(ADDQ, new_x_addq(vc, rbp)));
+        list_insert(ei, new_x_instr(ADDQ, new_x_addq(vc, rsp)));
         list_insert(ei, new_x_instr(POPQ, new_x_popq(rbp)));
         list_insert(ei, new_x_instr(RETQ, new_x_retq()));
         
@@ -400,7 +413,7 @@ list_t select_instr_expr(C_Expr* ce, X_Arg* dst){
                break;
             case C_READ:
                rax = new_x_arg(X_ARG_REG, new_x_arg_reg(RAX));
-               list_insert(instrs, new_x_instr(CALLQ, new_x_callq("_read_int"))); 
+               list_insert(instrs, new_x_instr(CALLQ, new_x_callq(READ_INT))); 
                list_insert(instrs, new_x_instr(MOVQ, new_x_movq(rax, dst)));
                break;
             case C_NEG:

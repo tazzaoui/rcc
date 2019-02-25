@@ -7,6 +7,13 @@
 #define I32MIN -2147483648
 #define RAND_RANGE 1024
 #define GET_RAND() (rand() % (2 * RAND_RANGE)) - RAND_RANGE
+#define QUIET_READ 1
+
+#if QUIET_READ == 1
+#define READ_INT "read_int_debug"
+#else
+#define READ_INT "read_int"
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>

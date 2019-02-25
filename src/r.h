@@ -3,7 +3,6 @@
 
 #include "list.h"
 #include "utils.h"
-#define QUIET_READ 1
 
 typedef enum R_EXPR_TYPE {
   R_EXPR_NEG,

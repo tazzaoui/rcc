@@ -222,7 +222,7 @@ int x_interp(X_Program *xp){
     Node *main_node = list_find(ms->lbls, new_lbl_blk_pair("main", NULL), lbl_blk_pair_cmp);
     Node *body_node = list_find(ms->lbls, new_lbl_blk_pair("body", NULL), lbl_blk_pair_cmp);
     if(main_node == NULL && body_node == NULL) die("[X_INTERP] NO MAIN OR BODY BLOCK!");
-    return x_blk_interp(main_node == NULL ? "body" : "main", &ms);
+    return x_blk_interp(body_node == NULL ? "main" : "body", &ms);
 }
 
 int x_blk_interp(label_t lbl, X_State **ms){
@@ -307,7 +307,7 @@ int x_instr_interp(X_Instr *instr, X_State **ms){
              case CALLQ: 
                 lbl = ((X_Callq*)instr->instr)->label; 
                 lval = 7;
-                if(strcmp(lbl, "_read_int") == 0){
+                if(strcmp(lbl, READ_INT) == 0){
                     if(!QUIET_READ)
                         scanf("%d", &lval);
                     s->regs[RAX] = lval;
