@@ -20,10 +20,10 @@ static inline void print_optim(R_Expr *e) {
 
 int main(int argc, char *argv[]) {
   int count = 0, res, rand_depth, res_opt, res_uniq, res_rco, res_econ, res_ul,
-      res_si, res_ah, full_count;
+      res_si, res_ah, res_pi, full_count;
   R_Expr *expr, *expr_opt, *uniq, *simple;
   C_Tail *c_tail;
-  X_Program *ah;
+  X_Program *ah, *pi;
   list_t vars = list_create();
   srand(time(0));
 
@@ -132,6 +132,7 @@ int main(int argc, char *argv[]) {
     cp_uncovered = uncover_locals(cp);
     xp = select_instr(cp_uncovered);
     ah = assign_homes(xp);
+    pi = patch_instrs(ah);
     res = r_interp(expr, NULL);
     res_uniq = r_interp(uniq, NULL);
     res_rco = r_interp(simple, NULL);
@@ -139,12 +140,14 @@ int main(int argc, char *argv[]) {
     res_ul = c_p_interp(cp_uncovered);
     res_si = x_interp(xp);
     res_ah = x_interp(ah);
+    res_pi = x_interp(pi);
     assert(res == res_uniq);
     assert(res_uniq == res_rco);
     assert(res_rco == res_econ);
     assert(res_econ == res_ul);
     assert(res_ul == res_si);
     assert(res_si == res_ah);
+    assert(res_ah == res_pi);
     if (DEBUG) {
       printf("Normal   : ");
       r_print_expr(expr);

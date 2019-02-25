@@ -265,7 +265,7 @@ X_Program* patch_instrs(X_Program *xp){
     Node *head, *node = list_find(xp->labels, new_lbl_blk_pair("main", NULL), lbl_blk_pair_cmp);
     if(node == NULL) die("PATCH_INSTRS] NO MAIN LABEL!"); 
     list_t new_instrs = list_create(), lbls = list_create();
-    head = *(xp->labels);
+    head = *(((lbl_blk_pair_t*)node->data)->block->instrs);
 
     while(head != NULL){
         patch_instr(head->data, new_instrs);
