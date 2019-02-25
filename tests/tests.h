@@ -49,4 +49,7 @@ void test_select_instr();
 /* A few tests for assign-homes */
 void test_assign_homes();
 
+/* A few tests for patch-instrs */
+void test_patch_instrs();
+
 #endif /* TESTS_H */

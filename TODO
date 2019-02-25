@@ -42,7 +42,7 @@
 * Write a few tests for assign-homes that predict its output.
 * Implement the assign-homes pass for X0 programs.
 * Connect assign-homes to your test suite.
-Write a half-dozen tests for patch-instructions that predict its output.
+* Write a half-dozen tests for patch-instructions that predict its output.
 Implement the patch-instructions pass for X0 programs.
 Connect patch-instructions to your test suite.
 Implement your language runtime.

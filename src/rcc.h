@@ -31,11 +31,17 @@ C_Expr* explicate_control(R_Expr*, list_t*);
 /* Uncover Locals Pass */
 C_Program* uncover_locals(C_Program*);
 
-/* Select Instructions pass */
+/* Select Instructions Pass */
 X_Program* select_instr(C_Program*);
 
-/* Assign Homes Pass (register allocation) */
+/* Assign Homes Pass (naive register allocation) */
 X_Program* assign_homes(X_Program*);
+
+/* Patch Instructions Pass (remove double memory refs) */
+X_Program* patch_instrs(X_Program*);
+
+/* Patch a single instruction */
+void patch_instr(X_Instr*, list_t);
 
 /* Single X_Instr Register Alloc */
 X_Instr* assign_instr(X_Instr*, list_t);

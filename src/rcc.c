@@ -8,6 +8,8 @@
 #include "x.h"
 #include "rcc.h"
 
+#define TMP_REG RAX
+
 char *append_int(const char* old, int n){
     int num_digits = n == 0 ? 1 : floor(log10(abs(n))) + 1; 
     char *new = malloc_or_die(strlen(old) + num_digits + 1); 
@@ -257,6 +259,21 @@ X_Program* assign_homes(X_Program* xp){
     }
     die("[assign_homes] XP OR INFO IS NULL!");
     return NULL;
+}
+
+X_Program* patch_instrs(X_Program *xp){
+
+
+}
+
+void patch_instr(X_Instr *xp, list_t instrs){
+/*
+    if(xp)
+        switch(xp->type){
+            case ADDQ:
+                if( ((X_Addq*)xp->instr)->left->type == 
+        }
+*/
 }
 
 X_Instr* assign_instr(X_Instr *xi, list_t map){

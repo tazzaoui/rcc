@@ -230,5 +230,11 @@ int main(int argc, char *argv[]) {
 
   printf("===================================================\n");
 
+  printf("testing patch-instrs...\n\n");
+
+  test_patch_instrs();
+
+  printf("===================================================\n");
+
   return 0;
 }
