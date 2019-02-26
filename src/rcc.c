@@ -39,6 +39,109 @@ int x_compile(X_Program *xp){
     return cc_result;
 }
 
+X_Program* uncover_live(X_Program* xp){
+    Node *node = list_find(xp->labels, new_lbl_blk_pair("body", NULL), lbl_blk_pair_cmp);
+    if(node == NULL) die("[UNCOVER LIVE] NO BODY LABEL!");
+    Node* head = *((lbl_blk_pair_t*)node->data)->block->instrs;
+    list_t live_after_set = list_create();
+    while(head){ 
+        list_t live = live_before(head->next);
+        list_insert(live_after_set, new_x_instr_list_pair(head->data, live));
+        head = head->next;
+    }
+    if(xp->info == NULL) xp->info = new_info(NULL, live_after_set);
+    else xp->info->live = live_after_set;
+
+    head = *((lbl_blk_pair_t*)node->data)->block->instrs;
+    while(head != NULL && head->next){
+        list_t ra = list_create();
+        list_t wa = list_create();
+        instrs_read(head->next->data, ra);
+        instrs_written(head->next->data, wa);
+        head = head->next;
+    }
+    return xp;
+}
+
+list_t live_after(Node* head){
+    list_t live = list_create(); 
+    if(head && head->next)
+        live = live_before(head->next);
+    return live;
+}
+
+list_t live_before(Node* head){
+    if(head){
+        list_t la, diff, written = list_create(), read = list_create();
+        la = live_after(head);
+        instrs_written(head->data, written);
+        instrs_read(head->data, read);
+        diff = list_subtract(la, written, cmp_x_args);
+        return list_concat(diff, read);
+    }
+    return list_create();
+}
+
+void instrs_written(X_Instr* xi, list_t args){
+    if(xi && args)
+        switch(xi->type){
+            case ADDQ:
+                args_written(((X_Addq*)xi->instr)->right, args);
+                break;
+             case SUBQ:
+                args_written(((X_Subq*)xi->instr)->right, args);
+                break;
+              case MOVQ:
+                args_written(((X_Movq*)xi->instr)->right, args);
+                break;
+              case POPQ:
+                args_written(((X_Popq*)xi->instr)->arg, args);
+                break;
+               case NEGQ:
+                args_written(((X_Negq*)xi->instr)->arg, args);
+                break;
+               default:
+                break;
+        };
+}
+
+void instrs_read(X_Instr* xi, list_t args){
+    if(xi && args)
+        switch(xi->type){
+            case ADDQ:
+                args_read(((X_Addq*)xi->instr)->left, args);
+                args_read(((X_Addq*)xi->instr)->right, args);
+                break;
+             case SUBQ:
+                args_read(((X_Subq*)xi->instr)->left, args);
+                args_read(((X_Subq*)xi->instr)->right, args);
+                break;
+              case MOVQ:
+                args_read(((X_Movq*)xi->instr)->left, args);
+                break;
+              case PUSHQ:
+                args_read(((X_Pushq*)xi->instr)->arg, args);
+                break;
+               case NEGQ:
+                args_read(((X_Negq*)xi->instr)->arg, args);
+                break;
+               default:
+                break;
+        };
+}
+
+void args_written(X_Arg* xa, list_t args){
+    // TODO: VERIFY THIS MAPING
+    if(xa && args && xa->type == X_ARG_VAR)
+        list_insert(args, xa);
+}
+
+void args_read(X_Arg* xa, list_t args){
+    // TODO: VERIFY THIS MAPING
+    if(xa && args && xa->type == X_ARG_VAR)
+        list_insert(args, xa);
+}
+
 R_Expr* uniquify(R_Expr* expr, list_t env, int *cnt){
     Node *node;
     list_t env_p;

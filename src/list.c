@@ -1,6 +1,8 @@
+#include <assert.h>
 #include <stdlib.h>
 #include "utils.h"
 #include "list.h" 
+#include "pairs.h"
 
 list_t list_create() {
   list_t list = malloc_or_die(sizeof(list_t));
@@ -33,24 +35,48 @@ void list_update(list_t list, void* old, void* new, cmp_func_t cmp) {
   }
 }
 
-void list_remove(Node** node, void* data, cmp_func_t cmp) {
+list_t list_subtract(list_t a, list_t b, cmp_func_t cmp){
+    if(a && b && list_size(a) > 0 && list_size(b) > 0){
+       Node* head = *b;
+        while(head != NULL){
+            list_remove_all(a, head->data, cmp);
+            head = head->next;
+        }
+    }
+    return a;
+}
+
+void list_remove_all(list_t list, void* data, cmp_func_t cmp){
+    Node *node = list_find(list, data, cmp);
+    while(node != NULL){
+        list_remove(list, data, cmp);
+        node = list_find(list, data, cmp);
+    }
+}
+
+void list_remove(list_t node, void* data, cmp_func_t cmp) {
   if (node != NULL && *node != NULL) {
-    Node *n, *temp = *node;
-    if ( cmp((*node)->data, data)) {
+    Node *n, *prev, *temp = *node;
+    if (cmp((*node)->data, data)) {
       *node = (*node)->next;
       free(temp);
       temp = NULL;
     } else {
-      while (temp->next &&  !cmp((*node)->data, data)) 
+        while (temp->next && !cmp(temp->data, data)){ 
+          prev = temp;
           temp = temp->next;
-      if (temp->next) {
-        n = temp->next;
-        temp->next = temp->next->next;
+        }
+        if (temp->next) {
+            n = temp->next;
+            temp->next = temp->next->next;
+        } else {
+            n = temp;
+            prev->next = NULL;
+        } 
         free(n);
         n = NULL;
       }
     }
-  }
 }
 
 Node* list_find(const list_t list, void *data, cmp_func_t cmp){

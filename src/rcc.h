@@ -43,8 +43,29 @@ X_Program* main_pass(X_Program*);
 /* Compile an X_Program with system assembler */
 int x_compile(X_Program*);
 
+/* uncover-live pass (liveness analysis) */
+X_Program* uncover_live(X_Program*);
+
 /* Patch a single instruction */
 void patch_instr(X_Instr*, list_t);
+
+/* Return a list of vars live after the current instr */
+list_t live_after(Node*);
+
+/* Return a list of vars live before the current instr */
+list_t live_before(Node*);
+
+/* Returns a list of the X_Args read by the argument */
+void instrs_read(X_Instr*, list_t);
+
+/* Returns a list of the X_Args written by the argument */
+void instrs_written(X_Instr*, list_t);
+
+/* Returns a list of the X_Args read by the argument */
+void args_read(X_Arg*, list_t);
+
+/* Returns a list of the X_Args written by the argument */
+void args_written(X_Arg*, list_t);
 
 /* Single X_Instr Register Alloc */
 X_Instr* assign_instr(X_Instr*, list_t);

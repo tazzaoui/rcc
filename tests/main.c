@@ -244,7 +244,7 @@ int main(int argc, char *argv[]) {
 
   printf("testing uncover-live...\n\n");
 
-  test_patch_instrs();
+  test_uncover_live();
 
   printf("===================================================\n");
 

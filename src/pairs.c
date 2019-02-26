@@ -5,6 +5,27 @@
 #include "x.h"
 #include "rcc.h"
 
+x_instr_list_pair_t* new_x_instr_list_pair(X_Instr* xi, list_t live){
+    x_instr_list_pair_t *x = malloc_or_die(sizeof(x_instr_list_pair_t));
+    x->xi = xi;
+    x->live = live;
+    return x;
+}
+
+void x_print_arg_void(void* data){
+    if(data) x_print_arg(data);
+}
+
+void print_x_instr_list_pair(void* data){
+    x_instr_list_pair_t* x = (x_instr_list_pair_t*) data;
+    if(x){
+        print_x_instr(x->xi);
+        printf("Live After = ");
+        list_print(x->live, x_print_arg_void);
+        printf("\n");
+    }
+}
+
 c_var_num_pair_t* new_c_var_num_pair(C_Var* cv, int num){
     c_var_num_pair_t *p = malloc_or_die(sizeof(c_var_num_pair_t));
     p->var = cv;
@@ -249,4 +270,23 @@ void r_var_var_print(void* r){
         r_print_expr(new_expr(v->v2, R_EXPR_VAR));
         printf("\n");
     }
+}
+
+int cmp_x_args(void* a, void* b){
+    X_Arg *xa = (X_Arg*) a; 
+    X_Arg *xb = (X_Arg*) b;
+    if(xa && xb && xa->type == xb->type){
+        switch(xa->type){
+            case X_ARG_NUM:
+                return ((X_Arg_Num*)xa->arg)->num == ((X_Arg_Num*)xb->arg)->num; 
+             case X_ARG_REG:
+                return ((X_Arg_Reg*)xa->arg)->reg == ((X_Arg_Reg*)xb->arg)->reg; 
+              case X_ARG_MEM:
+                return (((X_Arg_Mem*)xa->arg)->reg == ((X_Arg_Mem*)xb->arg)->reg) 
+                        && (((X_Arg_Mem*)xa->arg)->offset == ((X_Arg_Mem*)xb->arg)->offset); 
+              case X_ARG_VAR:
+                return strcmp(((X_Arg_Var*)xa->arg)->name, ((X_Arg_Var*)xb->arg)->name) == 0;
+        };
+    }
+    return 0;
 }

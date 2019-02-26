@@ -35,6 +35,12 @@ void list_update(list_t, void *, void *, cmp_func_t);
 /*Remove the node by data*/
 void list_remove(list_t, void *, cmp_func_t);
 
+/* Remove all occurances of the node */
+void list_remove_all(list_t, void *, cmp_func_t);
+
+/* Compute the difference between two lists  (A = A - B) */
+list_t list_subtract(list_t, list_t, cmp_func_t);
+
 /*Return node containing data*/
 Node *list_find(const list_t, void *, cmp_func_t);
 

@@ -47,6 +47,17 @@ typedef struct r_var_var_pair_t {
   R_Var *v1, *v2;
 } r_var_var_pair_t;
 
+typedef struct x_instr_list_pair_t {
+  X_Instr* xi;
+  list_t live;
+} x_instr_list_pair_t;
+
+/* Return a new X_Instr -> list_t pair */
+x_instr_list_pair_t* new_x_instr_list_pair(X_Instr*, list_t);
+
+/* Print an x_instr_lit_pair_t */
+void print_x_instr_list_pair(void*);
+
 /* Return a new r_var -> int pair  */
 r_var_int_pair_t* new_r_var_int_pair(R_Var*, int);
 
@@ -148,5 +159,14 @@ int c_var_cmp(void*, void*);
 
 /* Print a C_Var */
 void c_var_print(void*);
+
+/* Compare two X_Args */
+int cmp_x_args(void*, void*);
+
+/* Wraper around x_print_arg */
+void x_print_arg_void(void*);
+
+/* Print an instr list pair */
+void print_x_instr_list_pair(void*);
 
 #endif /* PAIRS_H */
