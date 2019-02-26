@@ -58,4 +58,7 @@ void test_uncover_live();
 /* A few tests for build-interferences */
 void test_build_interferences();
 
+/* A few tests for color-graph */
+void test_color_graph();
+
 #endif /* TESTS_H */

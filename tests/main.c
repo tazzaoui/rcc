@@ -194,6 +194,12 @@ int main(int argc, char *argv[]) {
 
   printf("===================================================\n");
 
+  printf("testing color_graph...\n\n");
+
+  test_color_graph();
+
+  printf("===================================================\n");
+
   printf("General Checks...\n");
 
   list_t new_vars, labels;
