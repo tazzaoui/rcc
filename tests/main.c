@@ -20,10 +20,10 @@ static inline void print_optim(R_Expr *e) {
 
 int main(int argc, char *argv[]) {
   int count = 0, res, rand_depth, res_opt, res_uniq, res_rco, res_econ, res_ul,
-      res_si, res_ah, res_pi, res_mp, full_count;
+      res_si, res_ah, res_pi, res_mp, res_ui, res_bi, full_count;
   R_Expr *expr, *expr_opt, *uniq, *simple;
   C_Tail *c_tail;
-  X_Program *ah, *pi, *mp;
+  X_Program *ul, *bi, *ah, *pi, *mp;
   list_t vars = list_create();
   srand(time(0));
 
@@ -205,7 +205,7 @@ int main(int argc, char *argv[]) {
   list_t new_vars, labels;
   count = full_count = 0;
   for (size_t i = 0; i < NUM_PROGS; ++i) {
-    rand_depth = rand() % 12;
+    rand_depth = rand() % 10;
     expr = randp(vars, rand_depth);
     uniq = unique(expr);
     new_vars = list_create();
@@ -219,6 +219,8 @@ int main(int argc, char *argv[]) {
     ah = assign_homes(xp);
     pi = patch_instrs(ah);
     mp = main_pass(pi);
+    ul = uncover_live(mp);
+    bi = build_interferences(ul);
     res = r_interp(expr, NULL);
     res_uniq = r_interp(uniq, NULL);
     res_rco = r_interp(simple, NULL);
@@ -228,6 +230,8 @@ int main(int argc, char *argv[]) {
     res_ah = x_interp(ah);
     res_pi = x_interp(pi);
     res_mp = x_compile(mp);
+    res_ui = x_interp(ul);
+    res_bi = x_interp(bi);
     assert(res == res_uniq);
     assert(res_uniq == res_rco);
     assert(res_rco == res_econ);
@@ -236,6 +240,8 @@ int main(int argc, char *argv[]) {
     assert(res_si == res_ah);
     assert(res_ah == res_pi);
     assert(res_pi == res_mp);
+    assert(res_mp == res_ul);
+    assert(res_ui == res_bi);
     if (DEBUG) {
       printf("Normal   : ");
       r_print_expr(expr);
