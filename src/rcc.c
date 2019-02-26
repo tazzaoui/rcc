@@ -99,10 +99,25 @@ void add_caller_saved_regs(list_t list, list_t graph){
     }
 }
 
+void move_bias(list_t m_graph, X_Instr* xi){
+    if(xi && xi->type == MOVQ){
+        X_Arg *left = ((X_Movq*)xi->instr)->left;
+        X_Arg *right = ((X_Movq*)xi->instr)->right;
+        if(left->type == X_ARG_VAR && right->type == X_ARG_VAR){
+            x_arg_list_pair_t *m = new_x_arg_list_pair(left, list_create());
+            Node* mov = list_find(m_graph, m, x_arg_list_pair_cmp);
+            if(mov == NULL){
+                list_insert(m->list, right);
+                list_insert(m_graph, m);
+            } else list_insert(((x_arg_list_pair_t*)mov->data)->list, right);
+        }
+    }
+}
+
 X_Program* build_interferences(X_Program* xp){
     if(xp && xp->info && xp->info->live){
         x_instr_list_pair_t *x;
-        list_t graph = list_create();
+        list_t graph = list_create(), move_graph = list_create();
         Node *head = *(xp->info->live);
         while(head){
             x = head->data;
@@ -118,7 +133,8 @@ X_Program* build_interferences(X_Program* xp){
                     break;
                 case MOVQ:
                     add_live_after(x->live, graph, ((X_Movq*)x->xi->instr)->right, ((X_Movq*)x->xi->instr)->left); 
-                    break;
+                    move_bias(move_graph, x->xi);
+                   break;
                 case CALLQ:
                     add_caller_saved_regs(x->live, graph);
                     break;
@@ -128,6 +144,7 @@ X_Program* build_interferences(X_Program* xp){
             head = head->next;
         }
         xp->info->i_graph = graph;
+        xp->info->m_graph = move_graph;
     }
     return xp;
 }

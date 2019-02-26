@@ -100,6 +100,15 @@ R_Expr* resolve_complex_expr(R_Expr*, list_t, list_t*, int*);
 /* Rename an R_Var */
 R_Expr* rename_var(R_Expr*);
 
+/* Add the live after pairs to graph */
+void add_live_after(const list_t, list_t, X_Arg*, X_Arg*);
+
+/* Add caller saved regs to interference graph */
+void add_caller_saved_regs(list_t, list_t);
+
+/* Add move bias node to move graph */
+void move_bias(list_t, X_Instr*);
+
 /* Extract the set of variables used in a C_Tail */
 void c_tail_extract_vars(C_Tail*, list_t);
 

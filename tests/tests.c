@@ -1880,4 +1880,6 @@ void test_build_interferences() {
   xp = uncover_live(xp);
   xp = build_interferences(xp);
   list_print(xp->info->i_graph, print_x_arg_list_pair);
+  printf("\n");
+  list_print(xp->info->m_graph, print_x_arg_list_pair);
 }
