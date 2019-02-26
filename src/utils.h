@@ -23,12 +23,13 @@ typedef const char *label_t;
 
 /* Program Info */
 typedef struct Info {
-  list_t vars;
-  list_t live;
+  list_t vars;     // list of live locals : <X_Arg*>
+  list_t live;     // list of live after sets : <X_Instr -> <X_Arg*>>
+  list_t i_graph;  // Adj. List rep. of interference graph
 } Info;
 
 /* Return a new Info */
-Info *new_info(list_t, list_t);
+Info *new_info(list_t, list_t, list_t);
 
 static inline void *malloc_or_die(size_t size) {
   void *mem = malloc(size);

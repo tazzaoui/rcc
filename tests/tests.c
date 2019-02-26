@@ -1671,12 +1671,13 @@ void test_uncover_live() {
   X_Block *b = new_x_block(NULL, instrs);
   lbl_blk_pair_t *lbp = new_lbl_blk_pair("body", b);
 
+  blks = list_create();
   list_insert(blks, lbp);
   xp = new_x_prog(NULL, blks);
   xp = uncover_live(xp);
 }
 
-void test_build_interferences(){
+void test_build_interferences() {
   C_Arg *cn_10 = new_c_arg(C_NUM, new_c_num(10));
   C_Arg *cn_42 = new_c_arg(C_NUM, new_c_num(42));
   C_Arg *cn_n42 = new_c_arg(C_NUM, new_c_num(-42));
@@ -1719,6 +1720,7 @@ void test_build_interferences(){
   ah = assign_homes(xp);
   pi = patch_instrs(ah);
   pi = uncover_live(pi);
+  pi = build_interferences(pi);
 
   C_Smt *cs = new_c_smt(new_c_var("Y"), new_c_expr(C_ARG, cn_42));
   C_Seq *cseq = new_c_seq(cs, t);
@@ -1731,6 +1733,7 @@ void test_build_interferences(){
   ah = assign_homes(xp);
   pi = patch_instrs(ah);
   pi = uncover_live(pi);
+  pi = build_interferences(pi);
 
   t = new_c_tail(C_TAIL_RET, new_c_ret(cv_x));
   cs = new_c_smt(new_c_var("X"), new_c_expr(C_ARG, cn_10));
@@ -1744,6 +1747,7 @@ void test_build_interferences(){
   ah = assign_homes(xp);
   pi = patch_instrs(ah);
   pi = uncover_live(pi);
+  pi = build_interferences(pi);
 
   t = new_c_tail(C_TAIL_RET, new_c_ret(cv_x));
   cs = new_c_smt(new_c_var("X"), add1);
@@ -1757,6 +1761,7 @@ void test_build_interferences(){
   ah = assign_homes(xp);
   pi = patch_instrs(ah);
   pi = uncover_live(pi);
+  pi = build_interferences(pi);
 
   t = new_c_tail(C_TAIL_RET, new_c_ret(cv_y));
   cs = new_c_smt(new_c_var("Y"), add3);
@@ -1772,6 +1777,7 @@ void test_build_interferences(){
   ah = assign_homes(xp);
   pi = patch_instrs(ah);
   pi = uncover_live(pi);
+  pi = build_interferences(pi);
 
   add2 = new_c_expr(C_ADD, new_c_add(cn_n42, cn_10));
   add3 = new_c_expr(C_ADD, new_c_add(cv_x, cn_10));
@@ -1792,6 +1798,7 @@ void test_build_interferences(){
   ah = assign_homes(xp);
   pi = patch_instrs(ah);
   pi = uncover_live(pi);
+  pi = build_interferences(pi);
 
   t = new_c_tail(C_TAIL_RET, new_c_ret(cv_z));
   cs = new_c_smt(new_c_var("Y"), add3);
@@ -1809,6 +1816,7 @@ void test_build_interferences(){
   ah = assign_homes(xp);
   pi = patch_instrs(ah);
   pi = uncover_live(pi);
+  pi = build_interferences(pi);
 
   add5 = new_c_expr(C_ADD, new_c_add(cn_10, cn_42));
   t = new_c_tail(C_TAIL_RET, new_c_ret(cv_z));
@@ -1827,6 +1835,7 @@ void test_build_interferences(){
   ah = assign_homes(xp);
   pi = patch_instrs(ah);
   pi = uncover_live(pi);
+  pi = build_interferences(pi);
 
   add5 = new_c_expr(C_ADD, new_c_add(cn_10, cn_42));
   t = new_c_tail(C_TAIL_RET, new_c_ret(cv_z));
@@ -1845,6 +1854,7 @@ void test_build_interferences(){
   x_emit(xp, NULL);
   pi = uncover_live(xp);
   pi = uncover_live(pi);
+  pi = build_interferences(pi);
 
   list_t instrs = list_create(), blks = list_create();
 
@@ -1868,4 +1878,6 @@ void test_build_interferences(){
   list_insert(blks, lbp);
   xp = new_x_prog(NULL, blks);
   xp = uncover_live(xp);
+  xp = build_interferences(xp);
+  list_print(xp->info->i_graph, print_x_arg_list_pair);
 }

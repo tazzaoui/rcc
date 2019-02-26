@@ -7,6 +7,9 @@
 #include "utils.h"
 #include "x.h"
 
+#define NUM_CALLER_SAVED_REGS 9
+extern const REGISTER Caller_Saved_Regs[NUM_CALLER_SAVED_REGS];
+
 /* Uniquify pass */
 R_Expr* uniquify(R_Expr*, list_t, int*);
 
@@ -45,6 +48,9 @@ int x_compile(X_Program*);
 
 /* uncover-live pass (liveness analysis) */
 X_Program* uncover_live(X_Program*);
+
+/* build-interferences pass */
+X_Program* build_interferences(X_Program*);
 
 /* Patch a single instruction */
 void patch_instr(X_Instr*, list_t);

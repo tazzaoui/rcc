@@ -47,10 +47,24 @@ typedef struct r_var_var_pair_t {
   R_Var *v1, *v2;
 } r_var_var_pair_t;
 
+typedef struct x_arg_list_pair_t {
+  X_Arg* arg;
+  list_t list;
+} x_arg_list_pair_t;
+
 typedef struct x_instr_list_pair_t {
   X_Instr* xi;
   list_t live;
 } x_instr_list_pair_t;
+
+/* Return a new X_Arg -> X_Arg pair */
+x_arg_list_pair_t* new_x_arg_list_pair(X_Arg*, list_t);
+
+/* Compare two X_Arg -> X_Arg pairs */
+int x_arg_list_pair_cmp(void*, void*);
+
+/* Print an x_arg_list_pair_t */
+void print_x_arg_list_pair(void*);
 
 /* Return a new X_Instr -> list_t pair */
 x_instr_list_pair_t* new_x_instr_list_pair(X_Instr*, list_t);

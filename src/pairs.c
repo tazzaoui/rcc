@@ -5,6 +5,28 @@
 #include "x.h"
 #include "rcc.h"
 
+x_arg_list_pair_t* new_x_arg_list_pair(X_Arg *arg, list_t list){
+    x_arg_list_pair_t *x = malloc_or_die(sizeof(x_arg_list_pair_t));
+    x->arg = arg;
+    x->list = list;
+    return x;
+}
+
+int x_arg_list_pair_cmp(void* alp1, void* alp2){
+    X_Arg *a1 = ((x_arg_list_pair_t*)alp1)->arg;
+    X_Arg *a2 = ((x_arg_list_pair_t*)alp2)->arg;
+    return cmp_x_args(a1, a2);
+}
+
+void print_x_arg_list_pair(void* data){
+    x_arg_list_pair_t *x = (x_arg_list_pair_t*) data;
+    printf("<");
+    x_print_arg(x->arg);
+    printf(" ");
+    list_print(x->list, x_print_arg_void);
+    printf(">\n");
+}
+
 x_instr_list_pair_t* new_x_instr_list_pair(X_Instr* xi, list_t live){
     x_instr_list_pair_t *x = malloc_or_die(sizeof(x_instr_list_pair_t));
     x->xi = xi;

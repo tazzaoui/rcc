@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h> 
@@ -9,6 +10,8 @@
 #include "rcc.h"
 
 #define TMP_REG RAX
+
+const REGISTER Caller_Saved_Regs[NUM_CALLER_SAVED_REGS] = {RAX, RDX, RCX, RSI, RDI, R8, R9, R10, R11};
 
 char *append_int(const char* old, int n){
     int num_digits = n == 0 ? 1 : floor(log10(abs(n))) + 1; 
@@ -44,25 +47,91 @@ X_Program* uncover_live(X_Program* xp){
     if(node == NULL) die("[UNCOVER LIVE] NO BODY LABEL!");
     Node* head = *((lbl_blk_pair_t*)node->data)->block->instrs;
     list_t live_after_set = list_create();
-    while(head){ 
+    while(head){
         list_t live = live_before(head->next);
         list_insert(live_after_set, new_x_instr_list_pair(head->data, live));
         head = head->next;
     }
-    if(xp->info == NULL) xp->info = new_info(NULL, live_after_set);
+    if(xp->info == NULL) xp->info = new_info(NULL, live_after_set, NULL);
     else xp->info->live = live_after_set;
-
-    head = *((lbl_blk_pair_t*)node->data)->block->instrs;
-    while(head != NULL && head->next){
-        list_t ra = list_create();
-        list_t wa = list_create();
-        instrs_read(head->next->data, ra);
-        instrs_written(head->next->data, wa);
-        head = head->next;
-    }
     return xp;
 }
 
+void add_live_after(const list_t live_after, list_t graph, X_Arg* key, X_Arg *ignore){
+    if(live_after && graph && key){ 
+        X_Arg *x_arg;
+        x_arg_list_pair_t *key_pair = new_x_arg_list_pair(key, list_create());
+        Node *la_head = *live_after, *key_node = list_find(graph, key_pair, x_arg_list_pair_cmp);
+        
+        if(!key_node){
+            list_insert(graph, key_pair);
+            key_node = list_find(graph, key_pair, x_arg_list_pair_cmp);  
+        } 
+
+        assert(key_node);
+        key_pair = key_node->data;
+
+        while(la_head){
+            x_arg = la_head->data; 
+            if(!cmp_x_args(key, x_arg) &&  (!ignore || !cmp_x_args(ignore, x_arg)))
+                list_insert(key_pair->list, x_arg);
+            la_head = la_head->next;
+        }
+    }
+}
+
+void add_caller_saved_regs(list_t list, list_t graph){
+    X_Arg *xa;
+    Node *head, *node;
+    x_arg_list_pair_t *key_pair;
+    for(int i = 0; i < NUM_CALLER_SAVED_REGS; ++i){
+         head = *list;
+         xa = new_x_arg(X_ARG_REG, new_x_arg_reg(Caller_Saved_Regs[i]));
+         while(head){
+             key_pair = new_x_arg_list_pair(head->data, list_create());
+             node = list_find(graph, key_pair, x_arg_list_pair_cmp);
+             if(node == NULL){
+                 list_insert(key_pair->list, xa);
+                 list_insert(graph, key_pair);
+             } else list_insert(((x_arg_list_pair_t*)node->data)->list, xa);
+             head = head->next;
+         }
+    }
+}
+
+X_Program* build_interferences(X_Program* xp){
+    if(xp && xp->info && xp->info->live){
+        x_instr_list_pair_t *x;
+        list_t graph = list_create();
+        Node *head = *(xp->info->live);
+        while(head){
+            x = head->data;
+            switch(x->xi->type){
+                case ADDQ:
+                    add_live_after(x->live, graph, ((X_Addq*)x->xi->instr)->right, NULL); 
+                    break;
+                case SUBQ:
+                    add_live_after(x->live, graph, ((X_Subq*)x->xi->instr)->right, NULL); 
+                    break;
+                case NEGQ:
+                    add_live_after(x->live, graph, ((X_Negq*)x->xi->instr)->arg, NULL); 
+                    break;
+                case MOVQ:
+                    add_live_after(x->live, graph, ((X_Movq*)x->xi->instr)->right, ((X_Movq*)x->xi->instr)->left); 
+                    break;
+                case CALLQ:
+                    add_caller_saved_regs(x->live, graph);
+                    break;
+                default:
+                    break;
+            }
+            head = head->next;
+        }
+        xp->info->i_graph = graph;
+    }
+    return xp;
+}
+    
 list_t live_after(Node* head){
     list_t live = list_create(); 
     if(head && head->next)
@@ -132,13 +201,13 @@ void instrs_read(X_Instr* xi, list_t args){
 
 void args_written(X_Arg* xa, list_t args){
     // TODO: VERIFY THIS MAPING
-    if(xa && args && xa->type == X_ARG_VAR)
+    if(xa && args && (xa->type == X_ARG_VAR || xa->type == X_ARG_REG))
         list_insert(args, xa);
 }
 
 void args_read(X_Arg* xa, list_t args){
     // TODO: VERIFY THIS MAPING
-    if(xa && args && xa->type == X_ARG_VAR)
+    if(xa && args && (xa->type == X_ARG_VAR || xa->type == X_ARG_REG))
         list_insert(args, xa);
 }
 
@@ -304,7 +373,7 @@ C_Program* uncover_locals(C_Program* cp){
         C_Tail *tail = ((lbl_tail_pair_t*)node->data)->tail;
         list_t vars = list_create();
         c_tail_extract_vars(tail, vars);
-        return new_c_program(new_info(vars, NULL), cp->labels); 
+        return new_c_program(new_info(vars, NULL, NULL), cp->labels); 
     }
     return cp;
 }
