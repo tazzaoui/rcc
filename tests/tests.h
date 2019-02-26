@@ -55,4 +55,7 @@ void test_patch_instrs();
 /* A few tests for uncover-live */
 void test_uncover_live();
 
+/* A few tests for build-interferences */
+void test_build_interferences();
+
 #endif /* TESTS_H */

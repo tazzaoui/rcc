@@ -31,6 +31,7 @@ int main(int argc, char *argv[]) {
   printf("Testing Linked List...\n");
 
   test_list();
+
   printf("%sAll List Tests Passed.\n%s", GRN, NRM);
 
   printf("===================================================\n");
@@ -115,67 +116,6 @@ int main(int argc, char *argv[]) {
 
   printf("===================================================\n");
 
-  printf("General Checks...\n");
-
-  list_t new_vars, labels;
-  count = full_count = 0;
-  for (size_t i = 0; i < NUM_PROGS; ++i) {
-    rand_depth = rand() % 12;
-    expr = randp(vars, rand_depth);
-    uniq = unique(expr);
-    new_vars = list_create();
-    simple = rco(uniq, &new_vars);
-    c_tail = econ_expr(simple);
-    labels = list_create();
-    list_insert(labels, new_lbl_tail_pair("body", c_tail));
-    cp = new_c_program(NULL, labels);
-    cp_uncovered = uncover_locals(cp);
-    xp = select_instr(cp_uncovered);
-    ah = assign_homes(xp);
-    pi = patch_instrs(ah);
-    mp = main_pass(pi);
-    res = r_interp(expr, NULL);
-    res_uniq = r_interp(uniq, NULL);
-    res_rco = r_interp(simple, NULL);
-    res_econ = c_t_interp(c_tail, list_create());
-    res_ul = c_p_interp(cp_uncovered);
-    res_si = x_interp(xp);
-    res_ah = x_interp(ah);
-    res_pi = x_interp(pi);
-    res_mp = x_compile(mp);
-    assert(res == res_uniq);
-    assert(res_uniq == res_rco);
-    assert(res_rco == res_econ);
-    assert(res_econ == res_ul);
-    assert(res_ul == res_si);
-    assert(res_si == res_ah);
-    assert(res_ah == res_pi);
-    assert(res_pi == res_mp);
-    if (DEBUG) {
-      printf("Normal   : ");
-      r_print_expr(expr);
-      printf(" -> %d\n", res);
-    }
-    expr_opt = r_optimize(expr, NULL);
-    res_opt = r_interp(expr_opt, NULL);
-    if (DEBUG) {
-      printf("Optimized: ");
-      r_print_expr(expr_opt);
-      printf("\n");
-    }
-    assert(res_opt == res);
-    count += (res_opt == res);
-    full_count += (res_opt == res && expr_opt->type == R_EXPR_NUM);
-  }
-
-  printf("%sSuccessfully optimized & uniquified %d/%d programs.%s\n", GRN,
-         count, NUM_PROGS, NRM);
-
-  printf("Fully optimized %d/%d\n", count, NUM_PROGS);
-  assert(count == NUM_PROGS);
-
-  printf("===================================================\n");
-
   printf("Testing a dozen R1 programs...\n");
 
   test_dozen_r1();
@@ -247,6 +187,71 @@ int main(int argc, char *argv[]) {
   test_uncover_live();
 
   printf("===================================================\n");
+
+  printf("testing build_interferences...\n\n");
+
+  test_build_interferences();
+
+  printf("===================================================\n");
+
+  printf("General Checks...\n");
+
+  list_t new_vars, labels;
+  count = full_count = 0;
+  for (size_t i = 0; i < NUM_PROGS; ++i) {
+    rand_depth = rand() % 12;
+    expr = randp(vars, rand_depth);
+    uniq = unique(expr);
+    new_vars = list_create();
+    simple = rco(uniq, &new_vars);
+    c_tail = econ_expr(simple);
+    labels = list_create();
+    list_insert(labels, new_lbl_tail_pair("body", c_tail));
+    cp = new_c_program(NULL, labels);
+    cp_uncovered = uncover_locals(cp);
+    xp = select_instr(cp_uncovered);
+    ah = assign_homes(xp);
+    pi = patch_instrs(ah);
+    mp = main_pass(pi);
+    res = r_interp(expr, NULL);
+    res_uniq = r_interp(uniq, NULL);
+    res_rco = r_interp(simple, NULL);
+    res_econ = c_t_interp(c_tail, list_create());
+    res_ul = c_p_interp(cp_uncovered);
+    res_si = x_interp(xp);
+    res_ah = x_interp(ah);
+    res_pi = x_interp(pi);
+    res_mp = x_compile(mp);
+    assert(res == res_uniq);
+    assert(res_uniq == res_rco);
+    assert(res_rco == res_econ);
+    assert(res_econ == res_ul);
+    assert(res_ul == res_si);
+    assert(res_si == res_ah);
+    assert(res_ah == res_pi);
+    assert(res_pi == res_mp);
+    if (DEBUG) {
+      printf("Normal   : ");
+      r_print_expr(expr);
+      printf(" -> %d\n", res);
+    }
+    expr_opt = r_optimize(expr, NULL);
+    res_opt = r_interp(expr_opt, NULL);
+    if (DEBUG) {
+      printf("Optimized: ");
+      r_print_expr(expr_opt);
+      printf("\n");
+    }
+    assert(res_opt == res);
+    count += (res_opt == res);
+    full_count += (res_opt == res && expr_opt->type == R_EXPR_NUM);
+  }
+
+  printf("%sSuccessfully optimized & uniquified %d/%d programs.%s\n", GRN,
+         count, NUM_PROGS, NRM);
+
+  printf("Fully optimized %d/%d\n", count, NUM_PROGS);
+  assert(count == NUM_PROGS);
 
   return 0;
 }

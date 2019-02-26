@@ -1,8 +1,6 @@
-#include <assert.h>
 #include <stdlib.h>
 #include "utils.h"
-#include "list.h" 
-#include "pairs.h"
+#include "list.h"
 
 list_t list_create() {
   list_t list = malloc_or_die(sizeof(list_t));

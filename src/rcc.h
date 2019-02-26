@@ -55,10 +55,10 @@ list_t live_after(Node*);
 /* Return a list of vars live before the current instr */
 list_t live_before(Node*);
 
-/* Returns a list of the X_Args read by the argument */
+/* Returns a list of the X_Args read by the instr */
 void instrs_read(X_Instr*, list_t);
 
-/* Returns a list of the X_Args written by the argument */
+/* Returns a list of the X_Args written by the instr */
 void instrs_written(X_Instr*, list_t);
 
 /* Returns a list of the X_Args read by the argument */
