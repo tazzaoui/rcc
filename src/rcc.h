@@ -40,6 +40,9 @@ X_Program* select_instr(C_Program*);
 /* Assign Homes Pass (naive register allocation) */
 X_Program* assign_homes(X_Program*);
 
+/* Define variable to register/stack mapping */
+list_t allocate_registers(X_Program*);
+
 /* Patch Instructions Pass (remove double memory refs) */
 X_Program* patch_instrs(X_Program*);
 
@@ -57,6 +60,9 @@ X_Program* build_interferences(X_Program*);
 
 /* color-graph pass */
 X_Program* color_graph(X_Program*);
+
+/* assign-registers pass */
+X_Program* assign_registers(X_Program*);
 
 /* Patch a single instruction */
 void patch_instr(X_Instr*, list_t);
@@ -84,6 +90,12 @@ X_Instr* assign_instr(X_Instr*, list_t);
 
 /* Single X_Arg Register Alloc */
 X_Arg* assign_arg(X_Arg*, list_t);
+
+/* Updated Single X_Instr Register Alloc */
+X_Instr* map_instr(X_Instr*, list_t);
+
+/* Updated Single X_Arg Register Alloc */
+X_Arg* map_arg(X_Arg*, list_t);
 
 /* C_Tail -> list of X instructions */
 list_t select_instr_tail(C_Tail*);

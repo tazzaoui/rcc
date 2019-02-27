@@ -5,6 +5,28 @@
 #include "x.h"
 #include "rcc.h"
 
+x_arg_pair_t* new_x_arg_pair(X_Arg* arg1, X_Arg* arg2){
+    x_arg_pair_t *x = malloc_or_die(sizeof(x_arg_pair_t));
+    x->arg1 = arg1;
+    x->arg2 = arg2;
+    return x;
+}
+
+int x_arg_pair_cmp(void* a, void* b){
+    X_Arg *a_arg = ((x_arg_pair_t*)a)->arg1;
+    X_Arg *b_arg = ((x_arg_pair_t*)b)->arg1;
+    return cmp_x_args(a_arg, b_arg);
+}
+
+void print_x_arg_pair(void* a){
+    x_arg_pair_t *a_arg = (x_arg_pair_t*)a;
+    printf("<");
+    x_print_arg(a_arg->arg1);
+    printf(", ");
+    x_print_arg(a_arg->arg2);
+    printf(">");
+}
+
 void* copy_x_arg(void* arg){
     return arg;
 }

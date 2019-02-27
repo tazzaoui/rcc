@@ -266,6 +266,71 @@ X_Program* color_graph(X_Program *xp){
     return xp;
 }
 
+X_Program* assign_registers(X_Program* xp){
+    if(xp && xp->info){
+        int variable_count;
+        Info *info = xp->info;
+        list_t bi = list_create(), ei = list_create(), new_instrs = list_create(),
+               var_to_num = list_create(), lbls = list_create();
+        
+        lbl_blk_pair_t *begin_lbp = new_lbl_blk_pair("begin", new_x_block(NULL, bi));
+        lbl_blk_pair_t *end_lbp = new_lbl_blk_pair("end", new_x_block(NULL, ei));
+        lbl_blk_pair_t *body_lbp = new_lbl_blk_pair("body", new_x_block(NULL, new_instrs));
+
+        list_insert(lbls, begin_lbp);
+        list_insert(lbls, body_lbp);
+        list_insert(lbls, end_lbp);
+
+        variable_count = list_size(info->vars) * 8;
+        variable_count = (variable_count % 16 == 0) ? variable_count : variable_count + 8;
+
+        X_Arg *rbp = new_x_arg(X_ARG_REG, new_x_arg_reg(RBP));
+        X_Arg *rsp = new_x_arg(X_ARG_REG, new_x_arg_reg(RSP));
+        X_Arg *vc = new_x_arg(X_ARG_NUM, new_x_arg_num(variable_count));
+        
+        list_insert(bi, new_x_instr(PUSHQ, new_x_pushq(rbp)));
+        list_insert(bi, new_x_instr(MOVQ, new_x_movq(rsp, rbp)));
+        list_insert(bi, new_x_instr(SUBQ, new_x_subq(vc, rsp)));
+        list_insert(bi, new_x_instr(JMP, new_x_jmp("body")));
+        
+        list_insert(ei, new_x_instr(ADDQ, new_x_addq(vc, rsp)));
+        list_insert(ei, new_x_instr(POPQ, new_x_popq(rbp)));
+        list_insert(ei, new_x_instr(RETQ, new_x_retq()));
+        
+        Node *node = list_find(xp->labels, new_lbl_blk_pair("body", NULL), lbl_blk_pair_cmp);
+        if(node == NULL) die("[assign_registers] NO BODY LABEL!");
+        X_Block *xb = ((lbl_blk_pair_t*)node->data)->block;
+
+        var_to_num = allocate_registers(xp);
+        node = *(xb->instrs);
+        while(node != NULL){
+            list_insert(new_instrs, map_instr(node->data, var_to_num));
+            node = node->next;
+        }
+        return new_x_prog(NULL, lbls);
+    }
+    die("[assign_registers] XP OR INFO IS NULL!");
+    return NULL;
+}
+
+list_t allocate_registers(X_Program* xp){
+    list_t mapping;
+    if(xp){
+        mapping = list_create();
+        Node *head = *(xp->info->colors);
+        x_arg_int_pair_t* pair;
+        while(head){
+            pair = head->data;
+            if(pair->num < NUM_REGS - 4)
+                list_insert(mapping, new_x_arg_pair(pair->arg, new_x_arg(X_ARG_REG, new_x_arg_reg(pair->num + 3))));
+            else
+                list_insert(mapping, new_x_arg_pair(pair->arg, new_x_arg(X_ARG_MEM, new_x_arg_mem(RSP, pair->num - 13))));
+            head = head->next;
+        } 
+    }
+    return mapping;
+}
+
 list_t live_after(Node* head){
     list_t live = list_create(); 
     if(head && head->next)
@@ -657,6 +722,42 @@ X_Instr* assign_instr(X_Instr *xi, list_t map){
                                                     assign_arg(((X_Movq*)xi->instr)->right, map)));
             case NEGQ:
                 return new_x_instr(NEGQ, new_x_negq(assign_arg(((X_Negq*)xi->instr)->arg, map)));
+            default: 
+                return xi;
+        };
+    return NULL;
+}
+
+X_Arg* map_arg(X_Arg* xa, list_t map){
+    Node *node;
+    if(xa)
+        switch(xa->type){
+            case X_ARG_NUM:
+                return xa;
+            case X_ARG_VAR:
+                node = list_find(map, new_x_arg_pair(xa, 0), x_arg_pair_cmp);
+                if(node == NULL) die("[ASSIGN_ARG] VARIABLE MAPPING NOT FOUND!");
+                return ((x_arg_pair_t*)node->data)->arg2;
+            default:
+                return xa;
+        };
+    return NULL;
+}
+
+X_Instr* map_instr(X_Instr *xi, list_t map){
+    if(xi)
+        switch(xi->type){
+            case ADDQ:
+                return new_x_instr(ADDQ, new_x_addq(map_arg(((X_Addq*)xi->instr)->left, map),
+                                                    map_arg(((X_Addq*)xi->instr)->right, map)));
+            case SUBQ:
+                return new_x_instr(SUBQ, new_x_subq(map_arg(((X_Subq*)xi->instr)->left, map),
+                                                    map_arg(((X_Subq*)xi->instr)->right, map)));
+            case MOVQ:
+                return new_x_instr(MOVQ, new_x_movq(map_arg(((X_Movq*)xi->instr)->left, map),
+                                                    map_arg(((X_Movq*)xi->instr)->right, map)));
+            case NEGQ:
+                return new_x_instr(NEGQ, new_x_negq(map_arg(((X_Negq*)xi->instr)->arg, map)));
             default: 
                 return xi;
         };

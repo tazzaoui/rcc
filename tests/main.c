@@ -171,7 +171,7 @@ int main(int argc, char *argv[]) {
 
   printf("testing assign-homes...\n\n");
 
-  test_assign_homes();
+  // test_assign_homes();
 
   printf("===================================================\n");
 

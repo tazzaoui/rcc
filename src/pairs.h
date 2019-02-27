@@ -62,6 +62,19 @@ typedef struct x_arg_int_pair_t {
   int num;
 } x_arg_int_pair_t;
 
+typedef struct x_arg_pair_t {
+  X_Arg *arg1, *arg2;
+} x_arg_pair_t;
+
+/* Return a new X_Arg -> X_Arg pairs */
+x_arg_pair_t* new_x_arg_pair(X_Arg*, X_Arg*);
+
+/* Compare two X_Arg -> X_Arg pairs */
+int x_arg_pair_cmp(void*, void*);
+
+/* Print an X_Arg -> X_Arg pair */
+void print_x_arg_pair(void*);
+
 /* Return a new X_Arg -> int pair */
 x_arg_int_pair_t* new_x_arg_int_pair(X_Arg*, int);
 

@@ -1917,6 +1917,7 @@ void test_color_graph() {
   C_Program *cp = new_c_program(NULL, labels);
 
   X_Program *ah, *pi, *xp = select_instr(cp);
+  list_t instrs = list_create(), blks = list_create();
 
   t = new_c_tail(C_TAIL_RET, new_c_ret(cn_42));
   labels = list_create();
@@ -2071,8 +2072,6 @@ void test_color_graph() {
   pi = uncover_live(pi);
   pi = build_interferences(pi);
 
-  list_t instrs = list_create(), blks = list_create();
-
   list_insert(instrs, new_x_instr(MOVQ, new_x_movq(n_1, v)));
   list_insert(instrs, new_x_instr(MOVQ, new_x_movq(n_46, w)));
   list_insert(instrs, new_x_instr(MOVQ, new_x_movq(v, x)));
@@ -2095,12 +2094,4 @@ void test_color_graph() {
   xp = uncover_live(xp);
   xp = build_interferences(xp);
   xp = color_graph(xp);
-
-  list_print(xp->info->colors, print_x_arg_int_pair);
-
-  list_print(xp->info->m_graph, print_x_arg_list_pair);
-  list_t coloring = list_create();
-  list_insert(coloring, new_x_arg_int_pair(w, 10));
-  list_insert(coloring, new_x_arg_int_pair(y, 15));
-  list_insert(coloring, new_x_arg_int_pair(x, 20));
 }
