@@ -5,9 +5,12 @@
 #include "list.h"
 #include "r.h"
 #include "utils.h"
-#include "x.h"
+#include "x.h" 
+#include "pairs.h"
 
 #define NUM_CALLER_SAVED_REGS 9
+#define NO_COLOR -9999
+
 extern const REGISTER Caller_Saved_Regs[NUM_CALLER_SAVED_REGS];
 
 /* Uniquify pass */
@@ -51,6 +54,9 @@ X_Program* uncover_live(X_Program*);
 
 /* build-interferences pass */
 X_Program* build_interferences(X_Program*);
+
+/* color-graph pass */
+X_Program* color_graph(X_Program*);
 
 /* Patch a single instruction */
 void patch_instr(X_Instr*, list_t);
@@ -109,11 +115,20 @@ void add_caller_saved_regs(list_t, list_t);
 /* Add move bias node to move graph */
 void move_bias(list_t, X_Instr*);
 
+/* Computes Saturation of an X_Arg and returns the max */
+int saturation(X_Arg*, list_t, list_t, list_t);
+
+/* Returns the vertex with the maximium saturation */
+x_arg_list_pair_t* max_sat(list_t, list_t);
+
 /* Extract the set of variables used in a C_Tail */
 void c_tail_extract_vars(C_Tail*, list_t);
 
 /* Helper function to append an int to a c_str */
 char* append_int(const char*, int);
+
+/* Make the adjacency list symmetric */
+void make_symmetric(list_t);
 
 /* Wrapper around uniquify */
 static inline R_Expr* unique(R_Expr* e) {

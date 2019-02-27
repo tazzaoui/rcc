@@ -114,6 +114,23 @@ void move_bias(list_t m_graph, X_Instr* xi){
     }
 }
 
+void make_symmetric(list_t graph){
+    Node* node = *graph, *tmp, *ptr;
+    x_arg_list_pair_t *pair;
+    list_t old = list_copy(graph, copy_x_arg_list_pair);
+    node = *old;
+    while(node){
+        pair = node->data;
+        tmp = *(pair->list);
+        while(tmp){
+            ptr = list_find(graph, new_x_arg_list_pair(tmp->data, NULL), x_arg_list_pair_cmp);
+            if(ptr) list_insert(((x_arg_list_pair_t*)ptr->data)->list, pair->arg);
+            tmp = tmp->next;
+        }
+        node = node->next;
+    }
+}
+
 X_Program* build_interferences(X_Program* xp){
     if(xp && xp->info && xp->info->live){
         x_instr_list_pair_t *x;
@@ -143,12 +160,112 @@ X_Program* build_interferences(X_Program* xp){
             }
             head = head->next;
         }
+        head = *graph;
+        while(head){
+           x_arg_list_pair_t *pair = head->data;
+           list_remove_duplicates(pair->list, cmp_x_args);
+           head = head->next;
+        }
+        make_symmetric(graph);
         xp->info->i_graph = graph;
         xp->info->m_graph = move_graph;
     }
     return xp;
 }
-    
+
+int saturation(X_Arg* xa, list_t i_graph, list_t coloring, list_t sat){
+    int curr_max = NO_COLOR;
+    Node *head, *node;
+    x_arg_int_pair_t *xp;
+    node = list_find(i_graph, new_x_arg_list_pair(xa, NULL), x_arg_list_pair_cmp); 
+   
+    if(node){
+        head = *(((x_arg_list_pair_t*)node->data)->list);
+        while(head){
+            node = list_find(coloring, new_x_arg_int_pair(head->data, 0), x_arg_int_pair_cmp);
+            if(node){
+                xp = node->data;
+                if(xp->num != NO_COLOR) list_insert(sat, node->data);
+                curr_max = xp->num > curr_max ? xp->num : curr_max; 
+            }
+            head = head->next;
+        }
+    }
+
+    return curr_max;
+}
+
+x_arg_list_pair_t* max_sat(list_t i_graph, list_t coloring){
+    Node* head = *i_graph;
+    list_t sat;
+    int ms, curr_max = I32MIN;
+    x_arg_list_pair_t *pair, *max_pair = NULL;
+    if(list_size(coloring) == 0)
+        return (*i_graph)->data;
+    while(head){
+        pair = head->data;
+        sat = list_create();
+        ms = saturation(pair->arg, i_graph, coloring, sat);
+        if(ms > curr_max){
+            curr_max = ms;
+            max_pair = pair;
+        }
+        head = head->next;
+    }
+    return max_pair;
+}
+
+list_t neighbor_colors(list_t neighbors, list_t colors){
+    list_t nc = list_create();
+    Node* head = *neighbors, *node;
+    while(head){
+        node = list_find(colors, new_x_arg_int_pair(head->data, 0), x_arg_int_pair_cmp); 
+        if(node) list_insert(nc, node->data);
+        head = head->next;
+    }
+    return nc;
+}
+
+int lowest_color(list_t neighbors, list_t colors){
+    if(list_size(colors) <= 0) return 0;
+    int i = 0;
+    list_t nc = neighbor_colors(neighbors, colors);
+    while(1){ 
+        Node *node = list_find(nc, new_x_arg_int_pair(NULL, i), x_arg_int_pair_cmp_by_int);
+        if(node == NULL) return i; 
+        ++i;
+    } 
+    return I32MIN;
+}
+
+X_Program* color_graph(X_Program *xp){
+    if(xp){
+        int color;
+        Node *head;
+        list_t i_graph = xp->info->i_graph, colors = list_create();
+        X_Arg* rax = new_x_arg(X_ARG_REG, new_x_arg_reg(RAX));
+        x_arg_list_pair_t *vrtx;
+
+        // Remove RAX from the graph
+        list_remove(i_graph, new_x_arg_int_pair(rax, 0), x_arg_int_pair_cmp);
+        head = *i_graph;
+        while(head){
+            vrtx = head->data;
+            list_remove(vrtx->list, rax, cmp_x_args);
+            head = head->next;
+        }
+
+        while(list_size(i_graph) > 0){
+            vrtx = max_sat(i_graph, colors);
+            color = lowest_color(vrtx->list, colors); 
+            list_insert(colors, new_x_arg_int_pair(vrtx->arg, color));
+            list_remove(i_graph, vrtx, x_arg_list_pair_cmp); 
+        }
+        xp->info->colors = colors;
+    }
+    return xp;
+}
+
 list_t live_after(Node* head){
     list_t live = list_create(); 
     if(head && head->next)

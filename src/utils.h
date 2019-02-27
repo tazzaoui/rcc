@@ -27,6 +27,7 @@ typedef struct Info {
   list_t live;     // list of live after sets : <X_Instr -> <X_Arg*>>
   list_t i_graph;  // Adj. List rep. of interference graph
   list_t m_graph;  // Adj. List rep. of the move graph
+  list_t colors;   // Graph Coloring Solution 
 } Info;
 
 /* Return a new Info */

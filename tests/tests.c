@@ -4,7 +4,7 @@
 
 #include "../src/list.h"
 #include "../src/pairs.h"
-#include "../src/rcc.h"
+#include "../src/rcc.h" 
 #include "../src/utils.h"
 
 #include "tests.h"
@@ -1928,6 +1928,7 @@ void test_color_graph() {
   pi = patch_instrs(ah);
   pi = uncover_live(pi);
   pi = build_interferences(pi);
+  pi = color_graph(pi);
 
   C_Smt *cs = new_c_smt(new_c_var("Y"), new_c_expr(C_ARG, cn_42));
   C_Seq *cseq = new_c_seq(cs, t);
@@ -1941,6 +1942,7 @@ void test_color_graph() {
   pi = patch_instrs(ah);
   pi = uncover_live(pi);
   pi = build_interferences(pi);
+  pi = color_graph(pi);
 
   t = new_c_tail(C_TAIL_RET, new_c_ret(cv_x));
   cs = new_c_smt(new_c_var("X"), new_c_expr(C_ARG, cn_10));
@@ -1955,6 +1957,7 @@ void test_color_graph() {
   pi = patch_instrs(ah);
   pi = uncover_live(pi);
   pi = build_interferences(pi);
+  pi = color_graph(pi);
 
   t = new_c_tail(C_TAIL_RET, new_c_ret(cv_x));
   cs = new_c_smt(new_c_var("X"), add1);
@@ -1969,6 +1972,7 @@ void test_color_graph() {
   pi = patch_instrs(ah);
   pi = uncover_live(pi);
   pi = build_interferences(pi);
+  pi = color_graph(pi);
 
   t = new_c_tail(C_TAIL_RET, new_c_ret(cv_y));
   cs = new_c_smt(new_c_var("Y"), add3);
@@ -1985,6 +1989,7 @@ void test_color_graph() {
   pi = patch_instrs(ah);
   pi = uncover_live(pi);
   pi = build_interferences(pi);
+  pi = color_graph(pi);
 
   add2 = new_c_expr(C_ADD, new_c_add(cn_n42, cn_10));
   add3 = new_c_expr(C_ADD, new_c_add(cv_x, cn_10));
@@ -2006,6 +2011,7 @@ void test_color_graph() {
   pi = patch_instrs(ah);
   pi = uncover_live(pi);
   pi = build_interferences(pi);
+  pi = color_graph(pi);
 
   t = new_c_tail(C_TAIL_RET, new_c_ret(cv_z));
   cs = new_c_smt(new_c_var("Y"), add3);
@@ -2024,6 +2030,7 @@ void test_color_graph() {
   pi = patch_instrs(ah);
   pi = uncover_live(pi);
   pi = build_interferences(pi);
+  pi = color_graph(pi);
 
   add5 = new_c_expr(C_ADD, new_c_add(cn_10, cn_42));
   t = new_c_tail(C_TAIL_RET, new_c_ret(cv_z));
@@ -2043,6 +2050,7 @@ void test_color_graph() {
   pi = patch_instrs(ah);
   pi = uncover_live(pi);
   pi = build_interferences(pi);
+  pi = color_graph(pi);
 
   add5 = new_c_expr(C_ADD, new_c_add(cn_10, cn_42));
   t = new_c_tail(C_TAIL_RET, new_c_ret(cv_z));
@@ -2076,7 +2084,7 @@ void test_color_graph() {
   list_insert(instrs, new_x_instr(MOVQ, new_x_movq(y, tv)));
   list_insert(instrs, new_x_instr(NEGQ, new_x_negq(tv)));
   list_insert(instrs, new_x_instr(MOVQ, new_x_movq(z, rax)));
-  list_insert(instrs, new_x_instr(ADDQ, new_x_addq(tv, rax)));
+  list_insert(instrs, new_x_instr(ADDQ, new_x_addq(tv, rax))); 
   list_insert(instrs, new_x_instr(JMP, new_x_jmp("end")));
 
   X_Block *b = new_x_block(NULL, instrs);
@@ -2086,7 +2094,13 @@ void test_color_graph() {
   xp = new_x_prog(NULL, blks);
   xp = uncover_live(xp);
   xp = build_interferences(xp);
-  list_print(xp->info->i_graph, print_x_arg_list_pair);
-  printf("\n");
+  xp = color_graph(xp);
+
+  list_print(xp->info->colors, print_x_arg_int_pair);
+
   list_print(xp->info->m_graph, print_x_arg_list_pair);
+  list_t coloring = list_create();
+  list_insert(coloring, new_x_arg_int_pair(w, 10));
+  list_insert(coloring, new_x_arg_int_pair(y, 15));
+  list_insert(coloring, new_x_arg_int_pair(x, 20));
 }

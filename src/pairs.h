@@ -57,6 +57,23 @@ typedef struct x_instr_list_pair_t {
   list_t live;
 } x_instr_list_pair_t;
 
+typedef struct x_arg_int_pair_t {
+    X_Arg *arg;
+    int num;
+} x_arg_int_pair_t;
+
+/* Return a new X_Arg -> int pair */
+x_arg_int_pair_t* new_x_arg_int_pair(X_Arg*, int);
+
+/* Compare two X_Arg -> int pairs */
+int x_arg_int_pair_cmp(void*, void*);
+
+/* Compare two X_Arg -> int pairs by value */
+int x_arg_int_pair_cmp_by_int(void*, void*);
+
+/* Print an x_arg_int_pair_t */
+void print_x_arg_int_pair(void*);
+
 /* Return a new X_Arg -> X_Arg pair */
 x_arg_list_pair_t* new_x_arg_list_pair(X_Arg*, list_t);
 
@@ -183,4 +200,9 @@ void x_print_arg_void(void*);
 /* Print an instr list pair */
 void print_x_instr_list_pair(void*);
 
+/* Copy a single x arg */
+void* copy_x_arg(void*);
+
+/* Copy an x_arg_list_pair_t */
+void* copy_x_arg_list_pair(void*);
 #endif /* PAIRS_H */

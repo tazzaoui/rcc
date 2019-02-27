@@ -35,6 +35,9 @@ void list_update(list_t, void *, void *, cmp_func_t);
 /*Remove the node by data*/
 void list_remove(list_t, void *, cmp_func_t);
 
+/*Remove duplicate data*/
+void list_remove_duplicates(list_t, cmp_func_t);
+
 /* Remove all occurances of the node */
 void list_remove_all(list_t, void *, cmp_func_t);
 

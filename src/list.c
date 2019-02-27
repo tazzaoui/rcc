@@ -44,6 +44,18 @@ list_t list_subtract(list_t a, list_t b, cmp_func_t cmp){
     return a;
 }
 
+void list_remove_duplicates(list_t list, cmp_func_t cmp){
+    Node *ptr1 = *list, *ptr2;
+    while(ptr1 && ptr1->next){
+        ptr2 = ptr1;
+        while(ptr2->next)
+            if(cmp(ptr1->data, ptr2->next->data)){
+                ptr2->next = ptr2->next->next;
+            } else ptr2 = ptr2->next; 
+        ptr1 = ptr1->next;
+    }
+}
+
 void list_remove_all(list_t list, void* data, cmp_func_t cmp){
     Node *node = list_find(list, data, cmp);
     while(node != NULL){

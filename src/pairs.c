@@ -5,6 +5,42 @@
 #include "x.h"
 #include "rcc.h"
 
+void* copy_x_arg(void* arg){
+    return arg;
+}
+
+void* copy_x_arg_list_pair(void* a){
+    x_arg_list_pair_t *x = (x_arg_list_pair_t*)a;
+    list_t new_list = list_copy(x->list, copy_x_arg);
+    return new_x_arg_list_pair(x->arg, new_list);
+}
+
+x_arg_int_pair_t* new_x_arg_int_pair(X_Arg* arg, int num){
+    x_arg_int_pair_t *x = malloc_or_die(sizeof(x_arg_int_pair_t));
+    x->arg = arg;
+    x->num = num;
+    return x;
+}
+
+int x_arg_int_pair_cmp(void* a, void* b){
+    X_Arg *a_arg = ((x_arg_int_pair_t*)a)->arg;
+    X_Arg *b_arg = ((x_arg_int_pair_t*)b)->arg;
+    return cmp_x_args(a_arg, b_arg);
+}
+
+int x_arg_int_pair_cmp_by_int(void *a, void *b){
+    return a && b && ((x_arg_int_pair_t*)a)->num == ((x_arg_int_pair_t*)b)->num;
+}
+
+void print_x_arg_int_pair(void* a){
+    if(a){
+        x_arg_int_pair_t *x = ((x_arg_int_pair_t*)a);
+        printf("<");
+        x_print_arg(x->arg);
+        printf(", %d>", x->num);
+    }
+}
+
 x_arg_list_pair_t* new_x_arg_list_pair(X_Arg *arg, list_t list){
     x_arg_list_pair_t *x = malloc_or_die(sizeof(x_arg_list_pair_t));
     x->arg = arg;
