@@ -123,7 +123,7 @@ int main(int argc, char *argv[]) {
   printf("===================================================\n");
 
   printf("Testing X0 emitter...\n");
-test_x0_emit();
+  test_x0_emit();
 
   printf("===================================================\n");
 
@@ -204,7 +204,7 @@ test_x0_emit();
   list_t new_vars, labels;
   count = full_count = 0;
   for (size_t i = 0; i < NUM_PROGS; ++i) {
-    rand_depth = rand() % 10; 
+    rand_depth = rand() % 10;
     expr = randp(vars, rand_depth);
     uniq = unique(expr);
     new_vars = list_create();

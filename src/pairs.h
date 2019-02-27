@@ -58,8 +58,8 @@ typedef struct x_instr_list_pair_t {
 } x_instr_list_pair_t;
 
 typedef struct x_arg_int_pair_t {
-    X_Arg *arg;
-    int num;
+  X_Arg* arg;
+  int num;
 } x_arg_int_pair_t;
 
 /* Return a new X_Arg -> int pair */

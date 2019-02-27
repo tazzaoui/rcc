@@ -3,10 +3,10 @@
 
 #include "c.h"
 #include "list.h"
+#include "pairs.h"
 #include "r.h"
 #include "utils.h"
-#include "x.h" 
-#include "pairs.h"
+#include "x.h"
 
 #define NUM_CALLER_SAVED_REGS 9
 #define NO_COLOR -9999

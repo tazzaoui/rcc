@@ -4,7 +4,7 @@
 
 #include "../src/list.h"
 #include "../src/pairs.h"
-#include "../src/rcc.h" 
+#include "../src/rcc.h"
 #include "../src/utils.h"
 
 #include "tests.h"
@@ -2084,7 +2084,7 @@ void test_color_graph() {
   list_insert(instrs, new_x_instr(MOVQ, new_x_movq(y, tv)));
   list_insert(instrs, new_x_instr(NEGQ, new_x_negq(tv)));
   list_insert(instrs, new_x_instr(MOVQ, new_x_movq(z, rax)));
-  list_insert(instrs, new_x_instr(ADDQ, new_x_addq(tv, rax))); 
+  list_insert(instrs, new_x_instr(ADDQ, new_x_addq(tv, rax)));
   list_insert(instrs, new_x_instr(JMP, new_x_jmp("end")));
 
   X_Block *b = new_x_block(NULL, instrs);
