@@ -32,6 +32,9 @@ void list_insert(list_t, void *);
 /*Update the data element of a node*/
 void list_update(list_t, void *, void *, cmp_func_t);
 
+/* Delete a matching node from the list */
+Node *delete_node(Node *, void *, cmp_func_t);
+
 /*Remove the node by data*/
 void list_remove(list_t, void *, cmp_func_t);
 

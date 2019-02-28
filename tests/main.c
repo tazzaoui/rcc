@@ -199,6 +199,12 @@ int main(int argc, char *argv[]) {
 
   printf("===================================================\n");
 
+  printf("testing assign_registers...\n\n");
+
+  test_assign_registers();
+
+  printf("===================================================\n");
+
   printf("General Checks...\n");
 
   list_t new_vars, labels;

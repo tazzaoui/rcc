@@ -61,4 +61,7 @@ void test_build_interferences();
 /* A few tests for color-graph */
 void test_color_graph();
 
+/* A few tests for assign-registers */
+void test_assign_registers();
+
 #endif /* TESTS_H */

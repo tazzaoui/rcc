@@ -64,29 +64,19 @@ void list_remove_all(list_t list, void* data, cmp_func_t cmp){
     }
 }
 
+Node* delete_node(Node* node, void* data, cmp_func_t cmp){
+  if (node){
+	if (cmp(node->data, data)) 
+        return node->next; 
+    else 
+        node->next = delete_node(node->next, data, cmp);
+  }
+  return node;
+}
+
+
 void list_remove(list_t node, void* data, cmp_func_t cmp) {
-  if (node != NULL && *node != NULL) {
-    Node *n, *prev, *temp = *node;
-    if (cmp((*node)->data, data)) {
-      *node = (*node)->next;
-      free(temp);
-      temp = NULL;
-    } else {
-        while (temp->next && !cmp(temp->data, data)){ 
-          prev = temp;
-          temp = temp->next;
-        }
-        if (temp->next) {
-            n = temp->next;
-            temp->next = temp->next->next;
-        } else {
-            n = temp;
-            prev->next = NULL;
-        } 
-        free(n);
-        n = NULL;
-      }
-    }
+    *node = delete_node(*node, data, cmp);
 }
 
 Node* list_find(const list_t list, void *data, cmp_func_t cmp){
