@@ -64,4 +64,7 @@ void test_color_graph();
 /* A few tests for assign-registers */
 void test_assign_registers();
 
+/* A few tests for allocate-registers */
+void test_allocate_registers();
+
 #endif /* TESTS_H */

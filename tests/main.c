@@ -171,7 +171,7 @@ int main(int argc, char *argv[]) {
 
   printf("testing assign-homes...\n\n");
 
-  // test_assign_homes();
+  test_assign_homes();
 
   printf("===================================================\n");
 
@@ -202,6 +202,12 @@ int main(int argc, char *argv[]) {
   printf("testing assign_registers...\n\n");
 
   test_assign_registers();
+
+  printf("===================================================\n");
+
+  printf("testing allocate_registers...\n\n");
+
+  test_allocate_registers();
 
   printf("===================================================\n");
 
