@@ -61,7 +61,7 @@
 * Update the main-generation pass to save and restore callee-saved registers.
 * Connect your test suite to the new main-generation and allocate-registers passes.
 * Write a few test programs that have opportunities for move-biasing to be effective.
-Extend your build-interferences pass to construct a move-graph.
+* Extend your build-interferences pass to construct a move-graph.
 Extend your color-graph function to incorporate move-biasing with an optional input argument.
 Update your allocate-registers pass to make use of the move-biasing feature of color-graph.
 Extend your data types from R1 to R2.
