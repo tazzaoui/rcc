@@ -12,6 +12,7 @@
 #define TMP_REG RAX
 
 const REGISTER Caller_Saved_Regs[NUM_CALLER_SAVED_REGS] = {RAX, RDX, RCX, RSI, RDI, R8, R9, R10, R11};
+const REGISTER Callee_Saved_Regs[NUM_CALLEE_SAVED_REGS] = {RSP, RBP, R12, R13, R14, R15};
 
 X_Program* reg_alloc(X_Program* xp){
     xp = uncover_live(xp);
@@ -275,36 +276,11 @@ X_Program* color_graph(X_Program *xp){
 
 X_Program* assign_registers(X_Program* xp){
     if(xp && xp->info){
-        int variable_count;
-        Info *info = xp->info;
+        int variable_count = 0;
         list_t bi = list_create(), ei = list_create(), new_instrs = list_create(),
                var_to_num = list_create(), lbls = list_create();
-        
-        lbl_blk_pair_t *begin_lbp = new_lbl_blk_pair("begin", new_x_block(NULL, bi));
-        lbl_blk_pair_t *end_lbp = new_lbl_blk_pair("end", new_x_block(NULL, ei));
-        lbl_blk_pair_t *body_lbp = new_lbl_blk_pair("body", new_x_block(NULL, new_instrs));
-
-        list_insert(lbls, begin_lbp);
-        list_insert(lbls, body_lbp);
-        list_insert(lbls, end_lbp);
-
-        variable_count = list_size(info->vars) * 8;
-        variable_count = (variable_count % 16 == 0) ? variable_count : variable_count + 8;
-
-        X_Arg *rbp = new_x_arg(X_ARG_REG, new_x_arg_reg(RBP));
-        X_Arg *rsp = new_x_arg(X_ARG_REG, new_x_arg_reg(RSP));
-        X_Arg *vc = new_x_arg(X_ARG_NUM, new_x_arg_num(variable_count));
-        
-        list_insert(bi, new_x_instr(PUSHQ, new_x_pushq(rbp)));
-        list_insert(bi, new_x_instr(MOVQ, new_x_movq(rsp, rbp)));
-        list_insert(bi, new_x_instr(SUBQ, new_x_subq(vc, rsp)));
-        list_insert(bi, new_x_instr(JMP, new_x_jmp("body")));
-        
-        list_insert(ei, new_x_instr(ADDQ, new_x_addq(vc, rsp)));
-        list_insert(ei, new_x_instr(POPQ, new_x_popq(rbp)));
-        list_insert(ei, new_x_instr(RETQ, new_x_retq()));
-        
-        Node *node = list_find(xp->labels, new_lbl_blk_pair("body", NULL), lbl_blk_pair_cmp);
+                      
+        Node *ptr, *node = list_find(xp->labels, new_lbl_blk_pair("body", NULL), lbl_blk_pair_cmp);
         if(node == NULL) die("[assign_registers] NO BODY LABEL!");
         X_Block *xb = ((lbl_blk_pair_t*)node->data)->block;
 
@@ -314,6 +290,48 @@ X_Program* assign_registers(X_Program* xp){
             list_insert(new_instrs, map_instr(node->data, var_to_num));
             node = node->next;
         }
+
+        ptr = *var_to_num;
+        while(ptr){
+            variable_count += (((x_arg_pair_t*)ptr->data)->arg2->type == X_ARG_MEM);
+            ptr = ptr->next;
+        } 
+        variable_count *= 8;
+        variable_count = (variable_count % 16 == 0) ? variable_count : variable_count + 8;
+
+        lbl_blk_pair_t *begin_lbp = new_lbl_blk_pair("begin", new_x_block(NULL, bi));
+        lbl_blk_pair_t *end_lbp = new_lbl_blk_pair("end", new_x_block(NULL, ei));
+        lbl_blk_pair_t *body_lbp = new_lbl_blk_pair("body", new_x_block(NULL, new_instrs));
+
+        list_insert(lbls, begin_lbp);
+        list_insert(lbls, body_lbp);
+        list_insert(lbls, end_lbp);
+
+        X_Arg *rbp = new_x_arg(X_ARG_REG, new_x_arg_reg(RBP));
+        X_Arg *rsp = new_x_arg(X_ARG_REG, new_x_arg_reg(RSP));
+        X_Arg *vc = new_x_arg(X_ARG_NUM, new_x_arg_num(variable_count));
+        X_Arg *reg;
+
+        list_insert(bi, new_x_instr(PUSHQ, new_x_pushq(rbp)));
+        list_insert(bi, new_x_instr(MOVQ, new_x_movq(rsp, rbp)));
+        list_insert(ei, new_x_instr(ADDQ, new_x_addq(vc, rsp)));       
+
+        // Save & Restore Any Used Callee-Saved Registers
+        for(int i = 0; i < NUM_CALLEE_SAVED_REGS; ++i){
+            reg = new_x_arg(X_ARG_REG, new_x_arg_reg(Callee_Saved_Regs[i]));
+            ptr = list_find(var_to_num, new_x_arg_pair(NULL, reg), x_arg_pair_cmp2);
+            if(ptr) list_insert(bi, new_x_instr(PUSHQ, new_x_pushq(reg)));
+
+            reg = new_x_arg(X_ARG_REG, new_x_arg_reg(Callee_Saved_Regs[NUM_CALLEE_SAVED_REGS - i - 1]));
+            ptr = list_find(var_to_num, new_x_arg_pair(NULL, reg), x_arg_pair_cmp2);
+            if(ptr) list_insert(ei, new_x_instr(POPQ, new_x_popq(reg))); 
+        }
+                 
+        list_insert(bi, new_x_instr(SUBQ, new_x_subq(vc, rsp)));
+        list_insert(bi, new_x_instr(JMP, new_x_jmp("body")));
+        list_insert(ei, new_x_instr(POPQ, new_x_popq(rbp)));
+        list_insert(ei, new_x_instr(RETQ, new_x_retq()));
+ 
         return new_x_prog(NULL, lbls);
     }
     die("[assign_registers] XP OR INFO IS NULL!");

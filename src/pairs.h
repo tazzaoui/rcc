@@ -72,6 +72,9 @@ x_arg_pair_t* new_x_arg_pair(X_Arg*, X_Arg*);
 /* Compare two X_Arg -> X_Arg pairs */
 int x_arg_pair_cmp(void*, void*);
 
+/* Compare two arg pairs wrt the second arg */
+int x_arg_pair_cmp2(void*, void*);
+
 /* Print an X_Arg -> X_Arg pair */
 void print_x_arg_pair(void*);
 

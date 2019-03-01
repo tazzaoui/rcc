@@ -18,6 +18,12 @@ int x_arg_pair_cmp(void* a, void* b){
     return cmp_x_args(a_arg, b_arg);
 }
 
+int x_arg_pair_cmp2(void* a, void* b){
+    X_Arg *a_arg = ((x_arg_pair_t*)a)->arg2;
+    X_Arg *b_arg = ((x_arg_pair_t*)b)->arg2;
+    return cmp_x_args(a_arg, b_arg);
+}
+
 void print_x_arg_pair(void* a){
     x_arg_pair_t *a_arg = (x_arg_pair_t*)a;
     printf("<");

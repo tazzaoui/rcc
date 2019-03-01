@@ -58,7 +58,7 @@
 * Write a dozen tests for the assign-registers that predict its output and check their behavior.
 * Write a dozen tests for allocate-registers that predict its output.
 * Replace stupid-allocate-registers with a new allocate-registers pass on X0 programs.
-Update the main-generation pass to save and restore callee-saved registers.
+* Update the main-generation pass to save and restore callee-saved registers.
 Connect your test suite to the new main-generation and allocate-registers passes.
 Write a few test programs that have opportunities for move-biasing to be effective.
 Extend your build-interferences pass to construct a move-graph.

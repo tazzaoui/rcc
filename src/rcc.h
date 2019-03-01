@@ -9,9 +9,11 @@
 #include "x.h"
 
 #define NUM_CALLER_SAVED_REGS 9
+#define NUM_CALLEE_SAVED_REGS 6
 #define NO_COLOR -9999
 
 extern const REGISTER Caller_Saved_Regs[NUM_CALLER_SAVED_REGS];
+extern const REGISTER Callee_Saved_Regs[NUM_CALLEE_SAVED_REGS];
 
 /* Uniquify pass */
 R_Expr* uniquify(R_Expr*, list_t, int*);
