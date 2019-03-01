@@ -211,6 +211,13 @@ int main(int argc, char *argv[]) {
 
   printf("===================================================\n");
 
+  printf("testing move biasing...\n\n");
+
+  test_move_biasing();
+
+  printf("===================================================\n");
+
+
   printf("General Checks...\n");
 
   list_t new_vars, labels;

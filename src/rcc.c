@@ -14,6 +14,25 @@
 const REGISTER Caller_Saved_Regs[NUM_CALLER_SAVED_REGS] = {RAX, RDX, RCX, RSI, RDI, R8, R9, R10, R11};
 const REGISTER Callee_Saved_Regs[NUM_CALLEE_SAVED_REGS] = {RSP, RBP, R12, R13, R14, R15};
 
+X_Program* compile(R_Expr* expr){
+    R_Expr *uniq, *simple;
+    C_Tail *c_tail;
+    C_Program *cp, *cp_uncovered;
+    X_Program *xp; 
+    list_t labels = list_create(), new_vars = list_create();
+	uniq = unique(expr);
+    simple = rco(uniq, &new_vars);
+    c_tail = econ_expr(simple); 
+    list_insert(labels, new_lbl_tail_pair("body", c_tail));
+    cp = new_c_program(NULL, labels);
+    cp_uncovered = uncover_locals(cp);
+    xp = select_instr(cp_uncovered);
+    xp = reg_alloc(xp);
+    xp = patch_instrs(xp);
+	xp = main_pass(xp);
+    return xp;
+}
+
 X_Program* reg_alloc(X_Program* xp){
     xp = uncover_live(xp);
     xp = build_interferences(xp);

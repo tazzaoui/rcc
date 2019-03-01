@@ -15,6 +15,9 @@
 extern const REGISTER Caller_Saved_Regs[NUM_CALLER_SAVED_REGS];
 extern const REGISTER Callee_Saved_Regs[NUM_CALLEE_SAVED_REGS];
 
+/* Run an R_Expr through the compiler to obtain an X_Program */
+X_Program* compile(R_Expr*);
+
 /* Uniquify pass */
 R_Expr* uniquify(R_Expr*, list_t, int*);
 

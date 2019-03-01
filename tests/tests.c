@@ -2515,3 +2515,53 @@ void test_allocate_registers() {
   list_print(mapping, print_x_arg_pair);
   printf("\n");
 }
+
+
+void test_move_biasing(){ 
+  X_Program *xp;
+  X_Arg *rax = new_x_arg(X_ARG_REG, new_x_arg_reg(RAX));
+  X_Arg *n_1 = new_x_arg(X_ARG_NUM, new_x_arg_num(1));
+  X_Arg *n_46 = new_x_arg(X_ARG_NUM, new_x_arg_num(46));
+  X_Arg *n_4 = new_x_arg(X_ARG_NUM, new_x_arg_num(4));
+  X_Arg *n_7 = new_x_arg(X_ARG_NUM, new_x_arg_num(7));
+  X_Arg *v = new_x_arg(X_ARG_VAR, new_x_arg_var("V"));
+  X_Arg *w = new_x_arg(X_ARG_VAR, new_x_arg_var("W"));
+  X_Arg *x = new_x_arg(X_ARG_VAR, new_x_arg_var("X"));
+  X_Arg *y = new_x_arg(X_ARG_VAR, new_x_arg_var("Y"));
+  X_Arg *z = new_x_arg(X_ARG_VAR, new_x_arg_var("Z"));
+  X_Arg *tv = new_x_arg(X_ARG_VAR, new_x_arg_var("T"));
+
+  list_t instrs = list_create(), blks = list_create();
+ 
+  R_Expr *r_expr = new_let(new_var("v"), new_num(1),
+                   new_let(new_var("w"), new_num(46),
+                   new_let(new_var("x"), new_add(new_var("v"), new_num(7)),
+                   new_let(new_var("y"), new_add(new_num(4), new_var("x")),
+                   new_let(new_var("z"), new_add(new_var("x"), new_var("w")),
+                   new_add(new_var("z"), new_neg(new_var("y"))))))));
+
+  xp = compile(r_expr);
+  x_emit(xp, NULL);
+
+  list_insert(instrs, new_x_instr(MOVQ, new_x_movq(n_1, v)));
+  list_insert(instrs, new_x_instr(MOVQ, new_x_movq(n_46, w)));
+  list_insert(instrs, new_x_instr(MOVQ, new_x_movq(v, x)));
+  list_insert(instrs, new_x_instr(ADDQ, new_x_addq(n_7, x)));
+  list_insert(instrs, new_x_instr(MOVQ, new_x_movq(x, y)));
+  list_insert(instrs, new_x_instr(ADDQ, new_x_addq(n_4, y)));
+  list_insert(instrs, new_x_instr(MOVQ, new_x_movq(x, z)));
+  list_insert(instrs, new_x_instr(ADDQ, new_x_addq(w, z)));
+  list_insert(instrs, new_x_instr(MOVQ, new_x_movq(y, tv)));
+  list_insert(instrs, new_x_instr(NEGQ, new_x_negq(tv)));
+  list_insert(instrs, new_x_instr(MOVQ, new_x_movq(z, rax)));
+  list_insert(instrs, new_x_instr(ADDQ, new_x_addq(tv, rax)));
+  list_insert(instrs, new_x_instr(JMP, new_x_jmp("end")));
+
+  X_Block *b = new_x_block(NULL, instrs);
+  lbl_blk_pair_t *lbp = new_lbl_blk_pair("body", b);
+
+  list_insert(blks, lbp);
+  xp = new_x_prog(NULL, blks);
+  xp = reg_alloc(xp);
+  x_emit(xp, NULL);
+}
