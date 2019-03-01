@@ -20,10 +20,10 @@ static inline void print_optim(R_Expr *e) {
 
 int main(int argc, char *argv[]) {
   int count = 0, res, rand_depth, res_opt, res_uniq, res_rco, res_econ, res_ul,
-      res_si, res_ah, res_pi, res_mp, res_ui, res_bi, res_cg, full_count;
+      res_si, res_ar, res_pi, res_mp, res_ui, res_bi, res_cg, full_count;
   R_Expr *expr, *expr_opt, *uniq, *simple;
   C_Tail *c_tail;
-  X_Program *ul, *bi, *ah, *pi, *mp, *cg;
+  X_Program *ul, *bi, *ar, *pi, *mp, *cg;
   list_t vars = list_create();
   srand(time(0));
 
@@ -227,35 +227,35 @@ int main(int argc, char *argv[]) {
     cp = new_c_program(NULL, labels);
     cp_uncovered = uncover_locals(cp);
     xp = select_instr(cp_uncovered);
-    ah = assign_homes(xp);
-    pi = patch_instrs(ah);
-    mp = main_pass(pi);
-    ul = uncover_live(mp);
+    ul = uncover_live(xp);
     bi = build_interferences(ul);
     cg = color_graph(bi);
+    ar = assign_registers(xp);
+    pi = patch_instrs(ar);
+    mp = main_pass(pi);
     res = r_interp(expr, NULL);
     res_uniq = r_interp(uniq, NULL);
     res_rco = r_interp(simple, NULL);
     res_econ = c_t_interp(c_tail, list_create());
     res_ul = c_p_interp(cp_uncovered);
     res_si = x_interp(xp);
-    res_ah = x_interp(ah);
+    res_ui = x_interp(ul);
+    res_bi = x_interp(bi);   
+    res_cg = x_interp(cg);   
+    res_ar = x_interp(ar);
     res_pi = x_interp(pi);
     res_mp = x_compile(mp);
-    res_ui = x_interp(ul);
-    res_bi = x_interp(bi);
-    res_cg = x_interp(cg);
     assert(res == res_uniq);
     assert(res_uniq == res_rco);
     assert(res_rco == res_econ);
     assert(res_econ == res_ul);
     assert(res_ul == res_si);
-    assert(res_si == res_ah);
-    assert(res_ah == res_pi);
-    assert(res_pi == res_mp);
-    assert(res_mp == res_ul);
+    assert(res_si == res_ui);
     assert(res_ui == res_bi);
     assert(res_bi == res_cg);
+    assert(res_cg == res_ar);
+    assert(res_ar == res_pi);
+    assert(res_pi == res_mp);
     if (DEBUG) {
       printf("Normal   : ");
       r_print_expr(expr);
