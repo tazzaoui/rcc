@@ -142,6 +142,9 @@ char* append_int(const char*, int);
 /* Make the adjacency list symmetric */
 void make_symmetric(list_t);
 
+/* Combine a few register allocation passes */
+X_Program* reg_alloc(X_Program* xp);
+
 /* Wrapper around uniquify */
 static inline R_Expr* unique(R_Expr* e) {
   int n = 0;

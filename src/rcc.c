@@ -13,6 +13,13 @@
 
 const REGISTER Caller_Saved_Regs[NUM_CALLER_SAVED_REGS] = {RAX, RDX, RCX, RSI, RDI, R8, R9, R10, R11};
 
+X_Program* reg_alloc(X_Program* xp){
+    xp = uncover_live(xp);
+    xp = build_interferences(xp);
+    xp = color_graph(xp);
+    return assign_registers(xp);
+}
+
 char *append_int(const char* old, int n){
     int num_digits = n == 0 ? 1 : floor(log10(abs(n))) + 1; 
     char *new = malloc_or_die(strlen(old) + num_digits + 1); 
