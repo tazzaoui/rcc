@@ -313,7 +313,7 @@ X_Program* color_graph_mb(X_Program *xp, int mb){
 }
 
 X_Program* color_graph(X_Program *xp){
-    return color_graph_mb(xp, 0);
+    return color_graph_mb(xp, 1);
 }
 
 X_Program* assign_registers(X_Program* xp){
