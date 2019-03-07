@@ -217,7 +217,6 @@ int main(int argc, char *argv[]) {
 
   printf("===================================================\n");
 
-
   printf("General Checks...\n");
 
   list_t new_vars, labels;
@@ -247,8 +246,8 @@ int main(int argc, char *argv[]) {
     res_ul = c_p_interp(cp_uncovered);
     res_si = x_interp(xp);
     res_ui = x_interp(ul);
-    res_bi = x_interp(bi);   
-    res_cg = x_interp(cg);   
+    res_bi = x_interp(bi);
+    res_cg = x_interp(cg);
     res_ar = x_interp(ar);
     res_pi = x_interp(pi);
     res_mp = x_compile(mp);

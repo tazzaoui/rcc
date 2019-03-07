@@ -194,6 +194,7 @@ X_Program* build_interferences(X_Program* xp){
            head = head->next;
         }
         make_symmetric(graph);
+        make_symmetric(move_graph);
         xp->info->i_graph = graph;
         xp->info->m_graph = move_graph;
     }
@@ -253,21 +254,36 @@ list_t neighbor_colors(list_t neighbors, list_t colors){
     return nc;
 }
 
-int lowest_color(list_t neighbors, list_t colors){
-    if(list_size(colors) <= 0) return 0;
+int find_lowest_color(list_t nc){
     int i = 0;
-    list_t nc = neighbor_colors(neighbors, colors);
-    while(1){ 
-        Node *node = list_find(nc, new_x_arg_int_pair(NULL, i), x_arg_int_pair_cmp_by_int);
-        if(node == NULL) return i; 
-        ++i;
-    } 
-    return I32MIN;
+    while(1)
+        if (!list_find(nc, new_x_arg_int_pair(NULL, i), x_arg_int_pair_cmp_by_int))
+            return i; 
+        else ++i;
 }
 
-X_Program* color_graph(X_Program *xp){
+int lowest_color(list_t neighbors, list_t colors){
+    return list_size(colors) ? find_lowest_color(neighbor_colors(neighbors, colors)) : 0;
+}
+
+int lowest_color_mb(x_arg_list_pair_t *vrtx, list_t m_graph, list_t colors){
+    Node* head;
+    list_t res, sat, neighbors, nc;
+    if(list_size(colors) <= 0) return 0;
+    if((head = list_find(m_graph, vrtx, x_arg_list_pair_cmp))){
+        sat = list_create(); 
+        neighbors = ((x_arg_list_pair_t*)head->data)->list;
+        nc = neighbor_colors(neighbors, colors);
+        saturation(vrtx->arg, m_graph, colors, sat);
+        res = list_subtract(nc, sat, x_arg_int_pair_cmp);
+        return find_lowest_color(res);
+    }
+    return I32MIN;  
+}
+
+X_Program* color_graph_mb(X_Program *xp, int mb){
     if(xp){
-        int color;
+        int color = I32MIN;
         Node *head;
         list_t i_graph = xp->info->i_graph, colors = list_create();
         X_Arg* rax = new_x_arg(X_ARG_REG, new_x_arg_reg(RAX));
@@ -284,13 +300,20 @@ X_Program* color_graph(X_Program *xp){
 
         while(list_size(i_graph) > 0){
             vrtx = max_sat(i_graph, colors);
-            color = lowest_color(vrtx->list, colors); 
+            if(mb) color = lowest_color_mb(vrtx, xp->info->m_graph, colors);
+            if(color == I32MIN) color = lowest_color(vrtx->list, colors); 
             list_insert(colors, new_x_arg_int_pair(vrtx->arg, color));
             list_remove(i_graph, vrtx, x_arg_list_pair_cmp); 
+            if(mb) list_remove(xp->info->m_graph, vrtx, x_arg_list_pair_cmp); 
+            color = I32MIN;
         }
         xp->info->colors = colors;
     }
     return xp;
+}
+
+X_Program* color_graph(X_Program *xp){
+    return color_graph_mb(xp, 0);
 }
 
 X_Program* assign_registers(X_Program* xp){

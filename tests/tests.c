@@ -2516,8 +2516,7 @@ void test_allocate_registers() {
   printf("\n");
 }
 
-
-void test_move_biasing(){ 
+void test_move_biasing() {
   X_Program *xp;
   X_Arg *rax = new_x_arg(X_ARG_REG, new_x_arg_reg(RAX));
   X_Arg *n_1 = new_x_arg(X_ARG_NUM, new_x_arg_num(1));
@@ -2532,13 +2531,16 @@ void test_move_biasing(){
   X_Arg *tv = new_x_arg(X_ARG_VAR, new_x_arg_var("T"));
 
   list_t instrs = list_create(), blks = list_create();
- 
-  R_Expr *r_expr = new_let(new_var("v"), new_num(1),
-                   new_let(new_var("w"), new_num(46),
-                   new_let(new_var("x"), new_add(new_var("v"), new_num(7)),
-                   new_let(new_var("y"), new_add(new_num(4), new_var("x")),
-                   new_let(new_var("z"), new_add(new_var("x"), new_var("w")),
-                   new_add(new_var("z"), new_neg(new_var("y"))))))));
+
+  R_Expr *r_expr = new_let(
+      new_var("v"), new_num(1),
+      new_let(
+          new_var("w"), new_num(46),
+          new_let(
+              new_var("x"), new_add(new_var("v"), new_num(7)),
+              new_let(new_var("y"), new_add(new_num(4), new_var("x")),
+                      new_let(new_var("z"), new_add(new_var("x"), new_var("w")),
+                              new_add(new_var("z"), new_neg(new_var("y"))))))));
 
   xp = compile(r_expr);
   x_emit(xp, NULL);
