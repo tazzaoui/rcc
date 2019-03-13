@@ -52,6 +52,52 @@ R_Expr* new_read() {
   return new_expr(r, R_EXPR_READ);
 }
 
+R_Expr* new_sub(R_Expr *left, R_Expr *right){
+    return new_add(left, new_neg(right));
+}
+
+R_Expr* new_true(){
+    R_True *r = malloc_or_die(sizeof(R_True));
+    r->val = 1;
+    return new_expr(r, R_EXPR_TRUE);
+}
+
+R_Expr* new_false(){
+    R_False *r = malloc_or_die(sizeof(R_True));
+    r->val = 0;
+    return new_expr(r, R_EXPR_FALSE);
+}
+
+R_Expr* new_and(R_Expr* left, R_Expr* right){
+    return new_if(left, right, new_false());
+}
+
+R_Expr* new_or(R_Expr* left, R_Expr* right){
+    return new_if(left, new_true(), right);
+}
+
+R_Expr* new_not(R_Expr* expr){
+  R_Not* n = malloc_or_die(sizeof(R_Not));
+  n->expr = expr;
+  return new_expr(n, R_EXPR_NOT);
+}
+
+R_Expr* new_cmp(R_CMP_TYPE cmp_type, R_Expr* left, R_Expr* right){
+  R_Cmp* r = malloc_or_die(sizeof(R_Expr));
+  r->cmp_type = cmp_type;
+  r->left = left;
+  r->right = right;
+  return new_expr(r, R_EXPR_CMP);
+}
+
+R_Expr* new_if(R_Expr* test_expr, R_Expr* then_expr, R_Expr* else_expr){
+  R_If* r = malloc_or_die(sizeof(R_If));
+  r->test_expr = test_expr;
+  r->then_expr = then_expr;
+  r->else_expr = else_expr; 
+  return new_expr(r, R_EXPR_CMP);
+}
+
 int r_interp(R_Expr* expr, list_t env) {
     Node* n;
     if(env == NULL)

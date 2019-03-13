@@ -10,8 +10,25 @@ typedef enum R_EXPR_TYPE {
   R_EXPR_READ,
   R_EXPR_NUM,
   R_EXPR_VAR,
-  R_EXPR_LET
+  R_EXPR_LET,
+  R_EXPR_TRUE,
+  R_EXPR_FALSE,
+  R_EXPR_AND,
+  R_EXPR_OR,
+  R_EXPR_NOT,
+  R_EXPR_CMP,
+  R_EXPR_IF
 } R_EXPR_TYPE;
+
+typedef enum R_CMP_TYPE {
+  R_CMP_EQUAL,
+  R_CMP_LESS,
+  R_CMP_LEQ,
+  R_CMP_GEQ,
+  R_CMP_GREATER
+} R_CMP_TYPE;
+
+typedef enum R_TYPE { R_TYPE_S64, R_TYPE_BOOL } R_TYPE;
 
 typedef struct R_Expr {
   R_EXPR_TYPE type;
@@ -42,6 +59,35 @@ typedef struct R_Var {
   const char* name;
 } R_Var;
 
+typedef struct R_True {
+  int val;
+} R_True;
+
+typedef struct R_False {
+  int val;
+} R_False;
+
+typedef struct R_And {
+  R_Expr *left, *right;
+} R_And;
+
+typedef struct R_Or {
+  R_Expr *left, *right;
+} R_Or;
+
+typedef struct R_Not {
+  R_Expr* expr;
+} R_Not;
+
+typedef struct R_Cmp {
+  R_CMP_TYPE cmp_type;
+  R_Expr *left, *right;
+} R_Cmp;
+
+typedef struct R_If {
+  R_Expr *test_expr, *then_expr, *else_expr;
+} R_If;
+
 /* Return a new expression */
 R_Expr* new_expr(void*, R_EXPR_TYPE);
 
@@ -62,6 +108,30 @@ R_Expr* new_read(void);
 
 /* Return a new variable */
 R_Expr* new_var(const char*);
+
+/* Return a new negative addition expression */
+R_Expr* new_sub(R_Expr*, R_Expr*);
+
+/* Return a new true expression */
+R_Expr* new_true(void);
+
+/* Return a new false expression */
+R_Expr* new_false(void);
+
+/* Return a new boolean and expression */
+R_Expr* new_and(R_Expr*, R_Expr*);
+
+/* Return a new boolean or expression */
+R_Expr* new_or(R_Expr*, R_Expr*);
+
+/* Return a new boolean not expression */
+R_Expr* new_not(R_Expr*);
+
+/* Return a new comparison expression */
+R_Expr* new_cmp(R_CMP_TYPE, R_Expr*, R_Expr*);
+
+/* Return a new if expression */
+R_Expr* new_if(R_Expr*, R_Expr*, R_Expr*);
 
 /* Interpret an expression in an environment*/
 int r_interp(R_Expr*, list_t);
