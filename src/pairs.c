@@ -12,13 +12,13 @@ x_arg_pair_t* new_x_arg_pair(X_Arg* arg1, X_Arg* arg2){
     return x;
 }
 
-int x_arg_pair_cmp(void* a, void* b){
+CMP x_arg_pair_cmp(void* a, void* b){
     X_Arg *a_arg = ((x_arg_pair_t*)a)->arg1;
     X_Arg *b_arg = ((x_arg_pair_t*)b)->arg1;
     return cmp_x_args(a_arg, b_arg);
 }
 
-int x_arg_pair_cmp2(void* a, void* b){
+CMP x_arg_pair_cmp2(void* a, void* b){
     X_Arg *a_arg = ((x_arg_pair_t*)a)->arg2;
     X_Arg *b_arg = ((x_arg_pair_t*)b)->arg2;
     return cmp_x_args(a_arg, b_arg);
@@ -50,13 +50,13 @@ x_arg_int_pair_t* new_x_arg_int_pair(X_Arg* arg, int num){
     return x;
 }
 
-int x_arg_int_pair_cmp(void* a, void* b){
+CMP x_arg_int_pair_cmp(void* a, void* b){
     X_Arg *a_arg = ((x_arg_int_pair_t*)a)->arg;
     X_Arg *b_arg = ((x_arg_int_pair_t*)b)->arg;
     return cmp_x_args(a_arg, b_arg);
 }
 
-int x_arg_int_pair_cmp_by_int(void *a, void *b){
+CMP x_arg_int_pair_cmp_by_int(void *a, void *b){
     int a_num = ((x_arg_int_pair_t*)a)->num; 
     int b_num = ((x_arg_int_pair_t*)b)->num; 
     if(a_num == b_num) return EQUAL;
@@ -80,7 +80,7 @@ x_arg_list_pair_t* new_x_arg_list_pair(X_Arg *arg, list_t list){
     return x;
 }
 
-int x_arg_list_pair_cmp(void* alp1, void* alp2){
+CMP x_arg_list_pair_cmp(void* alp1, void* alp2){
     X_Arg *a1 = ((x_arg_list_pair_t*)alp1)->arg;
     X_Arg *a2 = ((x_arg_list_pair_t*)alp2)->arg;
     return cmp_x_args(a1, a2);
@@ -123,19 +123,20 @@ c_var_num_pair_t* new_c_var_num_pair(C_Var* cv, int num){
     return p;
 }
 
-int c_var_num_pair_cmp(void* a, void* b){
+CMP c_var_num_pair_cmp(void* a, void* b){
     if(a && b){ 
         C_Var* cv_a = ((c_var_num_pair_t*) a)->var;
         C_Var* cv_b = ((c_var_num_pair_t*) b)->var;
-        return cv_a && cv_b && strcmp(cv_a->name, cv_b->name) == 0;
+        if(strcmp(cv_a->name, cv_b->name) == 0) return EQUAL;
     }
-    return 0;
+    return UNEQUAL;
 }
 
-int c_var_cmp(void* a, void* b){
+CMP c_var_cmp(void* a, void* b){
     C_Var *cv_a = (C_Var*)a;
     C_Var *cv_b = (C_Var*)b;
-    return cv_a && cv_b && strcmp(cv_a->name, cv_b->name) == 0;
+    if(strcmp(cv_a->name, cv_b->name) == 0) return EQUAL;
+    return UNEQUAL;
 }
 
 void c_var_print(void *a){
@@ -152,24 +153,26 @@ env_pair_t *new_env_pair(R_Expr* var, R_Expr* val){
     return ep;
 }
 
-int ep_cmp(void* a, void* b){
+CMP ep_cmp(void* a, void* b){
     if(a != NULL && b != NULL){
         env_pair_t *ae = (env_pair_t*) a;
         env_pair_t *be = (env_pair_t*) b;
-        return strcmp(((R_Var*)ae->var->expr)->name, ((R_Var*)be->var->expr)->name) == 0; 
+        if(strcmp(((R_Var*)ae->var->expr)->name, ((R_Var*)be->var->expr)->name) == 0)
+            return EQUAL;
     }
-    return 0; 
+    return UNEQUAL; 
 }
 
 
-int ep_var_cmp(void *a, void *b){
+CMP ep_var_cmp(void *a, void *b){
     if(a != NULL && b != NULL){
         R_Expr *a_expr = (R_Expr*) a; 
         R_Expr *b_expr = ((env_pair_t*) b)->var;
-        if(a_expr != NULL && b_expr != NULL && a_expr->type == R_EXPR_VAR && b_expr->type == R_EXPR_VAR)
-            return strcmp(((R_Var*)a_expr->expr)->name, ((R_Var*)b_expr->expr)->name) == 0; 
+        if(a_expr->type == R_EXPR_VAR && b_expr->type == R_EXPR_VAR && 
+           strcmp(((R_Var*)a_expr->expr)->name, ((R_Var*)b_expr->expr)->name) == 0)
+            return EQUAL; 
     }
-    return 0;
+    return UNEQUAL;
 }
 
 void* ep_cpy(void *old){
@@ -195,13 +198,13 @@ lbl_tail_pair_t *new_lbl_tail_pair(label_t lbl, C_Tail *tail){
     return lbt;
 }
 
-int lbl_tail_cmp(void* a, void* b){
+CMP lbl_tail_cmp(void* a, void* b){
     if(a && b){
         lbl_tail_pair_t *lt_a = (lbl_tail_pair_t*) a;
         lbl_tail_pair_t *lt_b = (lbl_tail_pair_t*) b;
-        return strcmp(lt_a->label, lt_b->label) == 0;
+        if(strcmp(lt_a->label, lt_b->label) == 0) return EQUAL;
     }
-    return 0;
+    return UNEQUAL;
 }
 
 void lbl_tail_print(void *a){
@@ -218,13 +221,13 @@ lbl_blk_pair_t* new_lbl_blk_pair(label_t label, X_Block* blk){
     return lbp;
 }
 
-int lbl_blk_pair_cmp(void *a, void *b){
+CMP lbl_blk_pair_cmp(void *a, void *b){
     if(a && b){        
         lbl_blk_pair_t *lbp_a = (lbl_blk_pair_t*) a;
         lbl_blk_pair_t *lbp_b = (lbl_blk_pair_t*) b;
-        return strcmp(lbp_a->label, lbp_b->label) == 0; 
+        if(strcmp(lbp_a->label, lbp_b->label) == 0) return EQUAL; 
     }
-    return 0;
+    return UNEQUAL;
 }
 
 void print_lbl_blk_pair(void* l){
@@ -243,13 +246,14 @@ reg_num_pair_t* new_reg_num_pair(REGISTER reg, int num){
     return rnp;
 }
 
-int reg_num_pair_cmp(void *a, void *b){
+CMP reg_num_pair_cmp(void *a, void *b){
     if(a && b){
         reg_num_pair_t *rnp_a = (reg_num_pair_t*) a;
         reg_num_pair_t *rnp_b = (reg_num_pair_t*) b;
-        return (rnp_a->reg == rnp_b->reg && rnp_a->num == rnp_b->num);
+        if(rnp_a->reg == rnp_b->reg && rnp_a->num == rnp_b->num)
+            return EQUAL;
     }
-    return 0;
+    return UNEQUAL;
 }
 
 void* reg_num_pair_cpy(void *old){
@@ -271,13 +275,13 @@ num_pair_t* new_num_pair(int n1, int n2){
     return np;
 }
 
-int num_pair_cmp(void *a, void *b){
+CMP num_pair_cmp(void *a, void *b){
     if(a && b){
         num_pair_t *np_a = (num_pair_t*) a;
         num_pair_t *np_b = (num_pair_t*) b;
-        return (np_a->n1 == np_b->n1);
+        if(np_a->n1 == np_b->n1) return EQUAL;
     }
-    return 0;
+    return UNEQUAL;
 }
 
 void* num_pair_cpy(void *old){
@@ -299,13 +303,14 @@ var_num_pair_t* new_var_num_pair(X_Arg_Var* var, int num){
     return vnp;
 }
 
-int var_num_pair_cmp(void *a, void *b){
+CMP var_num_pair_cmp(void *a, void *b){
     if(a && b){
         var_num_pair_t *vnp_a = (var_num_pair_t*) a;
         var_num_pair_t *vnp_b = (var_num_pair_t*) b;
-        return strcmp(vnp_a->var->name, vnp_b->var->name) == 0;
+        if(strcmp(vnp_a->var->name, vnp_b->var->name) == 0)
+            return EQUAL;
     }
-    return 0;
+    return UNEQUAL;
 }
 
 void* var_num_pair_cpy(void *old){
@@ -327,10 +332,10 @@ r_var_int_pair_t* new_r_var_int_pair(R_Var* v, int n){
     return r;
 }
 
-int r_var_int_pair_cmp(void* r1, void* r2) {
+CMP r_var_int_pair_cmp(void* r1, void* r2) {
     r_var_int_pair_t *rvv_a = (r_var_int_pair_t*) r1;
     r_var_int_pair_t *rvv_b = (r_var_int_pair_t*) r2;
-    return strcmp(rvv_a->var->name, rvv_b->var->name) == 0;
+    return strcmp(rvv_a->var->name, rvv_b->var->name) == 0 ? EQUAL : UNEQUAL;
 }
 
 r_var_var_pair_t* new_r_var_var_pair(R_Var* v1, R_Var* v2){
@@ -340,10 +345,10 @@ r_var_var_pair_t* new_r_var_var_pair(R_Var* v1, R_Var* v2){
     return r;
 }
 
-int r_var_var_pair_cmp(void* r1, void* r2) {
+CMP r_var_var_pair_cmp(void* r1, void* r2) {
     r_var_var_pair_t *rvv_a = (r_var_var_pair_t*) r1;
     r_var_var_pair_t *rvv_b = (r_var_var_pair_t*) r2;
-    return strcmp(rvv_a->v1->name, rvv_b->v1->name) == 0;
+    return strcmp(rvv_a->v1->name, rvv_b->v1->name) == 0 ? EQUAL : UNEQUAL;
 }
 
 void *r_var_var_cpy(void* old){
@@ -362,21 +367,21 @@ void r_var_var_print(void* r){
     }
 }
 
-int cmp_x_args(void* a, void* b){
+CMP cmp_x_args(void* a, void* b){
     X_Arg *xa = (X_Arg*) a; 
     X_Arg *xb = (X_Arg*) b;
     if(xa && xb && xa->type == xb->type){
         switch(xa->type){
             case X_ARG_NUM:
-                return ((X_Arg_Num*)xa->arg)->num == ((X_Arg_Num*)xb->arg)->num; 
+                return ((X_Arg_Num*)xa->arg)->num == ((X_Arg_Num*)xb->arg)->num ? EQUAL : UNEQUAL; 
              case X_ARG_REG:
-                return ((X_Arg_Reg*)xa->arg)->reg == ((X_Arg_Reg*)xb->arg)->reg; 
+                return ((X_Arg_Reg*)xa->arg)->reg == ((X_Arg_Reg*)xb->arg)->reg ? EQUAL : UNEQUAL; 
               case X_ARG_MEM:
                 return (((X_Arg_Mem*)xa->arg)->reg == ((X_Arg_Mem*)xb->arg)->reg) 
-                        && (((X_Arg_Mem*)xa->arg)->offset == ((X_Arg_Mem*)xb->arg)->offset); 
+                        && (((X_Arg_Mem*)xa->arg)->offset == ((X_Arg_Mem*)xb->arg)->offset) ? EQUAL : UNEQUAL; 
               case X_ARG_VAR:
-                return strcmp(((X_Arg_Var*)xa->arg)->name, ((X_Arg_Var*)xb->arg)->name) == 0;
+                return strcmp(((X_Arg_Var*)xa->arg)->name, ((X_Arg_Var*)xb->arg)->name) == 0 ? EQUAL : UNEQUAL;
         };
     }
-    return 0;
+    return UNEQUAL;
 }

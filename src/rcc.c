@@ -749,18 +749,13 @@ X_Program* main_pass(X_Program* xp){
     X_Arg *rax = new_x_arg(X_ARG_REG, new_x_arg_reg(RAX));
     X_Arg *rdi = new_x_arg(X_ARG_REG, new_x_arg_reg(RDI));
    
-//    printf("\nBEFORE = \n");
-//    x_emit(xp, NULL);
     list_t main_instrs = list_create();
     list_insert(main_instrs, new_x_instr(CALLQ, new_x_callq("begin")));
     list_insert(main_instrs, new_x_instr(MOVQ, new_x_movq(rax, rdi)));
     list_insert(main_instrs, new_x_instr(CALLQ, new_x_callq("print_int")));
     list_insert(main_instrs, new_x_instr(RETQ, new_x_retq()));
   
-    list_insert(xp->labels, new_lbl_blk_pair("main", new_x_block(NULL, main_instrs)));
-//    printf("\nAfter = \n");
-//    x_emit(xp, NULL);
-  
+    list_insert(xp->labels, new_lbl_blk_pair("main", new_x_block(NULL, main_instrs)));  
     return xp;
 }
 
@@ -780,8 +775,7 @@ void patch_instr(X_Instr *xp, list_t instrs){
                 left = ((X_Movq*)xp->instr)->left;
                 right = ((X_Movq*)xp->instr)->right;
                 if(left->type == X_ARG_MEM && right->type == X_ARG_MEM){
-                    list_insert(instrs, new_x_instr(MOVQ, new_x_movq(left, tmp))); 
-                    list_insert(instrs, new_x_instr(MOVQ, new_x_movq(tmp, right))); 
+                    list_insert(instrs, new_x_instr(MOVQ, new_x_movq(left, tmp))); list_insert(instrs, new_x_instr(MOVQ, new_x_movq(tmp, right))); 
                 } else list_insert(instrs, xp);
                 break;
             default:

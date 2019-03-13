@@ -27,7 +27,7 @@ Node* list_insert(list_t list, void* data){
 
 void list_update(list_t list, void* old, void* new, cmp_func_t cmp) {
   if (list != NULL && *list != NULL) {
-    if (cmp(old, (*list)->data))
+    if (cmp(old, (*list)->data) == EQUAL)
         (*list)->data = new;
     else
       list_update(&((*list)->next), old, new, cmp);
@@ -71,7 +71,7 @@ void list_remove_duplicates(list_t list, cmp_func_t cmp){
     while(ptr1 && ptr1->next){
         ptr2 = ptr1;
         while(ptr2->next)
-            if(cmp(ptr1->data, ptr2->next->data)){
+            if(cmp(ptr1->data, ptr2->next->data) == EQUAL){
                 ptr2->next = ptr2->next->next;
             } else ptr2 = ptr2->next; 
         ptr1 = ptr1->next;
@@ -88,7 +88,7 @@ void list_remove_all(list_t list, void* data, cmp_func_t cmp){
 
 Node* delete_node(Node* node, void* data, cmp_func_t cmp){
   if (node){
-	if (cmp(node->data, data)) 
+	if (cmp(node->data, data) == EQUAL) 
         return node->next; 
     else 
         node->next = delete_node(node->next, data, cmp);

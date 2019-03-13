@@ -3,7 +3,10 @@
 
 #include <stddef.h>
 
+typedef enum CMP { UNEQUAL, EQUAL, LESS, GREATER } CMP;
+
 typedef struct Node Node;
+
 struct Node {
   Node *next;
   void *data;
@@ -12,7 +15,7 @@ struct Node {
 typedef Node **list_t;
 
 /* A generic comparison function */
-typedef int (*cmp_func_t)(void *, void *);
+typedef enum CMP (*cmp_func_t)(void *, void *);
 
 /* A generic printing function */
 typedef void (*print_func_t)(void *);
@@ -43,13 +46,6 @@ void list_remove_duplicates(list_t, cmp_func_t);
 
 /* Remove all occurances of the node */
 void list_remove_all(list_t, void *, cmp_func_t);
-
-/*
- * int cmp(x, y)
- * if (x < y) ret -1
- * if (x == y) ret 0
- * if (x > y) ret 1
- */
 
 /* Return the minimum value in the list */
 Node *list_min(list_t, cmp_func_t);

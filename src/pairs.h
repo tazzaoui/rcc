@@ -70,10 +70,10 @@ typedef struct x_arg_pair_t {
 x_arg_pair_t* new_x_arg_pair(X_Arg*, X_Arg*);
 
 /* Compare two X_Arg -> X_Arg pairs */
-int x_arg_pair_cmp(void*, void*);
+CMP x_arg_pair_cmp(void*, void*);
 
 /* Compare two arg pairs wrt the second arg */
-int x_arg_pair_cmp2(void*, void*);
+CMP x_arg_pair_cmp2(void*, void*);
 
 /* Print an X_Arg -> X_Arg pair */
 void print_x_arg_pair(void*);
@@ -82,10 +82,10 @@ void print_x_arg_pair(void*);
 x_arg_int_pair_t* new_x_arg_int_pair(X_Arg*, int);
 
 /* Compare two X_Arg -> int pairs */
-int x_arg_int_pair_cmp(void*, void*);
+CMP x_arg_int_pair_cmp(void*, void*);
 
 /* Compare two X_Arg -> int pairs by value */
-int x_arg_int_pair_cmp_by_int(void*, void*);
+CMP x_arg_int_pair_cmp_by_int(void*, void*);
 
 /* Print an x_arg_int_pair_t */
 void print_x_arg_int_pair(void*);
@@ -94,7 +94,7 @@ void print_x_arg_int_pair(void*);
 x_arg_list_pair_t* new_x_arg_list_pair(X_Arg*, list_t);
 
 /* Compare two X_Arg -> X_Arg pairs */
-int x_arg_list_pair_cmp(void*, void*);
+CMP x_arg_list_pair_cmp(void*, void*);
 
 /* Print an x_arg_list_pair_t */
 void print_x_arg_list_pair(void*);
@@ -109,7 +109,7 @@ void print_x_instr_list_pair(void*);
 r_var_int_pair_t* new_r_var_int_pair(R_Var*, int);
 
 /* Compare two r_var -> int pairs */
-int r_var_var_pair_cmp(void*, void*);
+CMP r_var_var_pair_cmp(void*, void*);
 
 /* Return a new r_var_int_pair_t -> r_var_int_pair_t pair */
 r_var_var_pair_t* new_r_var_var_pair(R_Var*, R_Var*);
@@ -121,25 +121,25 @@ void r_var_var_print(void*);
 void* r_var_var_cpy(void* old);
 
 /* Compare two r_var -> r_var pairs */
-int r_var_var_pair_cmp(void*, void*);
+CMP r_var_var_pair_cmp(void*, void*);
 
 /* Return a new c_var -> num pair */
 c_var_num_pair_t* new_c_var_num_pair(C_Var*, int);
 
 /* Compare two c_var -> num pairs */
-int c_var_num_pair_cmp(void*, void*);
+CMP c_var_num_pair_cmp(void*, void*);
 
 /* Return a new lbl_tail_pair_t */
 lbl_tail_pair_t* new_lbl_tail_pair(label_t, C_Tail*);
 
 /* Compare two lbl -> tail pairs */
-int lbl_tail_cmp(void*, void*);
+CMP lbl_tail_cmp(void*, void*);
 
 /* Print a lbl -> tail pair */
 void lbl_tail_print(void*);
 
 /* Compare two env pairs */
-int ep_cmp(void*, void*);
+CMP ep_cmp(void*, void*);
 
 /* Print an env pair */
 void ep_print(void*);
@@ -148,7 +148,7 @@ void ep_print(void*);
 env_pair_t* new_env_pair(R_Expr*, R_Expr*);
 
 /* Compare two Var -> int pairs */
-int ep_var_cmp(void*, void*);
+CMP ep_var_cmp(void*, void*);
 
 /* Compare two Var -> R_Expr pairs */
 int ep_expr_cmp(void*, void*);
@@ -160,7 +160,7 @@ void* ep_cpy(void* old);
 lbl_blk_pair_t* new_lbl_blk_pair(label_t, X_Block*);
 
 /* Compare a label with a lbl_blk_pair_t pair */
-int lbl_blk_pair_cmp(void*, void*);
+CMP lbl_blk_pair_cmp(void*, void*);
 
 /* Print the label portion of a lbl_blk_pair */
 void print_lbl_blk_pair(void*);
@@ -175,7 +175,7 @@ num_pair_t* new_num_pair(int, int);
 var_num_pair_t* new_var_num_pair(X_Arg_Var*, int);
 
 /* Comparison function for reg->num pairs */
-int reg_num_pair_cmp(void*, void*);
+CMP reg_num_pair_cmp(void*, void*);
 
 /* Copy function for reg->num pairs */
 void* reg_num_pair_cpy(void*);
@@ -184,7 +184,7 @@ void* reg_num_pair_cpy(void*);
 void print_reg_num_pair(void*);
 
 /* Comparison function for num pairs */
-int num_pair_cmp(void*, void*);
+CMP num_pair_cmp(void*, void*);
 
 /* Copy function for num pairs*/
 void* num_pair_cpy(void*);
@@ -193,7 +193,7 @@ void* num_pair_cpy(void*);
 void print_num_pair(void*);
 
 /* Comparison function for var->num pairs*/
-int var_num_pair_cmp(void*, void*);
+CMP var_num_pair_cmp(void*, void*);
 
 /* Copy function for var->num pairs */
 void* var_num_pair_cpy(void*);
@@ -202,13 +202,13 @@ void* var_num_pair_cpy(void*);
 void print_var_num_pair(void*);
 
 /* Compare two C_Vars */
-int c_var_cmp(void*, void*);
+CMP c_var_cmp(void*, void*);
 
 /* Print a C_Var */
 void c_var_print(void*);
 
 /* Compare two X_Args */
-int cmp_x_args(void*, void*);
+CMP cmp_x_args(void*, void*);
 
 /* Wraper around x_print_arg */
 void x_print_arg_void(void*);

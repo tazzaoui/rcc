@@ -177,10 +177,10 @@ void test_dozen_r1() {
 
 void print_node(void *data) { printf("%lu ", (long)data); }
 
-int cmp_nodes(void *a, void *b) {
+CMP cmp_nodes(void *a, void *b) {
   int *x = (int *)a;
   int *y = (int *)b;
-  return (a != NULL && b != NULL && *x == *y);
+  return (a != NULL && b != NULL && *x == *y) ? EQUAL : UNEQUAL;
 }
 
 void *cpy_node(void *data) {
