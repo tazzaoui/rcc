@@ -27,7 +27,7 @@ list_t list_create(void);
 Node *node_create(void *);
 
 /*Insert an element into the list*/
-void list_insert(list_t, void *);
+Node *list_insert(list_t, void *);
 
 /*Update the data element of a node*/
 void list_update(list_t, void *, void *, cmp_func_t);
@@ -43,6 +43,19 @@ void list_remove_duplicates(list_t, cmp_func_t);
 
 /* Remove all occurances of the node */
 void list_remove_all(list_t, void *, cmp_func_t);
+
+/*
+ * int cmp(x, y)
+ * if (x < y) ret -1
+ * if (x == y) ret 0
+ * if (x > y) ret 1
+ */
+
+/* Return the minimum value in the list */
+Node *list_min(list_t, cmp_func_t);
+
+/* Return the minimum value in the list */
+Node *list_max(list_t, cmp_func_t);
 
 /* Compute the difference between two lists  (A = A - B) */
 list_t list_subtract(list_t, list_t, cmp_func_t);

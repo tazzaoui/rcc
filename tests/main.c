@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
 
   for (size_t i = 0; i < NUM_PROGS; ++i) {
     rand_depth = rand() % 20;
-    expr = randp(vars, 2);
+    expr = randp(vars, rand_depth);
     res = r_interp(expr, vars);
     if (DEBUG) {
       r_print_expr(expr);
@@ -262,27 +262,16 @@ int main(int argc, char *argv[]) {
     assert(res_cg == res_ar);
     assert(res_ar == res_pi);
     assert(res_pi == res_mp);
-    if (DEBUG) {
-      printf("Normal   : ");
-      r_print_expr(expr);
-      printf(" -> %d\n", res);
-    }
     expr_opt = r_optimize(expr, NULL);
     res_opt = r_interp(expr_opt, NULL);
-    if (DEBUG) {
-      printf("Optimized: ");
-      r_print_expr(expr_opt);
-      printf("\n");
-    }
     assert(res_opt == res);
     count += (res_opt == res);
     full_count += (res_opt == res && expr_opt->type == R_EXPR_NUM);
   }
 
-  printf("%sSuccessfully optimized & uniquified %d/%d programs.%s\n", GRN,
-         count, NUM_PROGS, NRM);
-
-  printf("Fully optimized %d/%d\n", count, NUM_PROGS);
+  printf("%sSuccessfully Compiled %d/%d Programs.%s\n", GRN, count, NUM_PROGS,
+         NRM);
+  printf("Fully optimized %d/%d Programs\n", count, NUM_PROGS);
   assert(count == NUM_PROGS);
 
   return 0;

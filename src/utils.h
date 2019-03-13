@@ -20,6 +20,7 @@
 #include "list.h"
 
 typedef const char *label_t;
+typedef enum CMP { LESS, EQUAL, GREATER } CMP;
 
 /* Program Info */
 typedef struct Info {

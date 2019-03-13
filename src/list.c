@@ -15,13 +15,14 @@ Node* node_create(void* data) {
   return n;
 }
 
-void list_insert(list_t list, void* data){ 
+Node* list_insert(list_t list, void* data){ 
   if (list != NULL && *list == NULL) {
     *list = malloc_or_die(sizeof(Node));
     (*list)->next = NULL;
     (*list)->data = data;
+    return *list;
   } else
-    list_insert(&((*list)->next), data);
+    return list_insert(&((*list)->next), data); 
 }
 
 void list_update(list_t list, void* old, void* new, cmp_func_t cmp) {
@@ -31,6 +32,27 @@ void list_update(list_t list, void* old, void* new, cmp_func_t cmp) {
     else
       list_update(&((*list)->next), old, new, cmp);
   }
+}
+
+Node* list_min(list_t list, cmp_func_t cmp){
+   Node *head = *list, *cur = *list;
+   while(head){
+       printf("hi!\n");
+        if(cmp(head, cur) == LESS)
+            cur = head;
+         head = head->next;
+    }
+    return cur;
+}
+
+Node* list_max(list_t list, cmp_func_t cmp){
+    Node *head = *list, *cur = *list;
+    while(head){
+        if(cmp(head, cur) == GREATER)
+            cur = head;
+         head = head->next;
+    }
+    return cur;
 }
 
 list_t list_subtract(list_t a, list_t b, cmp_func_t cmp){
@@ -83,7 +105,7 @@ Node* list_find(const list_t list, void *data, cmp_func_t cmp){
     Node *node = *list;
     if(node == NULL)
         return NULL;
-    else if(cmp(data, node->data))
+    else if(cmp(data, node->data) == EQUAL)
         return node;
     else
         return list_find(&(node->next), data, cmp);

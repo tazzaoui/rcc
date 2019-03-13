@@ -151,7 +151,8 @@ void make_symmetric(list_t graph){
         tmp = *(pair->list);
         while(tmp){
             ptr = list_find(graph, new_x_arg_list_pair(tmp->data, NULL), x_arg_list_pair_cmp);
-            if(ptr) list_insert(((x_arg_list_pair_t*)ptr->data)->list, pair->arg);
+            if(!ptr) ptr = list_insert(graph, new_x_arg_list_pair(tmp->data, list_create()));
+            list_insert(((x_arg_list_pair_t*)ptr->data)->list, pair->arg); 
             tmp = tmp->next;
         }
         node = node->next;
@@ -267,16 +268,17 @@ int lowest_color(list_t neighbors, list_t colors){
 }
 
 int lowest_color_mb(x_arg_list_pair_t *vrtx, list_t m_graph, list_t colors){
-    Node* head;
+    Node *head, *min;
     list_t res, sat, neighbors, nc;
     if(list_size(colors) <= 0) return 0;
     if((head = list_find(m_graph, vrtx, x_arg_list_pair_cmp))){
-        sat = list_create(); 
+        sat = list_create();
         neighbors = ((x_arg_list_pair_t*)head->data)->list;
         nc = neighbor_colors(neighbors, colors);
         saturation(vrtx->arg, m_graph, colors, sat);
         res = list_subtract(nc, sat, x_arg_int_pair_cmp);
-        return find_lowest_color(res);
+        min = list_min(res, x_arg_int_pair_cmp); 
+        if(min) return ((x_arg_int_pair_t*)min->data)->num;
     }
     return I32MIN;  
 }
@@ -286,16 +288,22 @@ X_Program* color_graph_mb(X_Program *xp, int mb){
         int color = I32MIN;
         Node *head;
         list_t i_graph = xp->info->i_graph, colors = list_create();
-        X_Arg* rax = new_x_arg(X_ARG_REG, new_x_arg_reg(RAX));
+        X_Arg* reg = new_x_arg(X_ARG_REG, new_x_arg_reg(RAX));
         x_arg_list_pair_t *vrtx;
 
         // Remove RAX from the graph
-        list_remove(i_graph, new_x_arg_int_pair(rax, 0), x_arg_int_pair_cmp);
+        list_remove(i_graph, new_x_arg_int_pair(reg, 0), x_arg_int_pair_cmp);
         head = *i_graph;
         while(head){
             vrtx = head->data;
-            list_remove(vrtx->list, rax, cmp_x_args);
+            list_remove(vrtx->list, reg, cmp_x_args);
             head = head->next;
+        }
+
+        // Pre-assign intrinsic colors (registers) 
+        for(int i = 3; i < NUM_REGS; ++i){
+            reg = new_x_arg(X_ARG_REG, new_x_arg_reg(i));
+            list_insert(colors, new_x_arg_int_pair(reg, i - 3));
         }
 
         while(list_size(i_graph) > 0){
@@ -303,8 +311,7 @@ X_Program* color_graph_mb(X_Program *xp, int mb){
             if(mb) color = lowest_color_mb(vrtx, xp->info->m_graph, colors);
             if(color == I32MIN) color = lowest_color(vrtx->list, colors); 
             list_insert(colors, new_x_arg_int_pair(vrtx->arg, color));
-            list_remove(i_graph, vrtx, x_arg_list_pair_cmp); 
-            if(mb) list_remove(xp->info->m_graph, vrtx, x_arg_list_pair_cmp); 
+            list_remove(i_graph, vrtx, x_arg_list_pair_cmp);
             color = I32MIN;
         }
         xp->info->colors = colors;
@@ -388,10 +395,12 @@ list_t allocate_registers(X_Program* xp){
         x_arg_int_pair_t* pair;
         while(head){
             pair = head->data;
-            if(pair->num < NUM_REGS - 4)
-                list_insert(mapping, new_x_arg_pair(pair->arg, new_x_arg(X_ARG_REG, new_x_arg_reg(pair->num + 3))));
+            if(pair->num < NUM_REGS - 3)
+                list_insert(mapping, new_x_arg_pair(pair->arg, new_x_arg(X_ARG_REG, 
+                                new_x_arg_reg(pair->num + 3))));
             else
-                list_insert(mapping, new_x_arg_pair(pair->arg, new_x_arg(X_ARG_MEM, new_x_arg_mem(RSP, pair->num - 13))));
+                list_insert(mapping, new_x_arg_pair(pair->arg, new_x_arg(X_ARG_MEM, 
+                                new_x_arg_mem(RSP, 8 * (pair->num - 12)))));
             head = head->next;
         } 
     }
@@ -739,7 +748,9 @@ X_Program* patch_instrs(X_Program *xp){
 X_Program* main_pass(X_Program* xp){
     X_Arg *rax = new_x_arg(X_ARG_REG, new_x_arg_reg(RAX));
     X_Arg *rdi = new_x_arg(X_ARG_REG, new_x_arg_reg(RDI));
-    
+   
+//    printf("\nBEFORE = \n");
+//    x_emit(xp, NULL);
     list_t main_instrs = list_create();
     list_insert(main_instrs, new_x_instr(CALLQ, new_x_callq("begin")));
     list_insert(main_instrs, new_x_instr(MOVQ, new_x_movq(rax, rdi)));
@@ -747,6 +758,9 @@ X_Program* main_pass(X_Program* xp){
     list_insert(main_instrs, new_x_instr(RETQ, new_x_retq()));
   
     list_insert(xp->labels, new_lbl_blk_pair("main", new_x_block(NULL, main_instrs)));
+//    printf("\nAfter = \n");
+//    x_emit(xp, NULL);
+  
     return xp;
 }
 

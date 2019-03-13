@@ -57,7 +57,11 @@ int x_arg_int_pair_cmp(void* a, void* b){
 }
 
 int x_arg_int_pair_cmp_by_int(void *a, void *b){
-    return a && b && ((x_arg_int_pair_t*)a)->num == ((x_arg_int_pair_t*)b)->num;
+    int a_num = ((x_arg_int_pair_t*)a)->num; 
+    int b_num = ((x_arg_int_pair_t*)b)->num; 
+    if(a_num == b_num) return EQUAL;
+    else if(a_num < b_num) return LESS;
+    else return GREATER;
 }
 
 void print_x_arg_int_pair(void* a){
