@@ -134,6 +134,9 @@ int r_interp(R_Expr* expr, list_t env) {
           scanf("%d", &(((R_Read*)expr->expr)->num));
         }
         return ((R_Read*)expr->expr)->num;
+      default:
+        die("Invalid Expr!\n");
+        return -1;
     }
   die("Invalid Program!");
   return -1;
@@ -265,7 +268,8 @@ R_Expr* r_optimize(R_Expr* expr, list_t env) {
 }
 
 void r_print_expr(R_Expr* expr) {
-  if (expr != NULL) switch (expr->type) {
+  if (expr != NULL) 
+      switch (expr->type) {
       case R_EXPR_VAR:
         printf("%s", ((R_Var*)expr->expr)->name);
         break;
@@ -299,7 +303,60 @@ void r_print_expr(R_Expr* expr) {
         else
           printf("R_EXPR_READ");
         break;
-      default:
+      case R_EXPR_TRUE:
+        printf("true");
         break;
-    }
+      case R_EXPR_FALSE:
+        printf("false");
+      case R_EXPR_AND:
+        printf("(and ");
+        r_print_expr(((R_And*)expr->expr)->left);
+        printf(" ");
+        r_print_expr(((R_And*)expr->expr)->right);
+        printf(")");
+        break;
+      case R_EXPR_OR:
+        printf("(or ");
+        r_print_expr(((R_Or*)expr->expr)->left);
+        printf(" ");
+        r_print_expr(((R_Or*)expr->expr)->right);
+        printf(")"); 
+        break;
+      case R_EXPR_NOT:
+        printf("(! ");
+        r_print_expr(((R_Not*)expr->expr)->expr);
+        printf(")");
+        break;
+      case R_EXPR_CMP:
+        switch(((R_Cmp*)expr->expr)->cmp_type){
+            case R_CMP_EQUAL:
+                printf("(== ");
+                break;
+            case R_CMP_LESS:
+                printf("(< ");
+                break;
+            case R_CMP_GREATER:
+                printf("(> ");
+                break;
+            case R_CMP_LEQ:
+                printf("(<= ");
+                break;
+            case R_CMP_GEQ:
+                printf("(>= ");
+                break;
+        };
+        r_print_expr(((R_Cmp*)expr->expr)->left);
+        printf(" ");
+        r_print_expr(((R_Cmp*)expr->expr)->right);
+        printf(")");
+        break;
+      case R_EXPR_IF:
+        printf("(if ");
+        r_print_expr(((R_If*)expr->expr)->test_expr);
+        printf(" ");
+        r_print_expr(((R_If*)expr->expr)->then_expr);
+        printf(" ");
+        r_print_expr(((R_If*)expr->expr)->else_expr);
+        break;
+    };
 }

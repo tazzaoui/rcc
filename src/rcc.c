@@ -583,6 +583,8 @@ R_Expr* resolve_complex_expr(R_Expr* expr, list_t env, list_t *new_vars, int *rc
                 r2 = resolve_complex_expr(((R_Let*)expr->expr)->body, l2, &l3, rco_calls); 
                 *new_vars = list_concat(l1, l3); 
                 return r2;
+            default:
+                die("[RESOLVE_COMPLEX] INVALID EXPR!\n");
         };
     die("[RESOLVE_COMPLEX] NO RESOLUTION!");
     return NULL;

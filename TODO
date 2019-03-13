@@ -65,7 +65,7 @@
 * Extend your color-graph function to incorporate move-biasing with an optional input argument.
 * Update your allocate-registers pass to make use of the move-biasing feature of color-graph.
 * Extend your data types from R1 to R2.
-Extend your pretty printer from R1 to R2.
+* Extend your pretty printer from R1 to R2.
 Write a dozen test R2 programs.
 Extend your interpreter from R1 to R2.
 Write type-checker tests for R2.
