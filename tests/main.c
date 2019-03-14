@@ -217,6 +217,12 @@ int main(int argc, char *argv[]) {
 
   printf("===================================================\n");
 
+  printf("testing r2...\n\n");
+
+  test_r2();
+
+  printf("===================================================\n");
+
   printf("General Checks...\n");
 
   list_t new_vars, labels;

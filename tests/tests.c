@@ -2567,3 +2567,24 @@ void test_move_biasing() {
   xp = reg_alloc(xp);
   x_emit(xp, NULL);
 }
+
+void test_r2() {
+  R_Expr *r1 = new_and(new_true(), new_false());
+  R_Expr *r8 = new_and(new_true(), new_true());
+
+  R_Expr *r2 = new_or(new_true(), new_false());
+  R_Expr *r9 = new_or(new_true(), new_true());
+
+  R_Expr *r3 = new_not(new_true());
+  R_Expr *r10 = new_not(new_false());
+
+  R_Expr *r4 = new_cmp(R_CMP_EQUAL, new_num(7), new_num(8));
+  R_Expr *r11 = new_cmp(R_CMP_LESS, new_num(7), new_num(8));
+  R_Expr *r5 = new_cmp(R_CMP_EQUAL, new_num(7), new_num(7));
+  R_Expr *r12 = new_cmp(R_CMP_GEQ, new_num(7), new_num(7));
+
+  R_Expr *r6 = new_if(r4, new_num(9), new_num(8));
+  R_Expr *r7 = new_sub(new_num(9), new_num(1));
+  if (r1 && r2 && r3 && r4 && r5 && r6 && r7 && r8 && r9 && r10 && r11 && r12)
+    ;
+}

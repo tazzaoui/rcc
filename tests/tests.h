@@ -69,4 +69,7 @@ void test_allocate_registers();
 
 /* A few tests for move biasing */
 void test_move_biasing();
+
+/* A few tests for R2 */
+void test_r2();
 #endif /* TESTS_H */
