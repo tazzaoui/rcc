@@ -23,12 +23,12 @@ typedef const char *label_t;
 
 /* Program Info */
 typedef struct Info {
-  list_t vars;        // list of live locals : <X_Arg*>
-  list_t live;        // list of live after sets : <X_Instr -> <X_Arg*>>
-  list_t i_graph;     // Adj. List rep. of interference graph
-  list_t m_graph;     // Adj. List rep. of the move graph
-  list_t colors;      // Graph Coloring Solution
-  list_t reg_assign;  // Register Assignments
+  list_t vars;                  // list of live locals : <X_Arg*>
+  list_t live;                  // list of live after sets : <X_Instr -> <X_Arg*>>
+  list_t i_graph;               // Adj. List rep. of interference graph
+  list_t m_graph;               // Adj. List rep. of the move graph
+  list_t colors;                // Graph Coloring Solution
+  list_t reg_assign;            // Register Assignments
 } Info;
 
 /* Return a new Info */
@@ -48,4 +48,4 @@ static inline int die(const char *err_msg) {
   exit(-1);
 }
 
-#endif /* UTILS_H */
+#endif                          /* UTILS_H */

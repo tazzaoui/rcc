@@ -47,7 +47,7 @@ typedef enum REGISTER {
 
 typedef struct X_Program {
   Info *info;
-  list_t labels;  // labels: label -> block
+  list_t labels;                // labels: label -> block
 } X_Program;
 
 typedef struct X_Block {
@@ -66,10 +66,10 @@ typedef struct X_Arg {
 } X_Arg;
 
 typedef struct X_State {
-  int regs[NUM_REGS];  // (register -> num)
-  list_t nums;         // (num -> num)
-  list_t vars;         // (var -> num)
-  list_t lbls;         // (lbl - >blks)
+  int regs[NUM_REGS];           // (register -> num)
+  list_t nums;                  // (num -> num)
+  list_t vars;                  // (var -> num)
+  list_t lbls;                  // (lbl - >blks)
 } X_State;
 
 typedef struct X_Addq {
@@ -208,4 +208,4 @@ int update_state(X_State **, X_Arg *, int);
 
 /* Returns an element from the machine state*/
 int lookup_state(X_State *, X_Arg *);
-#endif /* X_H */
+#endif                          /* X_H */

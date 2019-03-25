@@ -72,4 +72,4 @@ void test_move_biasing();
 
 /* A few tests for R2 */
 void test_r2();
-#endif /* TESTS_H */
+#endif                          /* TESTS_H */

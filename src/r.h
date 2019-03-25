@@ -151,43 +151,49 @@ void r_print_expr(R_Expr *);
 /* r_expr to int where applicable */
 int get_int(R_Expr *);
 
-static inline int is_simple(R_Expr *e) {
+static inline int is_simple(R_Expr * e) {
   return e && (e->type == R_EXPR_NUM || e->type == R_EXPR_VAR);
 }
 
-static inline R_Expr *get_left(R_Expr *expr) {
-  if (expr && expr->type == R_EXPR_ADD) return ((R_Add *)expr->expr)->left;
+static inline R_Expr *get_left(R_Expr * expr) {
+  if (expr && expr->type == R_EXPR_ADD)
+    return ((R_Add *) expr->expr)->left;
   return expr;
 }
 
-static inline R_Expr *get_right(R_Expr *expr) {
-  if (expr && expr->type == R_EXPR_ADD) return ((R_Add *)expr->expr)->right;
+static inline R_Expr *get_right(R_Expr * expr) {
+  if (expr && expr->type == R_EXPR_ADD)
+    return ((R_Add *) expr->expr)->right;
   return expr;
 }
 
-static inline R_Expr *get_num(R_Expr *expr) {
-  if (expr && expr->type == R_EXPR_NUM) return expr;
+static inline R_Expr *get_num(R_Expr * expr) {
+  if (expr && expr->type == R_EXPR_NUM)
+    return expr;
   if (expr && expr->type == R_EXPR_READ)
-    return new_num(((R_Read *)expr->expr)->num);
+    return new_num(((R_Read *) expr->expr)->num);
   return NULL;
 }
 
-static inline R_Expr *get_var(R_Expr *expr) {
-  if (expr && expr->type == R_EXPR_LET) return ((R_Let *)expr->expr)->var;
+static inline R_Expr *get_var(R_Expr * expr) {
+  if (expr && expr->type == R_EXPR_LET)
+    return ((R_Let *) expr->expr)->var;
   return expr;
 }
 
-static inline R_Expr *get_expr(R_Expr *expr) {
-  if (expr && expr->type == R_EXPR_LET) return ((R_Let *)expr->expr)->expr;
+static inline R_Expr *get_expr(R_Expr * expr) {
+  if (expr && expr->type == R_EXPR_LET)
+    return ((R_Let *) expr->expr)->expr;
   return expr;
 }
 
-static inline R_Expr *get_body(R_Expr *expr) {
-  if (expr && expr->type == R_EXPR_LET) return ((R_Let *)expr->expr)->body;
+static inline R_Expr *get_body(R_Expr * expr) {
+  if (expr && expr->type == R_EXPR_LET)
+    return ((R_Let *) expr->expr)->body;
   return expr;
 }
 
-static inline int r_int_interp(R_Expr *expr, list_t env) {
+static inline int r_int_interp(R_Expr * expr, list_t env) {
   return get_int(r_interp(expr, env));
 }
-#endif /* R_H */
+#endif                          /* R_H */

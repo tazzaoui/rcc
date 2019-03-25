@@ -11,7 +11,7 @@
 #define DEBUG 0
 #define NUM_PROGS 1024
 
-static inline void print_optim(R_Expr *e) {
+static inline void print_optim(R_Expr * e) {
   r_print_expr(e);
   printf(" -> ");
   r_print_expr(r_optimize(e, NULL));
@@ -20,7 +20,7 @@ static inline void print_optim(R_Expr *e) {
 
 int main(int argc, char *argv[]) {
   int count = 0, res, rand_depth, res_opt, res_uniq, res_rco, res_econ, res_ul,
-      res_si, res_ar, res_pi, res_mp, res_ui, res_bi, res_cg, full_count;
+    res_si, res_ar, res_pi, res_mp, res_ui, res_bi, res_cg, full_count;
   R_Expr *expr, *expr_opt, *uniq, *simple;
   C_Tail *c_tail;
   X_Program *ul, *bi, *ar, *pi, *mp, *cg;

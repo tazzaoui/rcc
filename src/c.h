@@ -10,7 +10,7 @@ typedef enum C_EXPR_TYPE { C_ARG, C_READ, C_NEG, C_ADD } C_EXPR_TYPE;
 
 typedef struct C_Program {
   Info *info;
-  list_t labels;  // labels: label -> tail
+  list_t labels;                // labels: label -> tail
 } C_Program;
 
 typedef struct C_Tail {
@@ -127,4 +127,4 @@ int c_e_interp(C_Expr *, list_t);
 
 /* Interp a C argument */
 int c_a_interp(C_Arg *, list_t);
-#endif /* C_H */
+#endif                          /* C_H */

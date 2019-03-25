@@ -46,4 +46,5 @@ clean:
 	rm -f *.o *~ a.out *.s *.bin $(EXE) 
 
 format:
-	clang-format -i -style=google main.c src/*.h src/*.h tests/*.c tests/*.h 
+	find . -name "*.c" | xargs indent -par -br -brf -brs -kr -ci2 -cli2 -i2 -l80 -nut
+	find . -name "*.h" | xargs indent -par -br -brf -brs -kr -ci2 -cli2 -i2 -l80 -nut

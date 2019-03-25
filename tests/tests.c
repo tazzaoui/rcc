@@ -11,7 +11,8 @@
 #define NUM 1024
 
 R_Expr *test_2n(int n) {
-  if (n <= 0) return new_num(1);
+  if (n <= 0)
+    return new_num(1);
   return new_add(test_2n(n - 1), test_2n(n - 1));
 }
 
@@ -23,7 +24,8 @@ R_Expr *randp_r0(int n) {
     else
       return new_num(rand_num);
   } else {
-    if (rand_num % 2) return new_neg(randp_r0(n - 1));
+    if (rand_num % 2)
+      return new_neg(randp_r0(n - 1));
     return new_add(randp_r0(n - 1), randp_r0(n - 1));
   }
 }
@@ -37,11 +39,12 @@ R_Expr *randp(list_t vars, int n) {
   int rand_num = GET_RAND(), choice = rand() % 3;
   char rand_char;
   if (n == 0) {
-    if (choice == 0 && list_size(vars) == 0) choice += ((rand() % 2) + 1);
+    if (choice == 0 && list_size(vars) == 0)
+      choice += ((rand() % 2) + 1);
     switch (choice) {
       case 0:
         node = list_get(vars, rand() % list_size(vars));
-        ep = (env_pair_t *)node->data;
+        ep = (env_pair_t *) node->data;
         return ep->var;
       case 1:
         return new_read();
@@ -157,7 +160,7 @@ void test_dozen_r1() {
   printf("\n");
 
   R_Expr *let_j =
-      new_let(z, new_add(new_num(4), new_num(2)), new_add(x, new_num(1)));
+    new_let(z, new_add(new_num(4), new_num(2)), new_add(x, new_num(1)));
   r_print_expr(let_j);
   printf("\n");
 
@@ -170,29 +173,32 @@ void test_dozen_r1() {
   printf("\n");
 
   R_Expr *let_m =
-      new_let(z, new_num(42), new_neg(new_add(new_var("P"), new_num(1))));
+    new_let(z, new_num(42), new_neg(new_add(new_var("P"), new_num(1))));
   r_print_expr(let_m);
   printf("\n");
 }
 
-void print_node(void *data) { printf("%lu ", (long)data); }
+void print_node(void *data) {
+  printf("%lu ", (long) data);
+}
 
 CMP cmp_nodes(void *a, void *b) {
-  int *x = (int *)a;
-  int *y = (int *)b;
+  int *x = (int *) a;
+  int *y = (int *) b;
   return (a != NULL && b != NULL && *x == *y) ? EQUAL : UNEQUAL;
 }
 
 void *cpy_node(void *data) {
-  int *x = (int *)data;
+  int *x = (int *) data;
   int *y = malloc_or_die(sizeof(int));
   *y = *x;
-  return (void *)y;
+  return (void *) y;
 }
 
 void test_list() {
   int nums[NUM];
-  for (int i = 0; i < NUM; ++i) nums[i] = rand();
+  for (int i = 0; i < NUM; ++i)
+    nums[i] = rand();
 
   list_t list = list_create(), copy = NULL;
 
@@ -205,7 +211,8 @@ void test_list() {
     assert(temp == NULL);
   }
 
-  for (int i = 0; i < NUM; ++i) list_insert(list, nums + i);
+  for (int i = 0; i < NUM; ++i)
+    list_insert(list, nums + i);
   assert(list_size(list) == NUM);
 
   copy = list_copy(list, cpy_node);
@@ -339,10 +346,11 @@ void test_x0_emit() {
   printf("\n");
 }
 
-void test_prog_interp(X_Program *xp, const char *file_name, int test_num) {
+void test_prog_interp(X_Program * xp, const char *file_name, int test_num) {
   printf("\n***********************************\n");
   char cmd_buf[2048];
-  if (file_name) x_emit(xp, file_name);
+  if (file_name)
+    x_emit(xp, file_name);
   sprintf(cmd_buf, "gcc %s", file_name);
   system(cmd_buf);
   int exit_code = system("./a.out");
@@ -2532,15 +2540,21 @@ void test_move_biasing() {
 
   list_t instrs = list_create(), blks = list_create();
 
-  R_Expr *r_expr = new_let(
-      new_var("v"), new_num(1),
-      new_let(
-          new_var("w"), new_num(46),
-          new_let(
-              new_var("x"), new_add(new_var("v"), new_num(7)),
-              new_let(new_var("y"), new_add(new_num(4), new_var("x")),
-                      new_let(new_var("z"), new_add(new_var("x"), new_var("w")),
-                              new_add(new_var("z"), new_neg(new_var("y"))))))));
+  R_Expr *r_expr = new_let(new_var("v"), new_num(1),
+                           new_let(new_var("w"), new_num(46),
+                                   new_let(new_var("x"),
+                                           new_add(new_var("v"), new_num(7)),
+                                           new_let(new_var("y"),
+                                                   new_add(new_num(4),
+                                                           new_var("x")),
+                                                   new_let(new_var("z"),
+                                                           new_add(new_var("x"),
+                                                                   new_var
+                                                                   ("w")),
+                                                           new_add(new_var("z"),
+                                                                   new_neg
+                                                                   (new_var
+                                                                    ("y"))))))));
 
   xp = compile(r_expr);
   x_emit(xp, NULL);
@@ -2585,6 +2599,5 @@ void test_r2() {
 
   R_Expr *r6 = new_if(r4, new_num(9), new_num(8));
   R_Expr *r7 = new_sub(new_num(9), new_num(1));
-  if (r1 && r2 && r3 && r4 && r5 && r6 && r7 && r8 && r9 && r10 && r11 && r12)
-    ;
+  if (r1 && r2 && r3 && r4 && r5 && r6 && r7 && r8 && r9 && r10 && r11 && r12);
 }

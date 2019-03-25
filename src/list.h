@@ -15,7 +15,7 @@ struct Node {
 typedef Node **list_t;
 
 /* A generic comparison function */
-typedef enum CMP (*cmp_func_t)(void *, void *);
+typedef enum CMP (*cmp_func_t) (void *, void *);
 
 /* A generic printing function */
 typedef void (*print_func_t)(void *);
@@ -74,4 +74,4 @@ void list_print(const list_t, print_func_t);
 /* Return the num of elements in the list*/
 size_t list_size(const list_t);
 
-#endif /* LIST_H */
+#endif                          /* LIST_H */

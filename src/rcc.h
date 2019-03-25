@@ -148,12 +148,12 @@ char *append_int(const char *, int);
 void make_symmetric(list_t);
 
 /* Combine a few register allocation passes */
-X_Program *reg_alloc(X_Program *xp);
+X_Program *reg_alloc(X_Program * xp);
 
 /* Wrapper around uniquify */
-static inline R_Expr *unique(R_Expr *e) {
+static inline R_Expr *unique(R_Expr * e) {
   int n = 0;
   return uniquify(e, list_create(), &n);
 }
 
-#endif /* RCC_H */
+#endif                          /* RCC_H */

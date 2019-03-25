@@ -221,4 +221,4 @@ void *copy_x_arg(void *);
 
 /* Copy an x_arg_list_pair_t */
 void *copy_x_arg_list_pair(void *);
-#endif /* PAIRS_H */
+#endif                          /* PAIRS_H */
