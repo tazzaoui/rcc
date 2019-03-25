@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
 
   for (size_t i = 0; i < 10; ++i) {
     expr = test_2n(i);
-    res = r_interp(expr, NULL);
+    res = r_int_interp(expr, NULL);
     if (res == (1 << i))
       printf("%s %d \t==\t %d %s\n", GRN, res, (1 << i), NRM);
     else
@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
   for (size_t i = 0; i < NUM_PROGS; ++i) {
     rand_depth = rand() % 20;
     expr = randp(vars, rand_depth);
-    res = r_interp(expr, vars);
+    res = r_int_interp(expr, vars);
     if (DEBUG) {
       r_print_expr(expr);
       printf(" -> %d\n", res);
@@ -245,9 +245,9 @@ int main(int argc, char *argv[]) {
     ar = assign_registers(xp);
     pi = patch_instrs(ar);
     mp = main_pass(pi);
-    res = r_interp(expr, NULL);
-    res_uniq = r_interp(uniq, NULL);
-    res_rco = r_interp(simple, NULL);
+    res = r_int_interp(expr, NULL);
+    res_uniq = r_int_interp(uniq, NULL);
+    res_rco = r_int_interp(simple, NULL);
     res_econ = c_t_interp(c_tail, list_create());
     res_ul = c_p_interp(cp_uncovered);
     res_si = x_interp(xp);
@@ -269,7 +269,7 @@ int main(int argc, char *argv[]) {
     assert(res_ar == res_pi);
     assert(res_pi == res_mp);
     expr_opt = r_optimize(expr, NULL);
-    res_opt = r_interp(expr_opt, NULL);
+    res_opt = r_int_interp(expr_opt, NULL);
     assert(res_opt == res);
     count += (res_opt == res);
     full_count += (res_opt == res && expr_opt->type == R_EXPR_NUM);

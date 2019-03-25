@@ -11,7 +11,8 @@ int main(int argc, char *argv[]) {
   r_print_expr(let);
   printf("\n");
 
-  int val = r_interp(let, NULL);
+  R_Expr *res = r_interp(let, NULL);
+  int val = get_int(res);
   printf("VAL = %d\n", val);
 
   return 0;

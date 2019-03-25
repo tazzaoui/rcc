@@ -6,7 +6,7 @@
 #define NUM_REGS 16
 #define X_PRINT_ARG_ALLOW_VARS 1
 
-extern const char* registers[NUM_REGS];
+extern const char *registers[NUM_REGS];
 typedef enum X_ARG_TYPE {
   X_ARG_NUM,
   X_ARG_REG,
@@ -46,23 +46,23 @@ typedef enum REGISTER {
 } REGISTER;
 
 typedef struct X_Program {
-  Info* info;
+  Info *info;
   list_t labels;  // labels: label -> block
 } X_Program;
 
 typedef struct X_Block {
-  Info* info;
+  Info *info;
   list_t instrs;
 } X_Block;
 
 typedef struct X_Instr {
   X_INSTR_TYPE type;
-  void* instr;
+  void *instr;
 } X_Instr;
 
 typedef struct X_Arg {
   X_ARG_TYPE type;
-  void* arg;
+  void *arg;
 } X_Arg;
 
 typedef struct X_State {
@@ -85,11 +85,11 @@ typedef struct X_Movq {
 } X_Movq;
 
 typedef struct X_Retq {
-  void* ret;
+  void *ret;
 } X_Retq;
 
 typedef struct X_Negq {
-  X_Arg* arg;
+  X_Arg *arg;
 } X_Negq;
 
 typedef struct X_Callq {
@@ -101,11 +101,11 @@ typedef struct X_Jmp {
 } X_Jmp;
 
 typedef struct X_Pushq {
-  X_Arg* arg;
+  X_Arg *arg;
 } X_Pushq;
 
 typedef struct X_Popq {
-  X_Arg* arg;
+  X_Arg *arg;
 } X_Popq;
 
 typedef struct X_Arg_Num {
@@ -122,90 +122,90 @@ typedef struct X_Arg_Mem {
 } X_Arg_Mem;
 
 typedef struct X_Arg_Var {
-  const char* name;
+  const char *name;
 } X_Arg_Var;
 
 /* Return a new program */
-X_Program* new_x_prog(void*, list_t);
+X_Program *new_x_prog(void *, list_t);
 
 /* Return a new block */
-X_Block* new_x_block(void*, list_t);
+X_Block *new_x_block(void *, list_t);
 
 /* Return a new instruction */
-X_Instr* new_x_instr(X_INSTR_TYPE, void*);
+X_Instr *new_x_instr(X_INSTR_TYPE, void *);
 
 /* Return an empty machine state */
-X_State* new_x_state(list_t);
+X_State *new_x_state(list_t);
 
 /* Return a new arg */
-X_Arg* new_x_arg(X_ARG_TYPE, void*);
+X_Arg *new_x_arg(X_ARG_TYPE, void *);
 
 /* Return a new addq instruction */
-X_Addq* new_x_addq(X_Arg*, X_Arg*);
+X_Addq *new_x_addq(X_Arg *, X_Arg *);
 
 /* Return a new addq instruction */
-X_Subq* new_x_subq(X_Arg*, X_Arg*);
+X_Subq *new_x_subq(X_Arg *, X_Arg *);
 
 /* Return a new movq instruction */
-X_Movq* new_x_movq(X_Arg*, X_Arg*);
+X_Movq *new_x_movq(X_Arg *, X_Arg *);
 
 /* Return a new retq instruction */
-X_Retq* new_x_retq(void);
+X_Retq *new_x_retq(void);
 
 /* Return a new negq instruction */
-X_Negq* new_x_negq(X_Arg*);
+X_Negq *new_x_negq(X_Arg *);
 
 /* Return a new callq instruction */
-X_Callq* new_x_callq(label_t);
+X_Callq *new_x_callq(label_t);
 
 /* Return a new jmp instruction */
-X_Jmp* new_x_jmp(label_t);
+X_Jmp *new_x_jmp(label_t);
 
 /* Return a new pushq instruction */
-X_Pushq* new_x_pushq(X_Arg*);
+X_Pushq *new_x_pushq(X_Arg *);
 
 /* Return a new popq instruction */
-X_Popq* new_x_popq(X_Arg*);
+X_Popq *new_x_popq(X_Arg *);
 
 /* Return a new num arg */
-X_Arg_Num* new_x_arg_num(int);
+X_Arg_Num *new_x_arg_num(int);
 
 /* Return a new register arg */
-X_Arg_Reg* new_x_arg_reg(REGISTER);
+X_Arg_Reg *new_x_arg_reg(REGISTER);
 
 /* Return a new memory ref arg */
-X_Arg_Mem* new_x_arg_mem(REGISTER, int);
+X_Arg_Mem *new_x_arg_mem(REGISTER, int);
 
 /* Return a new variable arg */
-X_Arg_Var* new_x_arg_var(const char*);
+X_Arg_Var *new_x_arg_var(const char *);
 
 /* Emit an X Program */
-void x_emit(X_Program*, const char*);
+void x_emit(X_Program *, const char *);
 
 /* Print a block instruction */
-void print_lbl_blk_pair(void*);
+void print_lbl_blk_pair(void *);
 
 /* Print a single instruction */
-void print_x_instr(void*);
+void print_x_instr(void *);
 
 /* Print a single argument */
-void x_print_arg(X_Arg*);
+void x_print_arg(X_Arg *);
 
 /* Interp an X Program */
-int x_interp(X_Program*);
+int x_interp(X_Program *);
 
 /* Interp a block */
-int x_blk_interp(label_t, X_State**);
+int x_blk_interp(label_t, X_State **);
 
 /* Interpret a list of instructions */
-int x_instrs_interp(list_t, X_State**);
+int x_instrs_interp(list_t, X_State **);
 
 /* Interpret a single instruction */
-int x_instr_interp(X_Instr*, X_State**);
+int x_instr_interp(X_Instr *, X_State **);
 
 /* Update the Machine State */
-int update_state(X_State**, X_Arg*, int);
+int update_state(X_State **, X_Arg *, int);
 
 /* Returns an element from the machine state*/
-int lookup_state(X_State*, X_Arg*);
+int lookup_state(X_State *, X_Arg *);
 #endif /* X_H */
