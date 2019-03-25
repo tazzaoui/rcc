@@ -68,7 +68,7 @@
 * Extend your pretty printer from R1 to R2.
 * Write a dozen test R2 programs.
 * Extend your interpreter from R1 to R2.
-Write type-checker tests for R2.
+* Write type-checker tests for R2.
 Write a type-checker for R2.
 Extend your random generation function from R1 to R2.
 Write some R2-specific optimizer tests.

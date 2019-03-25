@@ -2583,21 +2583,117 @@ void test_move_biasing() {
 }
 
 void test_r2() {
-  R_Expr *r1 = new_and(new_true(), new_false());
-  R_Expr *r8 = new_and(new_true(), new_true());
+  R_Expr *res;
 
-  R_Expr *r2 = new_or(new_true(), new_false());
+  R_Expr *r1 = new_and(new_true(), new_false());
+  r_print_expr(r1);
+  printf(" -> ");
+  res = r_interp(r1, NULL);
+  r_print_expr(res);
+  printf("\n");
+
+  R_Expr *r8 = new_and(new_false(), new_true());
+  r_print_expr(r8);
+  printf(" -> ");
+  res = r_interp(r8, NULL);
+  r_print_expr(res);
+  printf("\n");
+
+  R_Expr *r2 = new_or(new_false(), new_false());
+  r_print_expr(r2);
+  printf(" -> ");
+  res = r_interp(r2, NULL);
+  r_print_expr(res);
+  printf("\n");
+
   R_Expr *r9 = new_or(new_true(), new_true());
+  r_print_expr(r9);
+  printf(" -> ");
+  res = r_interp(r9, NULL);
+  r_print_expr(res);
+  printf("\n");
 
   R_Expr *r3 = new_not(new_true());
+  r_print_expr(r3);
+  printf(" -> ");
+  res = r_interp(r3, NULL);
+  r_print_expr(res);
+  printf("\n");
+
   R_Expr *r10 = new_not(new_false());
+  r_print_expr(r10);
+  printf(" -> ");
+  res = r_interp(r10, NULL);
+  r_print_expr(res);
+  printf("\n");
 
   R_Expr *r4 = new_cmp(R_CMP_EQUAL, new_num(7), new_num(8));
+  r_print_expr(r4);
+  printf(" -> ");
+  res = r_interp(r4, NULL);
+  r_print_expr(res);
+  printf("\n");
+
   R_Expr *r11 = new_cmp(R_CMP_LESS, new_num(7), new_num(8));
+  r_print_expr(r11);
+  printf(" -> ");
+  res = r_interp(r11, NULL);
+  r_print_expr(res);
+  printf("\n");
+
   R_Expr *r5 = new_cmp(R_CMP_EQUAL, new_num(7), new_num(7));
+  r_print_expr(r5);
+  printf(" -> ");
+  res = r_interp(r5, NULL);
+  r_print_expr(res);
+  printf("\n");
+
   R_Expr *r12 = new_cmp(R_CMP_GEQ, new_num(7), new_num(7));
+  r_print_expr(r12);
+  printf(" -> ");
+  res = r_interp(r12, NULL);
+  r_print_expr(res);
+  printf("\n");
 
   R_Expr *r6 = new_if(r4, new_num(9), new_num(8));
+  r_print_expr(r6);
+  printf(" -> ");
+  res = r_interp(r6, NULL);
+  r_print_expr(res);
+  printf("\n");
+
   R_Expr *r7 = new_sub(new_num(9), new_num(1));
-  if (r1 && r2 && r3 && r4 && r5 && r6 && r7 && r8 && r9 && r10 && r11 && r12);
+  r_print_expr(r7);
+  printf(" -> ");
+  res = r_interp(r7, NULL);
+  r_print_expr(res);
+  printf("\n");
+}
+
+void test_type_checker() {
+  R_Expr *r1 = new_add(new_true(), new_false());
+  r_print_expr(r1);
+  printf("\n");
+
+  R_Expr *r2 = new_add(new_num(7), new_false());
+  r_print_expr(r2);
+  printf("\n");
+
+  R_Expr *r3 = new_not(new_num(7));
+  r_print_expr(r3);
+  printf("\n");
+
+  R_Expr *r4 = new_neg(new_false());
+  r_print_expr(r4);
+  printf("\n");
+
+  R_Expr *r5 = new_or(new_num(7), new_num(8));
+  r_print_expr(r5);
+  printf("\n");
+
+  R_Expr *r6 = new_or(new_num(7), new_false());
+  r_print_expr(r6);
+  printf("\n");
+
+  if (r1 && r2 && r3 && r4 && r5 && r6);
 }

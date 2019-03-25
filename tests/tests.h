@@ -72,4 +72,7 @@ void test_move_biasing();
 
 /* A few tests for R2 */
 void test_r2();
+
+/* A few type checker tests */
+void test_type_checker();
 #endif                          /* TESTS_H */

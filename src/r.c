@@ -95,7 +95,7 @@ R_Expr *new_if(R_Expr * test_expr, R_Expr * then_expr, R_Expr * else_expr) {
   r->test_expr = test_expr;
   r->then_expr = then_expr;
   r->else_expr = else_expr;
-  return new_expr(r, R_EXPR_CMP);
+  return new_expr(r, R_EXPR_IF);
 }
 
 R_Expr *r_interp(R_Expr * expr, list_t env) {
@@ -346,19 +346,6 @@ void r_print_expr(R_Expr * expr) {
         break;
       case R_EXPR_FALSE:
         printf("false");
-      case R_EXPR_AND:
-        printf("(and ");
-        r_print_expr(((R_And *) expr->expr)->left);
-        printf(" ");
-        r_print_expr(((R_And *) expr->expr)->right);
-        printf(")");
-        break;
-      case R_EXPR_OR:
-        printf("(or ");
-        r_print_expr(((R_Or *) expr->expr)->left);
-        printf(" ");
-        r_print_expr(((R_Or *) expr->expr)->right);
-        printf(")");
         break;
       case R_EXPR_NOT:
         printf("(! ");
@@ -395,6 +382,9 @@ void r_print_expr(R_Expr * expr) {
         r_print_expr(((R_If *) expr->expr)->then_expr);
         printf(" ");
         r_print_expr(((R_If *) expr->expr)->else_expr);
+        printf(")");
+        break;
+      default:
         break;
     };
 }
