@@ -66,6 +66,20 @@ typedef struct x_arg_pair_t {
   X_Arg *arg1, *arg2;
 } x_arg_pair_t;
 
+typedef struct r_expr_type_pair_t {
+  R_Expr *expr;
+  R_EXPR_TYPE type;
+} r_expr_type_pair_t;
+
+/* Return a new R_Expr -> R_EXPR_TYPE pair */
+r_expr_type_pair_t *new_r_expr_type_pair(R_Expr *, R_EXPR_TYPE);
+
+/* Compare two R_Expr -> R_EXPR_TYPE pairs */
+CMP r_expr_type_pair_cmp(void *, void *);
+
+/* Comapare two R_Exprs */
+CMP r_expr_cmp(R_Expr *, R_Expr *);
+
 /* Return a new X_Arg -> X_Arg pairs */
 x_arg_pair_t *new_x_arg_pair(X_Arg *, X_Arg *);
 

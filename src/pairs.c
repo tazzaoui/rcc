@@ -5,6 +5,33 @@
 #include "x.h"
 #include "rcc.h"
 
+r_expr_type_pair_t *new_r_expr_type_pair(R_Expr * expr, R_EXPR_TYPE type) {
+  r_expr_type_pair_t *r = malloc_or_die(sizeof(r_expr_type_pair_t));
+  r->expr = expr;
+  r->type = type;
+  return r;
+}
+
+CMP r_expr_cmp(R_Expr * a, R_Expr * b) {
+  //TODO: Extend this function to handle more exprs
+  if (a && b && a->type == b->type)
+    switch (a->type) {
+      case R_EXPR_VAR:
+        if (!strcmp(((R_Var *) a->expr)->name, ((R_Var *) b->expr)->name))
+          return EQUAL;
+        break;
+      default:
+        break;
+    };
+  return UNEQUAL;
+}
+
+CMP r_expr_type_pair_cmp(void *a, void *b) {
+  r_expr_type_pair_t *a_arg = (r_expr_type_pair_t *) a;
+  r_expr_type_pair_t *b_arg = (r_expr_type_pair_t *) b;
+  return r_expr_cmp(a_arg->expr, b_arg->expr);
+}
+
 x_arg_pair_t *new_x_arg_pair(X_Arg * arg1, X_Arg * arg2) {
   x_arg_pair_t *x = malloc_or_die(sizeof(x_arg_pair_t));
   x->arg1 = arg1;

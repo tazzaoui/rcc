@@ -389,6 +389,81 @@ void r_print_expr(R_Expr * expr) {
     };
 }
 
+void r_print_type(R_EXPR_TYPE type) {
+  switch (type) {
+    case R_TYPE_S64:
+      printf("<S64>");
+      break;
+    case R_TYPE_BOOL:
+      printf("<BOOL>");
+      break;
+    case R_TYPE_ERROR:
+      printf("<ERROR>");
+      break;
+    default:
+      printf("<UNKOWN>");
+  };
+}
+
+R_TYPE r_type_check(R_Expr * expr, list_t env) {
+  R_TYPE l_type, r_type, t_type;
+  r_expr_type_pair_t *p;
+  Node *node;
+  if (env == NULL)
+    env = list_create();
+  if (expr)
+    switch (expr->type) {
+      case R_EXPR_NUM:
+        return R_TYPE_S64;
+      case R_EXPR_TRUE:
+      case R_EXPR_FALSE:
+        return R_TYPE_BOOL;
+      case R_EXPR_VAR:
+        p = new_r_expr_type_pair(expr, R_TYPE_ERROR);
+        node = list_find(env, p, r_expr_type_pair_cmp);
+        if (!node)
+          return R_TYPE_ERROR;
+        return ((r_expr_type_pair_t *) node->data)->type;
+      case R_EXPR_ADD:
+        l_type = r_type_check(get_left(expr), env);
+        r_type = r_type_check(get_right(expr), env);
+        if (l_type == R_TYPE_S64 && r_type == R_TYPE_S64)
+          return R_TYPE_S64;
+        break;
+      case R_EXPR_NEG:
+        if (r_type_check(((R_Neg *) expr->expr)->expr, env) == R_TYPE_S64)
+          return R_TYPE_S64;
+        break;
+      case R_EXPR_CMP:
+        l_type = r_type_check(get_left(expr), env);
+        r_type = r_type_check(get_right(expr), env);
+        if (l_type == R_TYPE_S64 && r_type == R_TYPE_S64)
+          return R_TYPE_BOOL;
+        break;
+      case R_EXPR_NOT:
+        l_type = r_type_check(((R_Not *) expr->expr)->expr, env);
+        if (l_type == R_TYPE_BOOL)
+          return R_TYPE_BOOL;
+        break;
+      case R_EXPR_IF:
+        t_type = r_type_check(((R_If *) expr->expr)->test_expr, env);
+        l_type = r_type_check(((R_If *) expr->expr)->then_expr, env);
+        r_type = r_type_check(((R_If *) expr->expr)->else_expr, env);
+        if (t_type == R_TYPE_BOOL && l_type == r_type)
+          return r_type;
+        break;
+      case R_EXPR_LET:
+        t_type = r_type_check(((R_Let *) expr->expr)->var, env);
+        p = new_r_expr_type_pair(((R_Let *) expr->expr)->var, t_type);
+        list_insert(env, p);
+        l_type = r_type_check(((R_Let *) expr->expr)->body, env);
+        return l_type;
+      default:
+        break;
+    };
+  return R_TYPE_ERROR;
+}
+
 int get_int(R_Expr * expr) {
   if (expr)
     switch (expr->type) {
@@ -404,4 +479,28 @@ int get_int(R_Expr * expr) {
         break;
     };
   return I32MIN;
+}
+
+R_Expr *get_left(R_Expr * expr) {
+  if (expr && expr->type == R_EXPR_ADD)
+    return ((R_Add *) expr->expr)->left;
+  if (expr && expr->type == R_EXPR_CMP)
+    return ((R_Cmp *) expr->expr)->left;
+  return expr;
+}
+
+R_Expr *get_right(R_Expr * expr) {
+  if (expr && expr->type == R_EXPR_ADD)
+    return ((R_Add *) expr->expr)->right;
+  if (expr && expr->type == R_EXPR_CMP)
+    return ((R_Cmp *) expr->expr)->left;
+  return expr;
+}
+
+R_Expr *get_num(R_Expr * expr) {
+  if (expr && expr->type == R_EXPR_NUM)
+    return expr;
+  if (expr && expr->type == R_EXPR_READ)
+    return new_num(((R_Read *) expr->expr)->num);
+  return NULL;
 }

@@ -2671,29 +2671,76 @@ void test_r2() {
 }
 
 void test_type_checker() {
+  R_TYPE type;
+
   R_Expr *r1 = new_add(new_true(), new_false());
+  type = r_type_check(r1, NULL);
   r_print_expr(r1);
+  printf(" -> ");
+  r_print_type(type);
   printf("\n");
 
+
   R_Expr *r2 = new_add(new_num(7), new_false());
+  type = r_type_check(r2, NULL);
   r_print_expr(r2);
+  printf(" -> ");
+  r_print_type(type);
   printf("\n");
 
   R_Expr *r3 = new_not(new_num(7));
+  type = r_type_check(r3, NULL);
   r_print_expr(r3);
+  printf(" -> ");
+  r_print_type(type);
   printf("\n");
 
   R_Expr *r4 = new_neg(new_false());
+  type = r_type_check(r4, NULL);
   r_print_expr(r4);
+  printf(" -> ");
+  r_print_type(type);
   printf("\n");
 
   R_Expr *r5 = new_or(new_num(7), new_num(8));
+  type = r_type_check(r5, NULL);
   r_print_expr(r5);
+  printf(" -> ");
+  r_print_type(type);
   printf("\n");
 
   R_Expr *r6 = new_or(new_num(7), new_false());
+  type = r_type_check(r6, NULL);
   r_print_expr(r6);
+  printf(" -> ");
+  r_print_type(type);
   printf("\n");
 
-  if (r1 && r2 && r3 && r4 && r5 && r6);
+  R_Expr *r7 = new_or(new_true(), new_false());
+  type = r_type_check(r7, NULL);
+  r_print_expr(r7);
+  printf(" -> ");
+  r_print_type(type);
+  printf("\n");
+
+  R_Expr *r8 = new_and(new_true(), new_false());
+  type = r_type_check(r8, NULL);
+  r_print_expr(r8);
+  printf(" -> ");
+  r_print_type(type);
+  printf("\n");
+
+  R_Expr *r9 = new_add(new_num(7), new_num(8));
+  type = r_type_check(r9, NULL);
+  r_print_expr(r9);
+  printf(" -> ");
+  r_print_type(type);
+  printf("\n");
+
+  R_Expr *r10 = new_neg(new_num(42));
+  type = r_type_check(r10, NULL);
+  r_print_expr(r10);
+  printf(" -> ");
+  r_print_type(type);
+  printf("\n");
 }

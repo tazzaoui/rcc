@@ -28,7 +28,11 @@ typedef enum R_CMP_TYPE {
   R_CMP_GREATER
 } R_CMP_TYPE;
 
-typedef enum R_TYPE { R_TYPE_S64, R_TYPE_BOOL } R_TYPE;
+typedef enum R_TYPE {
+  R_TYPE_S64,
+  R_TYPE_BOOL,
+  R_TYPE_ERROR
+} R_TYPE;
 
 typedef struct R_Expr {
   R_EXPR_TYPE type;
@@ -136,6 +140,9 @@ R_Expr *new_if(R_Expr *, R_Expr *, R_Expr *);
 /* Interpret an expression in an environment*/
 R_Expr *r_interp(R_Expr *, list_t);
 
+/* Type check an R_Expr */
+R_TYPE r_type_check(R_Expr *, list_t);
+
 /* Optimize an arbitrary (valid) expression */
 R_Expr *r_optimize(R_Expr *, list_t);
 
@@ -148,31 +155,23 @@ R_Expr *r_optimize_add(R_Expr *, list_t);
 /* Print an expression to stdout */
 void r_print_expr(R_Expr *);
 
+/* Print an R_EXPR_TYPE */
+void r_print_type(R_EXPR_TYPE);
+
 /* r_expr to int where applicable */
 int get_int(R_Expr *);
 
+/* Return the left expr where applicable */
+R_Expr *get_left(R_Expr * expr);
+
+/* Return the right expr where applicable */
+R_Expr *get_right(R_Expr * expr);
+
+/* Extract an R_Num where applicable */
+R_Expr *get_num(R_Expr * expr);
+
 static inline int is_simple(R_Expr * e) {
   return e && (e->type == R_EXPR_NUM || e->type == R_EXPR_VAR);
-}
-
-static inline R_Expr *get_left(R_Expr * expr) {
-  if (expr && expr->type == R_EXPR_ADD)
-    return ((R_Add *) expr->expr)->left;
-  return expr;
-}
-
-static inline R_Expr *get_right(R_Expr * expr) {
-  if (expr && expr->type == R_EXPR_ADD)
-    return ((R_Add *) expr->expr)->right;
-  return expr;
-}
-
-static inline R_Expr *get_num(R_Expr * expr) {
-  if (expr && expr->type == R_EXPR_NUM)
-    return expr;
-  if (expr && expr->type == R_EXPR_READ)
-    return new_num(((R_Read *) expr->expr)->num);
-  return NULL;
 }
 
 static inline R_Expr *get_var(R_Expr * expr) {
