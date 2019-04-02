@@ -143,8 +143,11 @@ R_Expr *r_interp(R_Expr *, list_t);
 /* Type check an R_Expr */
 R_TYPE r_type_check(R_Expr *, list_t);
 
-/* Optimize an arbitrary (valid) expression */
+/* Optimize R1 Expressions */
 R_Expr *r_optimize(R_Expr *, list_t);
+
+/* Optimize R2 Expressions */
+R_Expr *r2_optimize(R_Expr *, list_t);
 
 /* Optimize a neg expression */
 R_Expr *r_optimize_neg(R_Expr *, list_t);

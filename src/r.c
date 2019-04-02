@@ -305,6 +305,67 @@ R_Expr *r_optimize(R_Expr * expr, list_t env) {
   return expr;
 }
 
+R_Expr *r2_optimize(R_Expr * expr, list_t env) {
+  int left, right;
+  R_Cmp *cmp;
+  R_If *if_expr;
+  R_Not *not;
+  R_Expr *l, *r, *m, *res;
+  if (expr)
+    switch (expr->type) {
+      case R_EXPR_CMP:
+        cmp = expr->expr;
+        l = r2_optimize(cmp->left, env);
+        r = r2_optimize(cmp->right, env);
+        res = new_cmp(cmp->cmp_type, l, r);
+        cmp = res->expr;
+        if (cmp->left->type == R_EXPR_NUM && cmp->right->type == R_EXPR_NUM) {
+          left = get_int(cmp->left);
+          right = get_int(cmp->right);
+          switch (cmp->cmp_type) {
+            case R_CMP_EQUAL:
+              return left == right ? new_true() : new_false();
+            case R_CMP_LESS:
+              return left < right ? new_true() : new_false();
+            case R_CMP_GEQ:
+              return left >= right ? new_true() : new_false();
+            case R_CMP_LEQ:
+              return left <= right ? new_true() : new_false();
+            case R_CMP_GREATER:
+              return left > right ? new_true() : new_false();
+          };
+        }
+        return res;
+      case R_EXPR_IF:
+        if_expr = expr->expr;
+        l = r2_optimize(if_expr->test_expr, env);
+        r = r2_optimize(if_expr->then_expr, env);
+        m = r2_optimize(if_expr->else_expr, env);
+        res = new_if(l, r, m);
+        if_expr = res->expr;
+        if (if_expr->test_expr->type == R_EXPR_TRUE)
+          return if_expr->then_expr;
+        if (if_expr->test_expr->type == R_EXPR_FALSE)
+          return if_expr->else_expr;
+        if (if_expr->test_expr->type == R_EXPR_NOT) {
+          not = if_expr->test_expr->expr;
+          return new_if(not->expr, if_expr->else_expr, if_expr->then_expr);
+        }
+        return res;
+      case R_EXPR_NOT:
+        not = expr->expr;
+        res = r2_optimize(not->expr, env);
+        res = new_not(res);
+        not = res->expr;
+        if (not->expr->type == R_EXPR_NOT)
+          return ((R_Not *) not->expr)->expr;
+        return res;
+      default:
+        break;
+    };
+  return expr;
+}
+
 void r_print_expr(R_Expr * expr) {
   if (expr != NULL)
     switch (expr->type) {
