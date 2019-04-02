@@ -21,7 +21,8 @@ static inline void print_optim(R_Expr * e) {
 int main(int argc, char *argv[]) {
   int count = 0, res, rand_depth, res_opt, res_uniq, res_rco, res_econ, res_ul,
     res_si, res_ar, res_pi, res_mp, res_ui, res_bi, res_cg, full_count;
-  R_Expr *expr, *expr_opt, *uniq, *simple;
+  R_Expr *expr, *expr_opt, *uniq, *simple, *res_expr, *res_optim;
+  R_TYPE type, res_type, optim_type, res_optim_type;
   C_Tail *c_tail;
   X_Program *ul, *bi, *ar, *pi, *mp, *cg;
   list_t vars = list_create();
@@ -235,15 +236,22 @@ int main(int argc, char *argv[]) {
 
   printf("===================================================\n");
 
-  printf("General Type Checker Tests...\n\n");
+  printf("General R2 Tests...\n\n");
 
   for (size_t i = 0; i < NUM_PROGS; ++i) {
     rand_depth = rand() % 15;
-    R_Expr *expr = randp_typed(rand_depth);
-    R_Expr *res = r_interp(expr, NULL);
-    R_TYPE type = r_type_check(expr, NULL);
-    R_TYPE res_type = r_type_check(res, NULL);
-    assert(type != R_TYPE_ERROR && res_type == type);
+    expr = randp_typed(rand_depth);
+    res_expr = r_interp(expr, NULL);
+    expr_opt = r2_optimize(expr, NULL);
+    res_optim = r_interp(expr_opt, NULL);
+    type = r_type_check(expr, NULL);
+    res_type = r_type_check(res_expr, NULL);
+    optim_type = r_type_check(expr_opt, NULL);
+    res_optim_type = r_type_check(res_optim, NULL);
+    assert(type == res_type);
+    assert(res_type == optim_type);
+    assert(res_optim_type == optim_type);
+    assert(get_int(res_expr) == get_int(res_optim));
   }
 
   printf("===================================================\n");

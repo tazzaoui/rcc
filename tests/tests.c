@@ -2861,28 +2861,38 @@ void test_type_checker() {
 void test_r2_optimizer() {
 
   R_Expr *r1 = new_add(new_true(), new_false());
+  r2_optimize(r1, NULL);
 
   R_Expr *r2 = new_add(new_num(7), new_false());
+  r2_optimize(r2, NULL);
 
   R_Expr *r3 = new_not(new_num(7));
+  r2_optimize(r3, NULL);
 
   R_Expr *r4 = new_neg(new_false());
+  r2_optimize(r4, NULL);
 
   R_Expr *r5 = new_or(new_num(7), new_num(8));
+  r2_optimize(r5, NULL);
 
   R_Expr *r6 = new_or(new_num(7), new_false());
+  r2_optimize(r6, NULL);
 
   R_Expr *r7 = new_or(new_true(), new_false());
+  r2_optimize(r7, NULL);
 
   R_Expr *r8 = new_and(new_true(), new_false());
+  r2_optimize(r8, NULL);
 
   R_Expr *r9 = new_add(new_num(7), new_num(8));
+  r2_optimize(r9, NULL);
 
   R_Expr *r10 = new_neg(new_num(42));
+  r2_optimize(r10, NULL);
 
   R_Expr *r11 = new_cmp(R_CMP_GREATER, new_num(3), new_num(4));
+  r2_optimize(r11, NULL);
 
   R_Expr *r12 = new_if(new_true(), new_false(), new_false());
-
-  if (r1 && r2 && r3 && r4 && r5 && r6 && r7 && r8 && r9 && r10 && r11 && r12);
+  r2_optimize(r12, NULL);
 }
