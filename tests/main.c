@@ -229,6 +229,12 @@ int main(int argc, char *argv[]) {
 
   printf("===================================================\n");
 
+  printf("testing r2 optimizer...\n\n");
+
+  test_r2_optimizer();
+
+  printf("===================================================\n");
+
   printf("General Type Checker Tests...\n\n");
 
   for (size_t i = 0; i < NUM_PROGS; ++i) {

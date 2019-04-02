@@ -148,7 +148,7 @@ R_Expr *rand_let(list_t env, R_TYPE type, int depth) {
   list_t env_cpy;
   R_TYPE rand_type = rand() % NUM_TYPES;
   r_type_exprs_pair_t *p;
-  R_Expr *var = new_var("x"), *res1, *res2;
+  R_Expr *var = rand_var(2), *res1, *res2;
   env_cpy = list_copy(env, r_type_exprs_pair_cpy);
 
   res1 = rande(env, rand_type, depth - 1);
@@ -2855,4 +2855,34 @@ void test_type_checker() {
   printf(" -> ");
   r_print_type(type);
   printf("\n");
+}
+
+
+void test_r2_optimizer() {
+
+  R_Expr *r1 = new_add(new_true(), new_false());
+
+  R_Expr *r2 = new_add(new_num(7), new_false());
+
+  R_Expr *r3 = new_not(new_num(7));
+
+  R_Expr *r4 = new_neg(new_false());
+
+  R_Expr *r5 = new_or(new_num(7), new_num(8));
+
+  R_Expr *r6 = new_or(new_num(7), new_false());
+
+  R_Expr *r7 = new_or(new_true(), new_false());
+
+  R_Expr *r8 = new_and(new_true(), new_false());
+
+  R_Expr *r9 = new_add(new_num(7), new_num(8));
+
+  R_Expr *r10 = new_neg(new_num(42));
+
+  R_Expr *r11 = new_cmp(R_CMP_GREATER, new_num(3), new_num(4));
+
+  R_Expr *r12 = new_if(new_true(), new_false(), new_false());
+
+  if (r1 && r2 && r3 && r4 && r5 && r6 && r7 && r8 && r9 && r10 && r11 && r12);
 }
