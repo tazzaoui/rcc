@@ -195,4 +195,5 @@ static inline R_Expr *get_body(R_Expr * expr) {
 static inline int r_int_interp(R_Expr * expr, list_t env) {
   return get_int(r_interp(expr, env));
 }
+
 #endif                          /* R_H */

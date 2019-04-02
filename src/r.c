@@ -118,12 +118,12 @@ R_Expr *r_interp(R_Expr * expr, list_t env) {
         if (n == NULL)
           die("Unbound R_Variable!\n");
         ep = (env_pair_t *) n->data;
-        return get_num(ep->val);
+        return ep->val->type == R_EXPR_READ ? get_num(ep->val) : ep->val;
       case R_EXPR_LET:
         res = r_interp(get_expr(expr), env);
         ep = new_env_pair(get_var(expr), res);
         new_env = list_copy(env, ep_cpy);
-        n = list_find(env, ep, ep_cmp);
+        n = list_find(new_env, ep, ep_cmp);
         if (n == NULL)
           list_insert(new_env, ep);
         else
@@ -408,6 +408,7 @@ void r_print_type(R_EXPR_TYPE type) {
 R_TYPE r_type_check(R_Expr * expr, list_t env) {
   R_TYPE l_type, r_type, t_type;
   r_expr_type_pair_t *p;
+  list_t env_cpy;
   Node *node;
   if (env == NULL)
     env = list_create();
@@ -421,9 +422,9 @@ R_TYPE r_type_check(R_Expr * expr, list_t env) {
       case R_EXPR_VAR:
         p = new_r_expr_type_pair(expr, R_TYPE_ERROR);
         node = list_find(env, p, r_expr_type_pair_cmp);
-        if (!node)
-          return R_TYPE_ERROR;
-        return ((r_expr_type_pair_t *) node->data)->type;
+        if (node)
+          return ((r_expr_type_pair_t *) node->data)->type;
+        break;
       case R_EXPR_ADD:
         l_type = r_type_check(get_left(expr), env);
         r_type = r_type_check(get_right(expr), env);
@@ -453,10 +454,12 @@ R_TYPE r_type_check(R_Expr * expr, list_t env) {
           return r_type;
         break;
       case R_EXPR_LET:
-        t_type = r_type_check(((R_Let *) expr->expr)->var, env);
+        t_type = r_type_check(((R_Let *) expr->expr)->expr, env);
         p = new_r_expr_type_pair(((R_Let *) expr->expr)->var, t_type);
-        list_insert(env, p);
-        l_type = r_type_check(((R_Let *) expr->expr)->body, env);
+        env_cpy = list_copy(env, r_expr_type_pair_cpy);
+        list_remove_all(env_cpy, p, r_expr_type_pair_cmp);
+        list_insert(env_cpy, p);
+        l_type = r_type_check(((R_Let *) expr->expr)->body, env_cpy);
         return l_type;
       default:
         break;

@@ -5,21 +5,48 @@
 #include "x.h"
 #include "rcc.h"
 
-r_expr_type_pair_t *new_r_expr_type_pair(R_Expr * expr, R_EXPR_TYPE type) {
+r_type_exprs_pair_t *new_r_type_exprs_pair(R_TYPE type, list_t exprs) {
+  r_type_exprs_pair_t *r = malloc_or_die(sizeof(r_type_exprs_pair_t));
+  r->type = type;
+  r->exprs = exprs;
+  return r;
+}
+
+CMP r_type_exprs_pair_cmp(void *a, void *b) {
+  r_type_exprs_pair_t *a_expr = (r_type_exprs_pair_t *) a;
+  r_type_exprs_pair_t *b_expr = (r_type_exprs_pair_t *) b;
+  return a_expr->type == b_expr->type;
+}
+
+void *r_type_exprs_pair_cpy(void *old) {
+  r_type_exprs_pair_t *old_pair = (r_type_exprs_pair_t *) old;
+  list_t new_exprs = list_copy(old_pair->exprs, identity_cpy);
+  return old ? new_r_type_exprs_pair(old_pair->type, new_exprs) : NULL;
+}
+
+r_expr_type_pair_t *new_r_expr_type_pair(R_Expr * expr, R_TYPE type) {
   r_expr_type_pair_t *r = malloc_or_die(sizeof(r_expr_type_pair_t));
   r->expr = expr;
   r->type = type;
   return r;
 }
 
-CMP r_expr_cmp(R_Expr * a, R_Expr * b) {
+void *r_expr_type_pair_cpy(void *old) {
+  r_expr_type_pair_t *p = old;
+  return p ? new_r_expr_type_pair(p->expr, p->type) : p;
+}
+
+CMP r_expr_cmp(void *a, void *b) {
   //TODO: Extend this function to handle more exprs
-  if (a && b && a->type == b->type)
-    switch (a->type) {
+  R_Expr *a_expr = (R_Expr *) a;
+  R_Expr *b_expr = (R_Expr *) b;
+
+  if (a_expr && b_expr && a_expr->type == b_expr->type)
+    switch (a_expr->type) {
       case R_EXPR_VAR:
-        if (!strcmp(((R_Var *) a->expr)->name, ((R_Var *) b->expr)->name))
+        if (!strcmp(((R_Var *) a_expr->expr)->name,
+                    ((R_Var *) b_expr->expr)->name))
           return EQUAL;
-        break;
       default:
         break;
     };
@@ -137,6 +164,19 @@ void x_print_arg_void(void *data) {
     x_print_arg(data);
 }
 
+void print_r_expr_type_pair(void *data) {
+  r_expr_type_pair_t *p = data;
+  r_print_expr_void(p->expr);
+  printf(" -> ");
+  r_print_type(p->type);
+  printf("\n");
+}
+
+void r_print_expr_void(void *data) {
+  if (data)
+    r_print_expr(data);
+}
+
 void print_x_instr_list_pair(void *data) {
   x_instr_list_pair_t *x = (x_instr_list_pair_t *) data;
   if (x) {
@@ -197,7 +237,6 @@ CMP ep_cmp(void *a, void *b) {
   return UNEQUAL;
 }
 
-
 CMP ep_var_cmp(void *a, void *b) {
   if (a != NULL && b != NULL) {
     R_Expr *a_expr = (R_Expr *) a;
@@ -213,6 +252,10 @@ CMP ep_var_cmp(void *a, void *b) {
 void *ep_cpy(void *old) {
   env_pair_t *old_pair = (env_pair_t *) old;
   return old ? (void *) new_env_pair(old_pair->var, old_pair->val) : NULL;
+}
+
+void *identity_cpy(void *old) {
+  return old;
 }
 
 void ep_print(void *data) {

@@ -7,11 +7,26 @@ void test_dozen_r0(void);
 /* Generates an R0 program that computes 2^N for a given N.*/
 R_Expr *test_2n(int);
 
-/* A function that generates a random R0 program of depth N.*/
+/* Generates a random R0 program of depth N.*/
 R_Expr *randp_r0(int);
 
-/* A function that generates a random R1 program of depth N */
+/* Generates a random R1 program of depth N */
 R_Expr *randp(list_t, int);
+
+/* Generates a random R1 program of depth N guaranteed to type check */
+R_Expr *randp_typed(int);
+
+/* Generates a random R1 expression that is guaranteed to type check */
+R_Expr *rande(list_t, R_TYPE, int);
+
+/* Generates a random let expression that is guaranteed to type check */
+R_Expr *rand_let(list_t, R_TYPE, int);
+
+/* Generates a random if expression that is guaranteed to type check */
+R_Expr *rand_if(list_t, R_TYPE, int);
+
+/* Return a random var */
+R_Expr *rand_var();
 
 /* R1 Interpreter Sanity Checks (A dozen R0 progs)*/
 void test_dozen_r1(void);

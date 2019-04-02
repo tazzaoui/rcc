@@ -9,6 +9,7 @@
 
 #include "tests.h"
 #define NUM 1024
+#define NUM_TYPES 2
 
 R_Expr *test_2n(int n) {
   if (n <= 0)
@@ -33,11 +34,9 @@ R_Expr *randp_r0(int n) {
 R_Expr *randp(list_t vars, int n) {
   list_t env;
   Node *node;
-  R_Expr *rand_var;
+  R_Expr *var;
   env_pair_t *ep;
-  char *buf;
   int rand_num = GET_RAND(), choice = rand() % 3;
-  char rand_char;
   if (n == 0) {
     if (choice == 0 && list_size(vars) == 0)
       choice += ((rand() % 2) + 1);
@@ -59,16 +58,129 @@ R_Expr *randp(list_t vars, int n) {
         return new_add(randp(vars, n - 1), randp(vars, n - 1));
       case 2:
         env = list_copy(vars, ep_cpy);
-        buf = malloc_or_die(2 * sizeof(char));
-        rand_char = 0x61 + rand() % (0x7a - 0x61);
-        buf[0] = rand_char;
-        buf[1] = 0x0;
-        rand_var = new_var(buf);
-        ep = new_env_pair(rand_var, 0);
+        var = rand_var(1);
+        ep = new_env_pair(var, 0);
         list_insert(env, ep);
-        return new_let(rand_var, randp(vars, n - 1), randp(env, n - 1));
+        return new_let(var, randp(vars, n - 1), randp(env, n - 1));
     }
   return NULL;
+}
+
+R_Expr *randp_typed(int depth) {
+  return rande(NULL, rand() % 2, depth);
+}
+
+R_Expr *rande(list_t env, R_TYPE type, int depth) {
+  Node *node;
+  list_t exprs;
+  int rand_num;
+  R_Expr *res1, *res2;
+  r_type_exprs_pair_t *p;
+  if (!env)
+    env = list_create();
+  switch (type) {
+    case R_TYPE_BOOL:
+      if (depth == 0) {
+        rand_num = rand() % 3;
+        p = new_r_type_exprs_pair(R_TYPE_BOOL, NULL);
+        switch (rand_num) {
+          case 0:
+            return new_true();
+          case 1:
+            return new_false();
+          default:
+            node = list_find(env, p, r_type_exprs_pair_cmp);
+            if (!node
+                || !list_size(((r_type_exprs_pair_t *) node->data)->exprs))
+              return rand() % 2 ? new_true() : new_false();
+            exprs = ((r_type_exprs_pair_t *) node->data)->exprs;
+            node = list_get(exprs, rand() % list_size(exprs));
+            return node->data;
+        };
+      } else {
+        rand_num = rand() % 3;
+        switch (rand_num) {
+          case 0:
+            res1 = rande(env, R_TYPE_S64, depth - 1);
+            res2 = rande(env, R_TYPE_S64, depth - 1);
+            return new_cmp(rand() % 5, res1, res2);
+          case 1:
+            return rand_let(env, type, depth);
+          default:
+            return rand_if(env, type, depth);
+        };
+      }
+    case R_TYPE_S64:
+      if (depth == 0) {
+        p = new_r_type_exprs_pair(R_TYPE_S64, NULL);
+        rand_num = rand() % 2;
+        if (rand_num == 0)
+          return new_num(rand());
+        else {
+          node = list_find(env, p, r_type_exprs_pair_cmp);
+          if (!node || !list_size(((r_type_exprs_pair_t *) node->data)->exprs))
+            return new_num(rand());
+          exprs = ((r_type_exprs_pair_t *) node->data)->exprs;
+          node = list_get(exprs, rand() % list_size(exprs));
+          return node->data;
+        }
+      } else
+        return rand() % 2 ? rand_let(env, type, depth) : rand_if(env, type,
+                                                                 depth);
+    default:
+      break;
+  };
+  return NULL;
+}
+
+R_Expr *rand_var(int len) {
+  char *buf = malloc_or_die((len + 1) * sizeof(char));
+  for (size_t i = 0; i < len; ++i)
+    buf[i] = 0x61 + rand() % (0x7a - 0x61);
+  buf[len] = 0x0;
+  return new_var(buf);
+}
+
+R_Expr *rand_let(list_t env, R_TYPE type, int depth) {
+  if (depth <= 0)
+    return NULL;
+  Node *node;
+  list_t env_cpy;
+  R_TYPE rand_type = rand() % NUM_TYPES;
+  r_type_exprs_pair_t *p;
+  R_Expr *var = new_var("x"), *res1, *res2;
+  env_cpy = list_copy(env, r_type_exprs_pair_cpy);
+
+  res1 = rande(env, rand_type, depth - 1);
+  p = new_r_type_exprs_pair(rand_type, list_create());
+  node = list_find(env_cpy, p, r_type_exprs_pair_cmp);
+
+  if (!node)
+    node = list_insert(env_cpy, p);
+  p = node->data;
+
+  list_remove(p->exprs, var, r_expr_cmp);
+  list_insert(p->exprs, var);
+
+  node = *env_cpy;
+  while (node) {
+    p = node->data;
+    if (p->type != rand_type)
+      list_remove(p->exprs, var, r_expr_cmp);
+    node = node->next;
+  }
+
+  res2 = rande(env_cpy, type, depth - 1);
+  return new_let(var, res1, res2);
+}
+
+R_Expr *rand_if(list_t env, R_TYPE type, int depth) {
+  if (depth <= 0)
+    return NULL;
+  R_Expr *test = rande(env, R_TYPE_BOOL, depth - 1);
+  R_Expr *then_expr = rande(env, type, depth - 1);
+  R_Expr *else_expr = rande(env, type, depth - 1);
+  return new_if(test, then_expr, else_expr);
 }
 
 void test_dozen_r0() {

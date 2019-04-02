@@ -68,17 +68,40 @@ typedef struct x_arg_pair_t {
 
 typedef struct r_expr_type_pair_t {
   R_Expr *expr;
-  R_EXPR_TYPE type;
+  R_TYPE type;
 } r_expr_type_pair_t;
 
+typedef struct r_type_exprs_pair_t {
+  R_TYPE type;
+  list_t exprs;
+} r_type_exprs_pair_t;
+
+/* Return a new R_Type -> list_t pair */
+r_type_exprs_pair_t *new_r_type_exprs_pair(R_TYPE, list_t);
+
+/* Compare two r_expr_type_pair_t structs */
+CMP r_type_exprs_pair_cmp(void *, void *);
+
+/* (Deep) Copy an r_type_exprs_pair_t */
+void *r_type_exprs_pair_cpy(void *);
+
+/*  Copy an r_expr_type_pair_t  */
+void *r_expr_type_pair_cpy(void *);
+
+/* Returns a shallow copy of the data */
+void *identity_cpy(void *);
+
 /* Return a new R_Expr -> R_EXPR_TYPE pair */
-r_expr_type_pair_t *new_r_expr_type_pair(R_Expr *, R_EXPR_TYPE);
+r_expr_type_pair_t *new_r_expr_type_pair(R_Expr *, R_TYPE);
 
 /* Compare two R_Expr -> R_EXPR_TYPE pairs */
 CMP r_expr_type_pair_cmp(void *, void *);
 
 /* Comapare two R_Exprs */
-CMP r_expr_cmp(R_Expr *, R_Expr *);
+CMP r_expr_cmp(void *, void *);
+
+/*  Print an r_expr_type_pair_t pair */
+void print_r_expr_type_pair(void *);
 
 /* Return a new X_Arg -> X_Arg pairs */
 x_arg_pair_t *new_x_arg_pair(X_Arg *, X_Arg *);
@@ -226,6 +249,9 @@ CMP cmp_x_args(void *, void *);
 
 /* Wraper around x_print_arg */
 void x_print_arg_void(void *);
+
+/*  Wrapper arounf r_print_expr  */
+void r_print_expr_void(void *);
 
 /* Print an instr list pair */
 void print_x_instr_list_pair(void *);
