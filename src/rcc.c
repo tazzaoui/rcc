@@ -568,6 +568,26 @@ R_Expr *uniquify(R_Expr * expr, list_t env, int *cnt) {
         re = uniquify(((R_Add *) expr->expr)->left, env, cnt);
         nv = uniquify(((R_Add *) expr->expr)->right, env, cnt);
         return new_add(re, nv);
+      case R_EXPR_AND:
+        re = uniquify(((R_And *) expr->expr)->left, env, cnt);
+        nv = uniquify(((R_And *) expr->expr)->right, env, cnt);
+        return new_and(re, nv);
+      case R_EXPR_OR:
+        re = uniquify(((R_Or *) expr->expr)->left, env, cnt);
+        nv = uniquify(((R_Or *) expr->expr)->right, env, cnt);
+        return new_or(re, nv);
+      case R_EXPR_NOT:
+        re = uniquify(((R_Not *) expr->expr)->expr, env, cnt);
+        return new_not(re);
+      case R_EXPR_CMP:
+        re = uniquify(((R_Cmp *) expr->expr)->left, env, cnt);
+        nv = uniquify(((R_Cmp *) expr->expr)->right, env, cnt);
+        return new_cmp(((R_Cmp *) expr->expr)->cmp_type, re, nv);
+      case R_EXPR_IF:
+        re = uniquify(((R_If *) expr->expr)->test_expr, env, cnt);
+        nv = uniquify(((R_If *) expr->expr)->then_expr, env, cnt);
+        ne = uniquify(((R_If *) expr->expr)->else_expr, env, cnt);
+        return new_if(re, nv, ne);
       default:
         break;
     };
