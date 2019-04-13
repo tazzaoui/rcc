@@ -68,7 +68,7 @@ typedef struct R_True {
 } R_True;
 
 typedef struct R_False {
-  int val;
+  int val:1;
 } R_False;
 
 typedef struct R_And {

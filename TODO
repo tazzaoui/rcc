@@ -74,7 +74,7 @@
 * Write some R2-specific optimizer tests.
 * Extend your optimizer from R1 to R2.
 * Extend the uniquify pass from R1 to R2 programs, with a few test cases to check its output.
-Extend your data types from C0 to C1.
+* Extend your data types from C0 to C1.
 Extend your pretty-printer from C0 to C1 programs.
 Write a half-dozen C1 test programs.
 Extend your interpreter from C0 to C1 programs.

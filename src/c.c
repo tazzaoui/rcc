@@ -84,6 +84,40 @@ C_Add *new_c_add(C_Arg * left, C_Arg * right) {
   return ca;
 }
 
+C_True *new_c_true() {
+  C_True *ct = malloc_or_die(sizeof(C_True));
+  ct->val = 1;
+  return ct;
+}
+
+C_False *new_c_false() {
+  C_False *cf = malloc_or_die(sizeof(C_False));
+  cf->val = 1;
+  return cf;
+}
+
+C_Cmp *new_c_cmp(C_CMP_TYPE cmp_type, C_Arg * left, C_Arg * right) {
+  C_Cmp *cc = malloc_or_die(sizeof(C_Cmp));
+  cc->cmp_type = cmp_type;
+  cc->left = left;
+  cc->right = right;
+  return cc;
+}
+
+C_Goto *new_c_goto(label_t lbl) {
+  C_Goto *cg = malloc_or_die(sizeof(C_Goto));
+  cg->lbl = lbl;
+  return cg;
+}
+
+C_Goto_If *new_c_goto_if(C_Cmp * cmp, label_t true_lbl, label_t false_lbl) {
+  C_Goto_If *cgif = malloc_or_die(sizeof(C_Goto_If));
+  cgif->cmp = cmp;
+  cgif->true_lbl = true_lbl;
+  cgif->false_lbl = false_lbl;
+  return cgif;
+}
+
 void c_print_smt(C_Smt * cs) {
   if (cs) {
     printf("(set! %s ", ((C_Var *) cs->var)->name);
@@ -167,9 +201,9 @@ int c_p_interp(C_Program * cp) {
     if (node_main == NULL && node_body == NULL)
       die("[C_P_INTERP] NO MAIN OR BODY LABEL!");
     return c_t_interp(node_main ==
-                      NULL ? ((lbl_tail_pair_t *) node_body->
-                              data)->tail : ((lbl_tail_pair_t *) node_main->
-                                             data)->tail, list_create());
+                      NULL ? ((lbl_tail_pair_t *) node_body->data)->
+                      tail : ((lbl_tail_pair_t *) node_main->data)->tail,
+                      list_create());
   }
   return I32MIN;
 }

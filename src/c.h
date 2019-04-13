@@ -4,9 +4,31 @@
 #include "list.h"
 #include "utils.h"
 
-typedef enum C_ARG_TYPE { C_NUM, C_VAR } C_ARG_TYPE;
-typedef enum C_TAIL_TYPE { C_TAIL_RET, C_TAIL_SEQ } C_TAIL_TYPE;
-typedef enum C_EXPR_TYPE { C_ARG, C_READ, C_NEG, C_ADD } C_EXPR_TYPE;
+typedef enum C_ARG_TYPE { C_NUM, C_VAR, C_TRUE, C_FALSE } C_ARG_TYPE;
+
+typedef enum C_TAIL_TYPE {
+  C_TAIL_RET,
+  C_TAIL_SEQ,
+  C_TAIL_GOTO,
+  C_TAIL_GOTO_IF
+} C_TAIL_TYPE;
+
+typedef enum C_EXPR_TYPE {
+  C_ARG,
+  C_READ,
+  C_NEG,
+  C_ADD,
+  C_NOT,
+  C_CMP
+} C_EXPR_TYPE;
+
+typedef enum C_CMP_TYPE {
+  C_CMP_EQUAL,
+  C_CMP_LESS,
+  C_CMP_LEQ,
+  C_CMP_GEQ,
+  C_CMP_GREATER
+} C_CMP_TYPE;
 
 typedef struct C_Program {
   Info *info;
@@ -51,6 +73,32 @@ typedef struct C_Neg {
 typedef struct C_Add {
   C_Arg *left, *right;
 } C_Add;
+
+typedef struct C_True {
+  int val;
+} C_True;
+
+typedef struct C_False {
+  int val;
+} C_False;
+
+typedef struct C_Not {
+  C_Arg *arg;
+} C_Not;
+
+typedef struct C_Cmp {
+  C_CMP_TYPE cmp_type;
+  C_Arg *left, *right;
+} C_Cmp;
+
+typedef struct C_Goto {
+  label_t lbl;
+} C_Goto;
+
+typedef struct C_Goto_If {
+  C_Cmp *cmp;
+  label_t true_lbl, false_lbl;
+} C_Goto_If;
 
 typedef struct C_Smt {
   C_Var *var;
@@ -97,6 +145,21 @@ C_Neg *new_c_neg(C_Arg *);
 
 /* Return a new c add statement */
 C_Add *new_c_add(C_Arg *, C_Arg *);
+
+/* Return a new C_True expression */
+C_True *new_c_true(void);
+
+/*  Return a new C_False expression */
+C_False *new_c_false(void);
+
+/*  Return a new C_Arg expression */
+C_Cmp *new_c_cmp(C_CMP_TYPE, C_Arg *, C_Arg *);
+
+/* Return a new C_Goto expr */
+C_Goto *new_c_goto(label_t);
+
+/* Return a new C_Goto_If expr */
+C_Goto_If *new_c_goto_if(C_Cmp *, label_t, label_t);
 
 /* Print out a C_Smt */
 void c_print_smt(C_Smt *);

@@ -1008,6 +1008,8 @@ list_t select_instr_tail(C_Tail * ct) {
         instrs_smt = select_instr_smt(((C_Seq *) ct->tail)->smt);
         instrs_tail = select_instr_tail(((C_Seq *) ct->tail)->tail);
         return list_concat(instrs_smt, instrs_tail);
+      default:
+        break;
     }
   return list_create();
 }
@@ -1054,6 +1056,8 @@ list_t select_instr_expr(C_Expr * ce, X_Arg * dst) {
                                 new_x_addq(select_instr_arg
                                            (((C_Add *) ce->expr)->left), dst)));
         break;
+      default:
+        break;
     };
   return instrs;
 }
@@ -1065,6 +1069,8 @@ X_Arg *select_instr_arg(C_Arg * ca) {
         return new_x_arg(X_ARG_NUM, new_x_arg_num(((C_Num *) ca->arg)->num));
       case C_VAR:
         return new_x_arg(X_ARG_VAR, new_x_arg_var(((C_Var *) ca->arg)->name));
+      default:
+        break;
     };
   die("[SELECT_INSTR_ARG] INVALID CA");
   return NULL;
