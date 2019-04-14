@@ -149,9 +149,9 @@ void c_print_tail(C_Tail * ct) {
         printf(" %s", ((C_Goto_If *) ct->tail)->false_lbl);
         break;
       default:
-        break;
+        die("Invalid c_print_tail!");
     };
-  die("Invalid c_print_tail!");
+
 }
 
 void c_print_arg(C_Arg * ca) {
@@ -169,8 +169,9 @@ void c_print_arg(C_Arg * ca) {
       case C_FALSE:
         printf("false");
         break;
+      default:
+        die("Invalid c_print_arg!");
     };
-  die("Invalid c_print_arg!");
 }
 
 void c_print_cmp_type(C_CMP_TYPE type) {
@@ -227,6 +228,7 @@ void c_print_expr(C_Expr * ce) {
         printf(" ");
         c_print_arg(((C_Cmp *) ce->expr)->right);
         printf(")");
+        break;
       default:
         die("Invalid c_expr_print!");
         break;
@@ -247,9 +249,9 @@ int c_p_interp(C_Program * cp) {
     if (node_main == NULL && node_body == NULL)
       die("[C_P_INTERP] NO MAIN OR BODY LABEL!");
     return c_t_interp(node_main ==
-                      NULL ? ((lbl_tail_pair_t *) node_body->
-                              data)->tail : ((lbl_tail_pair_t *) node_main->
-                                             data)->tail, list_create());
+                      NULL ? ((lbl_tail_pair_t *) node_body->data)->
+                      tail : ((lbl_tail_pair_t *) node_main->data)->tail,
+                      list_create());
   }
   return I32MIN;
 }

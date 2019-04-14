@@ -2857,7 +2857,6 @@ void test_type_checker() {
   printf("\n");
 }
 
-
 void test_r2_optimizer() {
 
   R_Expr *r1 = new_add(new_true(), new_false());
@@ -2895,4 +2894,37 @@ void test_r2_optimizer() {
 
   R_Expr *r12 = new_if(new_true(), new_false(), new_false());
   r2_optimize(r12, NULL);
+}
+
+void test_c2() {
+  C_Arg *c7 = new_c_arg(C_NUM, new_c_num(7));
+  C_Arg *c42 = new_c_arg(C_NUM, new_c_num(42));
+
+  C_Arg *c6 = new_c_arg(C_TRUE, new_c_true());
+  c_print_arg(c6);
+  printf("\n");
+
+  C_Expr *c1 = new_c_expr(C_CMP, new_c_cmp(C_CMP_EQUAL, c7, c42));
+  c_print_expr(c1);
+  printf("\n");
+
+  C_Cmp *cp = new_c_cmp(C_CMP_LEQ, c7, c42);
+  C_Cmp *cp2 = new_c_cmp(C_CMP_EQUAL, c7, c42);
+
+  C_Expr *c2 = new_c_expr(C_CMP, cp);
+  c_print_expr(c2);
+  printf("\n");
+
+  C_Expr *c3 = new_c_expr(C_CMP, cp2);
+  c_print_expr(c3);
+  printf("\n");
+
+  C_Tail *c4 = new_c_tail(C_TAIL_GOTO, new_c_goto("label"));
+  c_print_tail(c4);
+  printf("\n");
+
+  C_Tail *c5 =
+    new_c_tail(C_TAIL_GOTO_IF, new_c_goto_if(c2, "true_lbl", "false_lbl"));
+  c_print_tail(c5);
+  printf("\n");
 }

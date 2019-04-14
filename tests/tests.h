@@ -94,4 +94,7 @@ void test_type_checker();
 /*  A few R2 optimizer tests */
 void test_r2_optimizer();
 
+/*  A few C2 tests */
+void test_c2();
+
 #endif                          /* TESTS_H */

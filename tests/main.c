@@ -236,6 +236,13 @@ int main(int argc, char *argv[]) {
 
   printf("===================================================\n");
 
+  printf("testing c2...\n\n");
+
+  test_c2();
+
+  printf("===================================================\n");
+
+
   printf("General R2 Tests...\n\n");
 
   for (size_t i = 0; i < NUM_PROGS; ++i) {
