@@ -1,6 +1,9 @@
 #ifndef TESTS_H
 #define TESTS_H
 
+#include "../src/r.h"
+#include "../src/x.h"
+
 /* R0 Interpreter Sanity Checks (A dozen R0 progs)*/
 void test_dozen_r0(void);
 

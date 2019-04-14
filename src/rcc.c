@@ -63,10 +63,12 @@ void c_tail_extract_vars(C_Tail * tail, list_t vars) {
 int x_compile(X_Program * xp) {
   FILE *fp;
   int cc_result;
+  char buf[1024];
+  sprintf(buf, "cc %s test_compile.s -o test.bin", RUNTIME_PATH);
   x_emit(xp, "test_compile.s");
-  system("cc src/runtime.c test_compile.s -o test.bin");
+  system(buf);
   if ((fp = popen("./test.bin", "r")) == NULL)
-    die("[compile_and_check] Failed to run test_bin!");
+    die("[x_compile] Failed to run test.bin!");
   fscanf(fp, "%d", &cc_result);
   pclose(fp);
   return cc_result;

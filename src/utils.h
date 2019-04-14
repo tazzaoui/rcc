@@ -8,7 +8,7 @@
 #define RAND_RANGE 1024
 #define GET_RAND() (rand() % (2 * RAND_RANGE)) - RAND_RANGE
 #define QUIET_READ 1
-
+#define RUNTIME_PATH "/home/taha/Code/rcc/runtime.c"
 #if QUIET_READ == 1
 #define READ_INT "read_int_debug"
 #else
