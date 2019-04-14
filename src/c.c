@@ -110,7 +110,7 @@ C_Goto *new_c_goto(label_t lbl) {
   return cg;
 }
 
-C_Goto_If *new_c_goto_if(C_Cmp * cmp, label_t true_lbl, label_t false_lbl) {
+C_Goto_If *new_c_goto_if(C_Expr * cmp, label_t true_lbl, label_t false_lbl) {
   C_Goto_If *cgif = malloc_or_die(sizeof(C_Goto_If));
   cgif->cmp = cmp;
   cgif->true_lbl = true_lbl;
@@ -139,10 +139,19 @@ void c_print_tail(C_Tail * ct) {
         printf("\n");
         c_print_tail(((C_Seq *) ct->tail)->tail);
         break;
+      case C_TAIL_GOTO:
+        printf("goto %s", ((C_Goto *) ct->tail)->lbl);
+        break;
+      case C_TAIL_GOTO_IF:
+        printf("gotoif ");
+        c_print_expr(((C_Goto_If *) ct->tail)->cmp);
+        printf(" %s", ((C_Goto_If *) ct->tail)->true_lbl);
+        printf(" %s", ((C_Goto_If *) ct->tail)->false_lbl);
+        break;
       default:
-        die("Invalid c_print_tail!");
         break;
     };
+  die("Invalid c_print_tail!");
 }
 
 void c_print_arg(C_Arg * ca) {
@@ -154,9 +163,34 @@ void c_print_arg(C_Arg * ca) {
       case C_VAR:
         printf("%s", ((C_Var *) ca->arg)->name);
         break;
-      default:
-        die("Invalid c_print_arg!");
+      case C_TRUE:
+        printf("true");
+        break;
+      case C_FALSE:
+        printf("false");
+        break;
     };
+  die("Invalid c_print_arg!");
+}
+
+void c_print_cmp_type(C_CMP_TYPE type) {
+  switch (type) {
+    case C_CMP_EQUAL:
+      printf("==");
+      break;
+    case C_CMP_LESS:
+      printf("<");
+      break;
+    case C_CMP_LEQ:
+      printf("<=");
+      break;
+    case C_CMP_GEQ:
+      printf(">=");
+      break;
+    case C_CMP_GREATER:
+      printf(">");
+      break;
+  };
 }
 
 void c_print_expr(C_Expr * ce) {
@@ -164,7 +198,6 @@ void c_print_expr(C_Expr * ce) {
     switch (ce->type) {
       case C_ARG:
         c_print_arg(ce->expr);
-        //printf("\n");
         break;
       case C_READ:
         printf("READ");
@@ -181,6 +214,19 @@ void c_print_expr(C_Expr * ce) {
         c_print_arg(((C_Add *) ce->expr)->right);
         printf(")");
         break;
+      case C_NOT:
+        printf("(! ");
+        c_print_arg(((C_Not *) ce->expr)->arg);
+        printf(")");
+        break;
+      case C_CMP:
+        printf("(");
+        c_print_cmp_type(((C_Cmp *) ce->expr)->cmp_type);
+        printf(" ");
+        c_print_arg(((C_Cmp *) ce->expr)->left);
+        printf(" ");
+        c_print_arg(((C_Cmp *) ce->expr)->right);
+        printf(")");
       default:
         die("Invalid c_expr_print!");
         break;
@@ -201,9 +247,9 @@ int c_p_interp(C_Program * cp) {
     if (node_main == NULL && node_body == NULL)
       die("[C_P_INTERP] NO MAIN OR BODY LABEL!");
     return c_t_interp(node_main ==
-                      NULL ? ((lbl_tail_pair_t *) node_body->data)->
-                      tail : ((lbl_tail_pair_t *) node_main->data)->tail,
-                      list_create());
+                      NULL ? ((lbl_tail_pair_t *) node_body->
+                              data)->tail : ((lbl_tail_pair_t *) node_main->
+                                             data)->tail, list_create());
   }
   return I32MIN;
 }

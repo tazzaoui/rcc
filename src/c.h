@@ -96,7 +96,7 @@ typedef struct C_Goto {
 } C_Goto;
 
 typedef struct C_Goto_If {
-  C_Cmp *cmp;
+  C_Expr *cmp;
   label_t true_lbl, false_lbl;
 } C_Goto_If;
 
@@ -159,7 +159,7 @@ C_Cmp *new_c_cmp(C_CMP_TYPE, C_Arg *, C_Arg *);
 C_Goto *new_c_goto(label_t);
 
 /* Return a new C_Goto_If expr */
-C_Goto_If *new_c_goto_if(C_Cmp *, label_t, label_t);
+C_Goto_If *new_c_goto_if(C_Expr *, label_t, label_t);
 
 /* Print out a C_Smt */
 void c_print_smt(C_Smt *);
