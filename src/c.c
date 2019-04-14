@@ -249,27 +249,43 @@ int c_p_interp(C_Program * cp) {
     if (node_main == NULL && node_body == NULL)
       die("[C_P_INTERP] NO MAIN OR BODY LABEL!");
     return c_t_interp(node_main ==
-                      NULL ? ((lbl_tail_pair_t *) node_body->data)->
-                      tail : ((lbl_tail_pair_t *) node_main->data)->tail,
-                      list_create());
+                      NULL ? ((lbl_tail_pair_t *) node_body->
+                              data)->tail : ((lbl_tail_pair_t *) node_main->
+                                             data)->tail, list_create(), cp->labels);
   }
   return I32MIN;
 }
 
-int c_t_interp(C_Tail * ct, list_t env) {
+int c_t_interp(C_Tail * ct, list_t env, list_t lbl2tail) {
+  int res;
+  Node *lbl_node;
+  lbl_tail_pair_t *p;
   if (ct && env)
     switch (ct->type) {
       case C_TAIL_RET:
         return c_a_interp(((C_Ret *) ct->tail)->arg, env);
       case C_TAIL_SEQ:
         c_s_interp(((C_Seq *) ct->tail)->smt, env);
-        return c_t_interp(((C_Seq *) ct->tail)->tail, env);
+        return c_t_interp(((C_Seq *) ct->tail)->tail, env, lbl2tail);
+      case C_TAIL_GOTO:
+        lbl_node = list_find(lbl2tail, new_lbl_tail_pair(((C_Goto*)ct->tail)->lbl, NULL), lbl_tail_cmp);
+        if(!lbl_node) die("[c_t_interp] GOTO INVALID LABEL!");
+        p = lbl_node->data;
+        return c_t_interp(p->tail, list_create(), lbl2tail);
+      case C_TAIL_GOTO_IF:
+        res = c_e_interp(((C_Goto_If*)ct->tail)->cmp, env);
+        if(res)
+            lbl_node = list_find(lbl2tail, new_lbl_tail_pair(((C_Goto_If*)ct->tail)->true_lbl, NULL), lbl_tail_cmp);
+        else
+            lbl_node = list_find(lbl2tail, new_lbl_tail_pair(((C_Goto_If*)ct->tail)->false_lbl, NULL), lbl_tail_cmp);
+        if(!lbl_node) die("[c_t_interp] GOTOIF INVALID LABEL!");
+        p = lbl_node->data;
+        return c_t_interp(p->tail, list_create(), lbl2tail);
       default:
         die("INVALID c_t_interp!");
     }
   return I32MIN;
 }
-
 
 int c_s_interp(C_Smt * cs, list_t env) {
   int res = I32MIN;
@@ -287,7 +303,8 @@ int c_s_interp(C_Smt * cs, list_t env) {
 }
 
 int c_e_interp(C_Expr * ce, list_t env) {
-  int r;
+  int r, left, right;
+  C_Cmp *cmp;
   if (ce && env)
     switch (ce->type) {
       case C_ARG:
@@ -302,6 +319,24 @@ int c_e_interp(C_Expr * ce, list_t env) {
       case C_ADD:
         return c_a_interp(((C_Add *) ce->expr)->left,
                           env) + c_a_interp(((C_Add *) ce->expr)->right, env);
+      case C_NOT:
+        return !c_a_interp(((C_Not*)ce->expr)->arg, env);
+      case C_CMP:
+        cmp = ce->expr;
+        left = c_a_interp(cmp->left, env);
+        right = c_a_interp(cmp->right, env);
+        switch(cmp->cmp_type){
+            case C_CMP_EQUAL:
+                return left == right;
+            case C_CMP_LESS:
+                return left < right;
+            case C_CMP_LEQ:
+                return left <= right;
+            case C_CMP_GEQ:
+                return left >= right;
+            case C_CMP_GREATER:
+                return left > right;
+        };
       default:
         die("INVALID c_e_interp!");
     };
@@ -312,6 +347,10 @@ int c_a_interp(C_Arg * ca, list_t env) {
   Node *node;
   if (ca && env)
     switch (ca->type) {
+      case C_TRUE:
+        return ((C_True *) ca->arg)->val;
+      case C_FALSE:
+        return ((C_False *) ca->arg)->val;
       case C_NUM:
         return ((C_Num *) ca->arg)->num;
       case C_VAR:

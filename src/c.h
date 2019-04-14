@@ -180,7 +180,7 @@ void c_print(C_Program *);
 int c_p_interp(C_Program *);
 
 /* Interp a C tail */
-int c_t_interp(C_Tail *, list_t);
+int c_t_interp(C_Tail *, list_t, list_t);
 
 /* Interp a C statement */
 int c_s_interp(C_Smt *, list_t);

@@ -324,7 +324,7 @@ int main(int argc, char *argv[]) {
     res = r_int_interp(expr, NULL);
     res_uniq = r_int_interp(uniq, NULL);
     res_rco = r_int_interp(simple, NULL);
-    res_econ = c_t_interp(c_tail, list_create());
+    res_econ = c_t_interp(c_tail, list_create(), NULL);
     res_ul = c_p_interp(cp_uncovered);
     res_si = x_interp(xp);
     res_ui = x_interp(ul);
