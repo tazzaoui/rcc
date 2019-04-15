@@ -9,6 +9,14 @@ const char *registers[NUM_REGS] = {
   "%r8", "%r9", "%r10", "%r11", "%r12", "%r13", "%r14", "%r15"
 };
 
+const char *byte_registers[NUM_REGS][2] = {
+  { "AH", "AL" },
+  { "BH", "BL" },
+  { "CH", "CL" },
+  { "DH", "DL" }
+};
+const char *x_cc_type[NUM_CC] = { "e", "l", "le", "g", "ge" };
+
 X_Program *new_x_prog(void *info, list_t labels) {
   X_Program *xp = malloc_or_die(sizeof(X_Program));
   xp->info = info;
@@ -135,10 +143,10 @@ X_Movzbq *new_x_movzbq(X_Arg * left, X_Arg * right) {
   return m;
 }
 
-X_Jmpif *new_x_jmpif(X_CC_TYPE cc, X_Arg * arg) {
+X_Jmpif *new_x_jmpif(X_CC_TYPE cc, label_t label) {
   X_Jmpif *j = malloc_or_die(sizeof(X_Jmpif));
   j->cc = cc;
-  j->arg = arg;
+  j->label = label;
   return j;
 }
 
@@ -157,6 +165,7 @@ X_Arg_Reg *new_x_arg_reg(REGISTER reg) {
 X_Arg_Byte_Reg *new_x_arg_byte_reg(REGISTER reg) {
   X_Arg_Byte_Reg *br = malloc_or_die(sizeof(X_Arg_Byte_Reg));
   br->reg = reg;
+  br->byte = 0;
   return br;
 }
 
@@ -227,6 +236,32 @@ void print_x_instr(void *instr) {
         printf("\tpopq\t");
         x_print_arg(((X_Popq *) i->instr)->arg);
         break;
+      case XORQ:
+        printf("\txorq\t");
+        x_print_arg(((X_Xorq *) i->instr)->left);
+        printf(", ");
+        x_print_arg(((X_Xorq *) i->instr)->right);
+        break;
+      case CMPQ:
+        printf("\tcmpq\t");
+        x_print_arg(((X_Cmpq *) i->instr)->left);
+        printf(", ");
+        x_print_arg(((X_Cmpq *) i->instr)->right);
+        break;
+      case SETCC:
+        printf("\tset%s\t", x_cc_type[((X_Setcc *) i->instr)->cc]);
+        x_print_arg(((X_Setcc *) i->instr)->arg);
+        break;
+      case MOVZBQ:
+        printf("\tmovzbq\t");
+        x_print_arg(((X_Movzbq *) i->instr)->left);
+        printf(", ");
+        x_print_arg(((X_Movzbq *) i->instr)->right);
+        break;
+      case JMPIF:
+        printf("\tjmp%s\t", x_cc_type[((X_Jmpif *) i->instr)->cc]);
+        printf("%s", ((X_Jmpif *) i->instr)->label);
+        break;
       default:
         die("Invalid Instruction!");
     };
@@ -235,6 +270,7 @@ void print_x_instr(void *instr) {
 }
 
 void x_print_arg(X_Arg * arg) {
+  int byte;
   if (arg) {
     switch (arg->type) {
       case X_ARG_NUM:
@@ -250,6 +286,12 @@ void x_print_arg(X_Arg * arg) {
       case X_ARG_VAR:
         if (X_PRINT_ARG_ALLOW_VARS)
           printf("!%s", ((X_Arg_Var *) arg->arg)->name);
+        break;
+      case X_ARG_BYTE_REG:
+        byte = ((X_Arg_Byte_Reg *) arg->arg)->byte;
+        printf("%s",
+               byte_registers[((X_Arg_Byte_Reg *) arg->arg)->reg - 2][byte ==
+                                                                      1]);
         break;
       default:
         die("Invalid Arg!");

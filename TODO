@@ -79,7 +79,7 @@
 * Write a half-dozen C1 test programs.
 * Extend your interpreter from C0 to C1 programs.
 * Extend your data types from X0 to X1.
-Extend your emitter from X0 to X1 programs.
+* Extend your emitter from X0 to X1 programs.
 Write a half-dozen X1 test programs.
 Extend your interpreter from X0 to X1 programs.
 Extend the resolve-complex pass from R1 to R2 programs, with a few test cases to check its output.

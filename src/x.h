@@ -3,10 +3,13 @@
 
 #include "list.h"
 
+#define NUM_CC 5
 #define NUM_REGS 16
 #define X_PRINT_ARG_ALLOW_VARS 1
 
+extern const char *x_cc_type[NUM_CC];
 extern const char *registers[NUM_REGS];
+extern const char *byte_registers[NUM_REGS][2];
 
 typedef enum X_ARG_TYPE {
   X_ARG_NUM,
@@ -16,13 +19,7 @@ typedef enum X_ARG_TYPE {
   X_ARG_BYTE_REG
 } X_ARG_TYPE;
 
-typedef enum X_CC_TYPE {
-  X_CC_E,
-  X_CC_L,
-  X_CC_LE,
-  X_CC_G,
-  X_CC_GE
-} X_CC_TYPE;
+typedef enum X_CC_TYPE { E, L, LE, G, GE } X_CC_TYPE;
 
 typedef enum X_INSTR_TYPE {
   ADDQ,
@@ -142,7 +139,7 @@ typedef struct X_Movzbq {
 
 typedef struct X_Jmpif {
   X_CC_TYPE cc;
-  X_Arg *arg;
+  label_t label;
 } X_Jmpif;
 
 typedef struct X_Arg_Num {
@@ -164,6 +161,7 @@ typedef struct X_Arg_Var {
 
 typedef struct X_Arg_Byte_Reg {
   REGISTER reg;
+  int byte;                     // 0 = low half, 1 = high half
 } X_Arg_Byte_Reg;
 
 /* Return a new program */
@@ -221,7 +219,7 @@ X_Setcc *new_x_setcc(X_CC_TYPE, X_Arg *);
 X_Movzbq *new_x_movzbq(X_Arg *, X_Arg *);
 
 /*  Return a new jmpif instruction */
-X_Jmpif *new_x_jmpif(X_CC_TYPE, X_Arg *);
+X_Jmpif *new_x_jmpif(X_CC_TYPE, label_t);
 
 /* Return a new num arg */
 X_Arg_Num *new_x_arg_num(int);
