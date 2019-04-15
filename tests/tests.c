@@ -2928,3 +2928,26 @@ void test_c2() {
   c_print_tail(c5);
   printf("\n");
 }
+
+void test_x1() {
+  X_Arg *x42 = new_x_arg(X_ARG_NUM, new_x_arg_num(42));
+  X_Arg *rax = new_x_arg(X_ARG_REG, new_x_arg_reg(RAX));
+
+  X_Instr *x1 = new_x_instr(CMPQ, new_x_cmpq(x42, x42));
+  print_x_instr(x1);
+
+  X_Instr *x2 = new_x_instr(XORQ, new_x_xorq(x42, x42));
+  print_x_instr(x2);
+
+  X_Instr *x3 = new_x_instr(SETCC, new_x_setcc(E, x42));
+  print_x_instr(x3);
+
+  X_Instr *x4 = new_x_instr(MOVZBQ, new_x_movzbq(x42, rax));
+  print_x_instr(x4);
+
+  X_Instr *x5 = new_x_instr(JMPIF, new_x_jmpif(GE, "someLabel"));
+  print_x_instr(x5);
+
+  X_Instr *x6 = new_x_instr(JMPIF, new_x_jmpif(L, "someLabel"));
+  print_x_instr(x6);
+}

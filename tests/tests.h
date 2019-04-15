@@ -100,4 +100,7 @@ void test_r2_optimizer();
 /*  A few C2 tests */
 void test_c2();
 
+/* A few X1 tests */
+void test_x1();
+
 #endif                          /* TESTS_H */

@@ -249,10 +249,9 @@ int c_p_interp(C_Program * cp) {
     if (node_main == NULL && node_body == NULL)
       die("[C_P_INTERP] NO MAIN OR BODY LABEL!");
     return c_t_interp(node_main ==
-                      NULL ? ((lbl_tail_pair_t *) node_body->
-                              data)->tail : ((lbl_tail_pair_t *) node_main->
-                                             data)->tail, list_create(),
-                      cp->labels);
+                      NULL ? ((lbl_tail_pair_t *) node_body->data)->
+                      tail : ((lbl_tail_pair_t *) node_main->data)->tail,
+                      list_create(), cp->labels);
   }
   return I32MIN;
 }
