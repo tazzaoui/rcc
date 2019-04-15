@@ -79,6 +79,7 @@ typedef struct X_Arg {
 
 typedef struct X_State {
   int regs[NUM_REGS];           // (register -> num)
+  int flags[NUM_CC];            // flags set on cmpq
   list_t nums;                  // (num -> num)
   list_t vars;                  // (var -> num)
   list_t lbls;                  // (lbl - >blks)
@@ -161,7 +162,6 @@ typedef struct X_Arg_Var {
 
 typedef struct X_Arg_Byte_Reg {
   REGISTER reg;
-  int byte;                     // 0 = low half, 1 = high half
 } X_Arg_Byte_Reg;
 
 /* Return a new program */

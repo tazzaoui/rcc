@@ -44,8 +44,12 @@ X_Instr *new_x_instr(X_INSTR_TYPE type, void *instr) {
 
 X_State *new_x_state(list_t lbls) {
   X_State *s = malloc_or_die(sizeof(X_State));
+
   for (int i = 0; i < NUM_REGS; ++i)
     s->regs[i] = 0;
+
+  for (int i = 0; i < NUM_CC; ++i)
+    s->flags[i] = 0;
 
   s->nums = list_create();
   s->vars = list_create();
@@ -165,7 +169,6 @@ X_Arg_Reg *new_x_arg_reg(REGISTER reg) {
 X_Arg_Byte_Reg *new_x_arg_byte_reg(REGISTER reg) {
   X_Arg_Byte_Reg *br = malloc_or_die(sizeof(X_Arg_Byte_Reg));
   br->reg = reg;
-  br->byte = 0;
   return br;
 }
 
@@ -270,7 +273,6 @@ void print_x_instr(void *instr) {
 }
 
 void x_print_arg(X_Arg * arg) {
-  int byte;
   if (arg) {
     switch (arg->type) {
       case X_ARG_NUM:
@@ -288,10 +290,7 @@ void x_print_arg(X_Arg * arg) {
           printf("!%s", ((X_Arg_Var *) arg->arg)->name);
         break;
       case X_ARG_BYTE_REG:
-        byte = ((X_Arg_Byte_Reg *) arg->arg)->byte;
-        printf("%s",
-               byte_registers[((X_Arg_Byte_Reg *) arg->arg)->reg - 2][byte ==
-                                                                      1]);
+        printf("%s", byte_registers[((X_Arg_Byte_Reg *) arg->arg)->reg - 2][0]);
         break;
       default:
         die("Invalid Arg!");
@@ -348,7 +347,6 @@ int x_instr_interp(X_Instr * instr, X_State ** ms) {
   if (instr && ms) {
     int lval, rval;
     X_State *s = *ms;
-    label_t lbl;
     X_Arg *mem_rsp = new_x_arg(X_ARG_MEM, new_x_arg_mem(RSP, 0));
     X_Arg *rsp = new_x_arg(X_ARG_REG, new_x_arg_reg(RSP));
     switch (instr->type) {
@@ -363,6 +361,12 @@ int x_instr_interp(X_Instr * instr, X_State ** ms) {
         rval = lookup_state(s, ((X_Subq *) instr->instr)->right);
         rval -= lval;
         update_state(ms, ((X_Subq *) instr->instr)->right, rval);
+        return rval;
+      case XORQ:
+        lval = lookup_state(s, ((X_Xorq *) instr->instr)->left);
+        rval = lookup_state(s, ((X_Xorq *) instr->instr)->right);
+        rval ^= lval;
+        update_state(ms, ((X_Xorq *) instr->instr)->right, rval);
         return rval;
       case NEGQ:
         lval = lookup_state(s, ((X_Negq *) instr->instr)->arg);
@@ -387,19 +391,38 @@ int x_instr_interp(X_Instr * instr, X_State ** ms) {
         update_state(ms, rsp, lval + 8);
         return rval;
       case JMP:
-        lbl = ((X_Jmp *) instr->instr)->label;
-        return x_blk_interp(lbl, ms);
+        return x_blk_interp(((X_Jmp *) instr->instr)->label, ms);
+      case JMPIF:
+        if (s->flags[((X_Jmpif *) instr->instr)->cc])
+          return x_blk_interp(((X_Jmpif *) instr->instr)->label, ms);
+        break;
       case RETQ:
         return lookup_state(s, new_x_arg(X_ARG_REG, new_x_arg_reg(RAX)));
       case CALLQ:
-        lbl = ((X_Callq *) instr->instr)->label;
         lval = 7;
-        if (strcmp(lbl, READ_INT) == 0) {
+        if (strcmp(((X_Callq *) instr->instr)->label, READ_INT) == 0) {
           if (!QUIET_READ)
             scanf("%d", &lval);
           s->regs[RAX] = lval;
         }
         return lval;
+      case CMPQ:
+        lval = lookup_state(s, ((X_Cmpq *) instr->instr)->left);
+        rval = lookup_state(s, ((X_Cmpq *) instr->instr)->right);
+        s->flags[E] = (lval == rval);
+        s->flags[L] = (lval < rval);
+        s->flags[LE] = (lval <= rval);
+        s->flags[G] = (lval > rval);
+        s->flags[GE] = (lval >= rval);
+        break;
+      case SETCC:
+        lval = s->flags[((X_Setcc *) instr->instr)->cc];
+        update_state(ms, ((X_Setcc *) instr->instr)->arg, lval);
+        break;
+      case MOVZBQ:
+        lval = lookup_state(s, ((X_Movzbq *) instr->instr)->left);
+        update_state(ms, ((X_Movzbq *) instr->instr)->right, lval);
+        break;
       default:
         break;
     };
@@ -446,6 +469,10 @@ int update_state(X_State ** s, X_Arg * arg, int val) {
           list_update(ms->vars, n->data, new_vnp, var_num_pair_cmp);
           return old;
         }
+      case X_ARG_BYTE_REG:
+        old = ms->regs[((X_Arg_Byte_Reg *) arg->arg)->reg];
+        ms->regs[((X_Arg_Reg *) arg->arg)->reg] |= (val & 0xff00);
+        return old;
       default:
         break;
     };
@@ -477,6 +504,8 @@ int lookup_state(X_State * ms, X_Arg * arg) {
         if (n != NULL)
           return ((var_num_pair_t *) n->data)->num;
         return I32MIN;
+      case X_ARG_BYTE_REG:
+        return ms->regs[((X_Arg_Byte_Reg *) arg->arg)->reg] & 0xff;
       default:
         break;
     };
