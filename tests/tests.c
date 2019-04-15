@@ -2906,27 +2906,27 @@ void test_c2() {
 
   C_Expr *c1 = new_c_expr(C_CMP, new_c_cmp(C_CMP_EQUAL, c7, c42));
   c_print_expr(c1);
-  printf(" -> %d\n", c_e_interp(c1, NULL));
+  printf("\n");
 
   C_Cmp *cp = new_c_cmp(C_CMP_LEQ, c7, c42);
   C_Cmp *cp2 = new_c_cmp(C_CMP_EQUAL, c7, c42);
 
   C_Expr *c2 = new_c_expr(C_CMP, cp);
   c_print_expr(c2);
-  printf(" -> %d\n", c_e_interp(c2, NULL));
+  printf("\n");
 
   C_Expr *c3 = new_c_expr(C_CMP, cp2);
   c_print_expr(c3);
-  printf(" -> %d\n", c_e_interp(c3, NULL));
+  printf("\n");
 
   C_Tail *c4 = new_c_tail(C_TAIL_GOTO, new_c_goto("label"));
   c_print_tail(c4);
-  printf(" -> %d\n", c_t_interp(c4, NULL, NULL));
+  printf("\n");
 
   C_Tail *c5 =
     new_c_tail(C_TAIL_GOTO_IF, new_c_goto_if(c2, "true_lbl", "false_lbl"));
   c_print_tail(c5);
-  printf(" -> %d\n", c_t_interp(c5, NULL, NULL));
+  printf("\n");
 }
 
 void test_x1() {
@@ -2935,25 +2935,25 @@ void test_x1() {
 
   X_Instr *x1 = new_x_instr(CMPQ, new_x_cmpq(x42, x42));
   print_x_instr(x1);
-  printf(" -> %d\n", x_instr_interp(x1, NULL));
+  printf("\n");
 
   X_Instr *x2 = new_x_instr(XORQ, new_x_xorq(x42, x42));
   print_x_instr(x2);
-  printf(" -> %d\n", x_instr_interp(x2, NULL));
+  printf("\n");
 
   X_Instr *x3 = new_x_instr(SETCC, new_x_setcc(E, x42));
   print_x_instr(x3);
-  printf(" -> %d\n", x_instr_interp(x3, NULL));
+  printf("\n");
 
   X_Instr *x4 = new_x_instr(MOVZBQ, new_x_movzbq(x42, rax));
   print_x_instr(x4);
-  printf(" -> %d\n", x_instr_interp(x4, NULL));
+  printf("\n");
 
   X_Instr *x5 = new_x_instr(JMPIF, new_x_jmpif(GE, "someLabel"));
   print_x_instr(x5);
-  printf(" -> %d\n", x_instr_interp(x5, NULL));
+  printf("\n");
 
   X_Instr *x6 = new_x_instr(JMPIF, new_x_jmpif(L, "someLabel"));
   print_x_instr(x6);
-  printf(" -> %d\n", x_instr_interp(x6, NULL));
+  printf("\n");
 }
