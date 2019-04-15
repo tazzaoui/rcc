@@ -466,6 +466,8 @@ CMP cmp_x_args(void *a, void *b) {
       case X_ARG_VAR:
         return strcmp(((X_Arg_Var *) xa->arg)->name,
                       ((X_Arg_Var *) xb->arg)->name) == 0 ? EQUAL : UNEQUAL;
+      default:
+        break;
     };
   }
   return UNEQUAL;

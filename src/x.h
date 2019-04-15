@@ -7,12 +7,22 @@
 #define X_PRINT_ARG_ALLOW_VARS 1
 
 extern const char *registers[NUM_REGS];
+
 typedef enum X_ARG_TYPE {
   X_ARG_NUM,
   X_ARG_REG,
   X_ARG_MEM,
-  X_ARG_VAR
+  X_ARG_VAR,
+  X_ARG_BYTE_REG
 } X_ARG_TYPE;
+
+typedef enum X_CC_TYPE {
+  X_CC_E,
+  X_CC_L,
+  X_CC_LE,
+  X_CC_G,
+  X_CC_GE
+} X_CC_TYPE;
 
 typedef enum X_INSTR_TYPE {
   ADDQ,
@@ -23,7 +33,12 @@ typedef enum X_INSTR_TYPE {
   CALLQ,
   JMP,
   PUSHQ,
-  POPQ
+  POPQ,
+  XORQ,
+  CMPQ,
+  SETCC,
+  MOVZBQ,
+  JMPIF
 } X_INSTR_TYPE;
 
 typedef enum REGISTER {
@@ -108,6 +123,28 @@ typedef struct X_Popq {
   X_Arg *arg;
 } X_Popq;
 
+typedef struct X_Xorq {
+  X_Arg *left, *right;
+} X_Xorq;
+
+typedef struct X_Cmpq {
+  X_Arg *left, *right;
+} X_Cmpq;
+
+typedef struct X_Setcc {
+  X_CC_TYPE cc;
+  X_Arg *arg;
+} X_Setcc;
+
+typedef struct X_Movzbq {
+  X_Arg *left, *right;
+} X_Movzbq;
+
+typedef struct X_Jmpif {
+  X_CC_TYPE cc;
+  X_Arg *arg;
+} X_Jmpif;
+
 typedef struct X_Arg_Num {
   int num;
 } X_Arg_Num;
@@ -124,6 +161,10 @@ typedef struct X_Arg_Mem {
 typedef struct X_Arg_Var {
   const char *name;
 } X_Arg_Var;
+
+typedef struct X_Arg_Byte_Reg {
+  REGISTER reg;
+} X_Arg_Byte_Reg;
 
 /* Return a new program */
 X_Program *new_x_prog(void *, list_t);
@@ -167,6 +208,21 @@ X_Pushq *new_x_pushq(X_Arg *);
 /* Return a new popq instruction */
 X_Popq *new_x_popq(X_Arg *);
 
+/*  Return a new xorq instruction */
+X_Xorq *new_x_xorq(X_Arg *, X_Arg *);
+
+/*  Return a new cmpq instruction */
+X_Cmpq *new_x_cmpq(X_Arg *, X_Arg *);
+
+/*  Return a new setcc instruction */
+X_Setcc *new_x_setcc(X_CC_TYPE, X_Arg *);
+
+/*  Return a new movzbq instruction */
+X_Movzbq *new_x_movzbq(X_Arg *, X_Arg *);
+
+/*  Return a new jmpif instruction */
+X_Jmpif *new_x_jmpif(X_CC_TYPE, X_Arg *);
+
 /* Return a new num arg */
 X_Arg_Num *new_x_arg_num(int);
 
@@ -178,6 +234,9 @@ X_Arg_Mem *new_x_arg_mem(REGISTER, int);
 
 /* Return a new variable arg */
 X_Arg_Var *new_x_arg_var(const char *);
+
+/* Return a new byte register arg */
+X_Arg_Byte_Reg *new_x_arg_byte_reg(REGISTER);
 
 /* Emit an X Program */
 void x_emit(X_Program *, const char *);

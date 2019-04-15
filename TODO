@@ -78,7 +78,7 @@
 * Extend your pretty-printer from C0 to C1 programs.
 * Write a half-dozen C1 test programs.
 * Extend your interpreter from C0 to C1 programs.
-Extend your data types from X0 to X1.
+* Extend your data types from X0 to X1.
 Extend your emitter from X0 to X1 programs.
 Write a half-dozen X1 test programs.
 Extend your interpreter from X0 to X1 programs.

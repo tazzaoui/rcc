@@ -107,17 +107,57 @@ X_Popq *new_x_popq(X_Arg * arg) {
   return p;
 }
 
+X_Xorq *new_x_xorq(X_Arg * left, X_Arg * right) {
+  X_Xorq *q = malloc_or_die(sizeof(X_Xorq));
+  q->left = left;
+  q->right = right;
+  return q;
+}
+
+X_Cmpq *new_x_cmpq(X_Arg * left, X_Arg * right) {
+  X_Cmpq *c = malloc_or_die(sizeof(X_Cmpq));
+  c->left = left;
+  c->right = right;
+  return c;
+}
+
+X_Setcc *new_x_setcc(X_CC_TYPE cc, X_Arg * arg) {
+  X_Setcc *c = malloc_or_die(sizeof(X_Setcc));
+  c->cc = cc;
+  c->arg = arg;
+  return c;
+}
+
+X_Movzbq *new_x_movzbq(X_Arg * left, X_Arg * right) {
+  X_Movzbq *m = malloc_or_die(sizeof(X_Movzbq));
+  m->left = left;
+  m->right = right;
+  return m;
+}
+
+X_Jmpif *new_x_jmpif(X_CC_TYPE cc, X_Arg * arg) {
+  X_Jmpif *j = malloc_or_die(sizeof(X_Jmpif));
+  j->cc = cc;
+  j->arg = arg;
+  return j;
+}
+
 X_Arg_Num *new_x_arg_num(int n) {
   X_Arg_Num *an = malloc_or_die(sizeof(X_Arg_Num));
   an->num = n;
   return an;
 }
 
-
 X_Arg_Reg *new_x_arg_reg(REGISTER reg) {
   X_Arg_Reg *ar = malloc_or_die(sizeof(X_Arg_Reg));
   ar->reg = reg;
   return ar;
+}
+
+X_Arg_Byte_Reg *new_x_arg_byte_reg(REGISTER reg) {
+  X_Arg_Byte_Reg *br = malloc_or_die(sizeof(X_Arg_Byte_Reg));
+  br->reg = reg;
+  return br;
 }
 
 X_Arg_Mem *new_x_arg_mem(REGISTER reg, int offset) {
