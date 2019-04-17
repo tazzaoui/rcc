@@ -1,15 +1,19 @@
 CC=gcc
 CFLAGS=-Wall -Werror -std=gnu99 -pedantic -g
 LFLAGS=-lm
+OBJ=list.o utils.o pairs.o r.o x.o c.o rco.o rcc.o main.o 
 
-rcc: list.o utils.o pairs.o r.o x.o c.o rcc.o main.o 
-	$(CC) main.o r.o x.o c.o rcc.o pairs.o utils.o list.o $(LFLAGS) -o rcc
+rcc: $(OBJ)
+	$(CC) $(OBJ) $(LFLAGS) -o rcc
 
 main.o: main.c
 	$(CC) -c $(CFLAGS) main.c -o main.o
 
 rcc.o: src/rcc.c src/rcc.h
 	$(CC) -c $(CFLAGS) src/rcc.c -o rcc.o
+
+rco.o: src/rco.c src/rco.h
+	$(CC) -c $(CFLAGS) src/rco.c -o rco.o
 
 r.o: src/r.c src/r.h
 	$(CC) -c $(CFLAGS) src/r.c -o r.o

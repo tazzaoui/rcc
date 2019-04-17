@@ -546,18 +546,36 @@ int get_int(R_Expr * expr) {
 }
 
 R_Expr *get_left(R_Expr * expr) {
-  if (expr && expr->type == R_EXPR_ADD)
-    return ((R_Add *) expr->expr)->left;
-  if (expr && expr->type == R_EXPR_CMP)
-    return ((R_Cmp *) expr->expr)->left;
+  if (expr)
+    switch (expr->type) {
+      case R_EXPR_ADD:
+        return ((R_Add *) expr->expr)->left;
+      case R_EXPR_OR:
+        return ((R_Or *) expr->expr)->left;
+      case R_EXPR_AND:
+        return ((R_And *) expr->expr)->left;
+      case R_EXPR_CMP:
+        return ((R_Cmp *) expr->expr)->left;
+      default:
+        break;
+    };
   return expr;
 }
 
 R_Expr *get_right(R_Expr * expr) {
-  if (expr && expr->type == R_EXPR_ADD)
-    return ((R_Add *) expr->expr)->right;
-  if (expr && expr->type == R_EXPR_CMP)
-    return ((R_Cmp *) expr->expr)->left;
+  if (expr)
+    switch (expr->type) {
+      case R_EXPR_ADD:
+        return ((R_Add *) expr->expr)->right;
+      case R_EXPR_OR:
+        return ((R_Or *) expr->expr)->right;
+      case R_EXPR_AND:
+        return ((R_And *) expr->expr)->right;
+      case R_EXPR_CMP:
+        return ((R_Cmp *) expr->expr)->right;
+      default:
+        break;
+    };
   return expr;
 }
 

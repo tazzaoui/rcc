@@ -7,6 +7,7 @@
 #include "r.h"
 #include "utils.h"
 #include "x.h"
+#include "rco.h"
 
 #define NUM_CALLER_SAVED_REGS 9
 #define NUM_CALLEE_SAVED_REGS 6
