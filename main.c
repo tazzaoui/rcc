@@ -68,5 +68,14 @@ int main(int argc, char *argv[]) {
   R_Expr *h = new_let(i, g, c);
   r_print_expr(h);
   r_print_type(r_type_check(h, NULL));
+
+
+  //(if true 550265294 470491080)
+  R_Expr *test_expr = new_if(new_true(),
+                             new_num(550265294), new_num(470491080));
+  r_print_expr(test_expr);
+  R_Expr *res_ed = rco_e(test_expr, list_create(), 1);
+  r_print_expr(res_ed);
+
   return 0;
 }

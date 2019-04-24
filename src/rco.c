@@ -1,4 +1,5 @@
 #include <assert.h>
+#include "pairs.h"
 #include "rco.h"
 #include "r.h"
 
@@ -17,8 +18,8 @@ int is_bin_op(R_Expr * expr) {
 }
 
 R_Expr *rco_e(R_Expr * expr, list_t var2expr, int is_tail) {
-  list_t new_vars = list_create();
   int n = 0;
+  list_t new_vars = list_create();
   R_Expr *res = rco_a(expr, var2expr, is_tail, &new_vars, &n);
   return combine_lets(*new_vars, res);
 }
@@ -49,7 +50,7 @@ R_Expr *rco_a(R_Expr * expr, list_t env, int is_tail,
         return expr;
       case R_EXPR_NEG:
       case R_EXPR_NOT:
-        return rco_a_unary(expr, env, is_tail, new_vars, rco_calls);
+        return rco_a_unary(expr, env, 0, new_vars, rco_calls);
       case R_EXPR_OR:
       case R_EXPR_ADD:
       case R_EXPR_AND:
@@ -156,12 +157,10 @@ R_Expr *rco_a_if(R_Expr * expr, list_t env, int is_tail, list_t * new_vars,
   if (expr && env && new_vars && rco_calls) {
     assert(expr->type == R_EXPR_IF);
     R_Expr *if_res, *if_var, *e_then, *e_else, *cmp;
-
-    cmp = rco_c(expr, env, new_vars, rco_calls);
+    cmp = rco_c(((R_If *) expr->expr)->test_expr, env, new_vars, rco_calls);
     e_then = rco_e(((R_If *) expr->expr)->then_expr, env, is_tail);
     e_else = rco_e(((R_If *) expr->expr)->else_expr, env, is_tail);
     if_res = new_if(cmp, e_then, e_else);
-
     if (is_tail)
       return if_res;
     else {

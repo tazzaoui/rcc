@@ -20,8 +20,9 @@ static inline void print_optim(R_Expr * e) {
 
 int main(int argc, char *argv[]) {
   int count = 0, res, rand_depth;
-  R_Expr *expr, *expr_opt, *uniq, *res_expr, *res_optim;
-  R_TYPE type, res_type, uniq_type, res_uniq_type, optim_type, res_optim_type;
+  R_Expr *expr, *expr_opt, *uniq, *rco, *res_expr, *res_optim;
+  R_TYPE type, res_type, uniq_type, res_uniq_type, rco_type, res_rco_type,
+    optim_type, res_optim_type;
   list_t vars = list_create();
   srand(time(0));
 
@@ -101,7 +102,7 @@ int main(int argc, char *argv[]) {
 
   printf("General R2 Tests...\n\n");
 
-  for (size_t i = 0; i < NUM_PROGS; ++i) {
+  for (size_t i = 0; i < NUM_PROGS - NUM_PROGS; ++i) {
     rand_depth = rand() % 15;
 
     /*  Generate random typed expression */
@@ -138,6 +139,12 @@ int main(int argc, char *argv[]) {
     res_uniq_type = r_type_check(r_interp(uniq, NULL), NULL);
     assert(uniq_type == res_uniq_type);
 
+    /* RCO */
+    rco = rco_e(expr, list_create(), 0);
+    rco_type = r_type_check(rco, NULL);
+    res_rco_type = r_type_check(r_interp(rco, NULL), NULL);
+    assert(rco_type == res_rco_type);
+
     /* Optimize the expression */
     expr_opt = r2_optimize(expr, NULL);
     optim_type = r_type_check(expr_opt, NULL);
@@ -147,6 +154,7 @@ int main(int argc, char *argv[]) {
     /*  Cross-pass type checks */
     assert(type == uniq_type);
     assert(type == optim_type);
+    assert(type == rco_type);
   }
 
   return 0;
