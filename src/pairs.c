@@ -226,6 +226,13 @@ env_pair_t *new_env_pair(R_Expr * var, R_Expr * val) {
   return ep;
 }
 
+void_pair_t *new_void_pair(void *p1, void *p2) {
+  void_pair_t *p = malloc_or_die(sizeof(void_pair_t));
+  p->p1 = p1;
+  p->p2 = p2;
+  return p;
+}
+
 CMP ep_cmp(void *a, void *b) {
   if (a != NULL && b != NULL) {
     env_pair_t *ae = (env_pair_t *) a;

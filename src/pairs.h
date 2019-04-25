@@ -9,6 +9,10 @@ typedef struct env_pair_t {
   R_Expr *var, *val;
 } env_pair_t;
 
+typedef struct void_pair_t {
+  void *p1, *p2;
+} void_pair_t;
+
 typedef struct c_var_num_pair_t {
   C_Var *var;
   int num;
@@ -183,6 +187,9 @@ void ep_print(void *);
 
 /* Return a new environment pair */
 env_pair_t *new_env_pair(R_Expr *, R_Expr *);
+
+/* Return a new void pair */
+void_pair_t *new_void_pair(void *, void *);
 
 /* Compare two Var -> int pairs */
 CMP ep_var_cmp(void *, void *);
