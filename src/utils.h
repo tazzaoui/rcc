@@ -34,6 +34,9 @@ typedef struct Info {
 /* Return a new Info */
 Info *new_info(list_t, list_t, list_t);
 
+/*  Return a time stamp w/ millisecond precision */
+static char *get_time_stamp(void);
+
 static inline void *malloc_or_die(size_t size) {
   void *mem = malloc(size);
   if (mem == NULL) {
