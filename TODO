@@ -83,7 +83,7 @@
 * Write a half-dozen X1 test programs.
 * Extend your interpreter from X0 to X1 programs.
 * Extend the resolve-complex pass from R1 to R2 programs, with a few test cases to check its output.
-Extend the explicate-control pass from R1 to R2 programs, with a half-dozen tests that predict its output.
+* Extend the explicate-control pass from R1 to R2 programs, with a half-dozen tests that predict its output.
 Extend the uncover-locals pass for C1 programs.
 Extend the select-instr pass for C1 programs, with a few test cases to check its output.
 Write a half-dozen tests for the uncover-live pass.
