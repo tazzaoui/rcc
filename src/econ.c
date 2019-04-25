@@ -30,6 +30,28 @@ C_Tail *new_kont_tail(C_Var * cv, label_t suffixlab) {
   return new_c_tail(C_TAIL_SEQ, cseq);
 }
 
+C_Tail *econ_e(R_Expr * expr, kont_func_t k, list_t l2t, C_Tail * ct) {
+  R_Let *r_let;
+  if (expr)
+    switch (expr->type) {
+      case R_EXPR_NUM:
+      case R_EXPR_VAR:
+      case R_EXPR_TRUE:
+      case R_EXPR_FALSE:
+        return econ_e_simple(expr, k, l2t, ct);
+      case R_EXPR_IF:
+        return econ_e_if(expr, k, l2t, ct);
+      case R_EXPR_LET:
+        r_let = expr->expr;
+        if (r_let->expr->type == R_EXPR_IF)
+          return econ_e_non_tail_let(expr, k, l2t, ct);
+        return econ_e_let(expr, k, l2t, ct);
+      default:
+        break;
+    };
+  return NULL;
+}
+
 C_Tail *econ_e_simple(R_Expr * expr, kont_func_t k, list_t l2t, C_Tail * ct) {
   l2t = list_create();
   C_Tail *t = econ_expr(expr);

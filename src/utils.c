@@ -12,7 +12,7 @@ Info *new_info(list_t vars, list_t live, list_t graph) {
   return info;
 }
 
-static char *get_timestamp() {
+char *get_time_stamp() {
   struct timeb start;
   char *buf = malloc_or_die(512 * sizeof(char));
   char append[100];
