@@ -147,5 +147,9 @@ int main(int argc, char *argv[]) {
 
   printf("===================================================\n");
 
+  printf("testing uncover-live...\n\n");
+
+  test_uncover_live();
+
   return 0;
 }
