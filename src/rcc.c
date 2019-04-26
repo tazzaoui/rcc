@@ -993,27 +993,46 @@ X_Arg *assign_arg(X_Arg * xa, list_t map) {
 }
 
 list_t select_instr_tail(C_Tail * ct) {
-  list_t instrs_smt, instrs_tail;
+  list_t instrs_smt = list_create(), instrs_tail;
   X_Arg *rax;
+  X_Jmp *xj;
+  C_Cmp *c_cmp;
+  C_Goto_If *cg;
+  X_Cmpq *x_cmp;
   if (ct)
     switch (ct->type) {
       case C_TAIL_RET:
-        instrs_smt = list_create();
         rax = new_x_arg(X_ARG_REG, new_x_arg_reg(RAX));
         list_insert(instrs_smt,
                     new_x_instr(MOVQ,
                                 new_x_movq(select_instr_arg
                                            (((C_Ret *) ct->tail)->arg), rax)));
         list_insert(instrs_smt, new_x_instr(JMP, new_x_jmp("end")));
-        return instrs_smt;
+        break;
       case C_TAIL_SEQ:
         instrs_smt = select_instr_smt(((C_Seq *) ct->tail)->smt);
         instrs_tail = select_instr_tail(((C_Seq *) ct->tail)->tail);
         return list_concat(instrs_smt, instrs_tail);
+      case C_TAIL_GOTO:
+        xj = new_x_jmp(((C_Goto *) ct->tail)->lbl);
+        list_insert(instrs_smt, new_x_instr(JMP, xj));
+        break;
+      case C_TAIL_GOTO_IF:
+        cg = ct->tail;
+        c_cmp = cg->cmp->expr;
+        x_cmp =
+          new_x_cmpq(select_instr_arg(c_cmp->left),
+                     select_instr_arg(c_cmp->right));
+        list_insert(instrs_smt, new_x_instr(CMPQ, x_cmp));
+        list_insert(instrs_smt,
+                    new_x_instr(JMPIF,
+                                new_x_jmpif(c_cmp->cmp_type, cg->true_lbl)));
+        list_insert(instrs_smt, new_x_instr(JMP, new_x_jmp(cg->false_lbl)));
+        break;
       default:
         break;
     }
-  return list_create();
+  return instrs_smt;
 }
 
 list_t select_instr_smt(C_Smt * cs) {
@@ -1026,7 +1045,9 @@ list_t select_instr_smt(C_Smt * cs) {
 }
 
 list_t select_instr_expr(C_Expr * ce, X_Arg * dst) {
-  X_Arg *rax;
+  X_Arg *rax = new_x_arg(X_ARG_REG, new_x_arg_reg(RAX));
+  X_Arg *al = new_x_arg(X_ARG_BYTE_REG, new_x_arg_byte_reg(RAX));
+  X_Arg *res, *one;
   list_t instrs = list_create();
   if (ce)
     switch (ce->type) {
@@ -1036,7 +1057,7 @@ list_t select_instr_expr(C_Expr * ce, X_Arg * dst) {
                                 new_x_movq(select_instr_arg(ce->expr), dst)));
         break;
       case C_READ:
-        rax = new_x_arg(X_ARG_REG, new_x_arg_reg(RAX));
+
         list_insert(instrs, new_x_instr(CALLQ, new_x_callq(READ_INT)));
         list_insert(instrs, new_x_instr(MOVQ, new_x_movq(rax, dst)));
         break;
@@ -1058,6 +1079,22 @@ list_t select_instr_expr(C_Expr * ce, X_Arg * dst) {
                                 new_x_addq(select_instr_arg
                                            (((C_Add *) ce->expr)->left), dst)));
         break;
+      case C_NOT:
+        one = new_x_arg(X_ARG_NUM, new_x_arg_num(1));
+        res = select_instr_arg(((C_Not *) ce->expr)->arg);
+        list_insert(instrs, new_x_instr(MOVQ, new_x_movq(res, dst)));
+        list_insert(instrs, new_x_instr(XORQ, new_x_xorq(one, dst)));
+        break;
+      case C_CMP:
+        one = select_instr_arg(((C_Cmp *) ce->expr)->left);
+        res = select_instr_arg(((C_Cmp *) ce->expr)->right);
+        list_insert(instrs, new_x_instr(CMPQ, new_x_cmpq(res, one)));
+        list_insert(instrs,
+                    new_x_instr(SETCC,
+                                new_x_setcc(((C_Cmp *) ce->expr)->cmp_type,
+                                            al)));
+        list_insert(instrs, new_x_instr(MOVZBQ, new_x_movzbq(al, dst)));
+        break;
       default:
         break;
     };
@@ -1071,6 +1108,10 @@ X_Arg *select_instr_arg(C_Arg * ca) {
         return new_x_arg(X_ARG_NUM, new_x_arg_num(((C_Num *) ca->arg)->num));
       case C_VAR:
         return new_x_arg(X_ARG_VAR, new_x_arg_var(((C_Var *) ca->arg)->name));
+      case C_TRUE:
+        return new_x_arg(X_ARG_NUM, new_x_arg_num(1));
+      case C_FALSE:
+        return new_x_arg(X_ARG_NUM, new_x_arg_num(0));
       default:
         break;
     };

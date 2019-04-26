@@ -19,7 +19,7 @@ typedef enum X_ARG_TYPE {
   X_ARG_BYTE_REG
 } X_ARG_TYPE;
 
-typedef enum X_CC_TYPE { E, L, LE, G, GE } X_CC_TYPE;
+typedef enum X_CC_TYPE { E, L, LE, GE, G } X_CC_TYPE;
 
 typedef enum X_INSTR_TYPE {
   ADDQ,
