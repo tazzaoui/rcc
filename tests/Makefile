@@ -2,7 +2,7 @@ CC=gcc
 CFLAGS=-Wall -Werror -std=gnu99 -pedantic -g
 LFLAGS=-lm
 EXE=test_passes test_r test_indiv
-OBJ=../list.o ../utils.o ../pairs.o ../r.o ../x.o ../c.o ../rco.o ../econ.o ../rcc.o tests.o
+OBJ=../list.o ../utils.o ../pairs.o ../r.o ../x.o ../c.o ../rco.o ../econ.o ../live.o ../rcc.o tests.o
 
 all: rcc $(EXE) 
 

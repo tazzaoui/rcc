@@ -2,6 +2,7 @@
 #define X_H
 
 #include "list.h"
+#include "utils.h"
 
 #define NUM_CC 5
 #define NUM_REGS 16
