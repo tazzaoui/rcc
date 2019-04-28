@@ -29,6 +29,7 @@ typedef struct Info {
   list_t m_graph;               // Adj. List rep. of the move graph
   list_t colors;                // Graph Coloring Solution
   list_t reg_assign;            // Register Assignments
+  int final_type;
 } Info;
 
 /* Return a new Info */

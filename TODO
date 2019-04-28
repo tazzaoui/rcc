@@ -91,7 +91,7 @@
 * Extend your build-interference pass for X1 programs, with a few test cases to check its output.
 * Extend the patch-instructions pass for X1 programs, with a few test cases to check its output.
 * Update your runtime to support printing out booleans, in addition to integers.
-Update your main-generation pass for boolean-outputting programs.
+* Update your main-generation pass for boolean-outputting programs.
 Extend your compiler to support conditional moves.
 Extend your data types from R2 to R3.
 Extend your pretty printer from R2 to R3.

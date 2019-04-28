@@ -16,6 +16,6 @@ int print_int(int x) {
 }
 
 int print_bool(int x) {
-    printf("%s\n", x ? "<T>" : "<F>");
-    return x;
+  printf("%s\n", x ? "<T>" : "<F>");
+  return x;
 }

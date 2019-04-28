@@ -21,6 +21,7 @@ X_Program *compile(R_Expr * expr) {
   C_Tail *c_tail;
   C_Program *cp, *cp_uncovered;
   X_Program *xp;
+  R_TYPE rt = r_type_check(expr, NULL);
   list_t labels = list_create(), new_vars = list_create();
   uniq = unique(expr);
   simple = rco(uniq, &new_vars);
@@ -31,6 +32,7 @@ X_Program *compile(R_Expr * expr) {
   xp = select_instr(cp_uncovered);
   xp = reg_alloc(xp);
   xp = patch_instrs(xp);
+  xp->info->final_type = rt;
   xp = main_pass(xp);
   return xp;
 }
@@ -855,10 +857,12 @@ X_Program *main_pass(X_Program * xp) {
   X_Arg *rax = new_x_arg(X_ARG_REG, new_x_arg_reg(RAX));
   X_Arg *rdi = new_x_arg(X_ARG_REG, new_x_arg_reg(RDI));
 
+  char *f = xp->info
+    && xp->info->final_type == R_TYPE_BOOL ? "print_bool" : "print_int";
   list_t main_instrs = list_create();
   list_insert(main_instrs, new_x_instr(CALLQ, new_x_callq("begin")));
   list_insert(main_instrs, new_x_instr(MOVQ, new_x_movq(rax, rdi)));
-  list_insert(main_instrs, new_x_instr(CALLQ, new_x_callq("print_int")));
+  list_insert(main_instrs, new_x_instr(CALLQ, new_x_callq(f)));
   list_insert(main_instrs, new_x_instr(RETQ, new_x_retq()));
 
   list_insert(xp->labels,
@@ -905,7 +909,8 @@ void patch_instr(X_Instr * xp, list_t instrs) {
         if (left->type == X_ARG_MEM && right->type == X_ARG_MEM) {
           list_insert(instrs, new_x_instr(MOVQ, new_x_movq(left, tmp)));
           list_insert(instrs, new_x_instr(XORQ, new_x_xorq(tmp, right)));
-        } else list_insert(instrs, xp);
+        } else
+          list_insert(instrs, xp);
       case MOVZBQ:
         left = ((X_Movzbq *) xp->instr)->left;
         right = ((X_Movzbq *) xp->instr)->right;
