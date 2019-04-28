@@ -14,3 +14,8 @@ int print_int(int x) {
   printf("%d\n", x);
   return 0;
 }
+
+int print_bool(int x) {
+    printf("%s\n", x ? "<T>" : "<F>");
+    return x;
+}
