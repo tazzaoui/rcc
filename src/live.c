@@ -55,8 +55,8 @@ list_t live_is(list_t all, list_t mem, list_t instrs) {
   if (list_size(instrs) == 0)
     return list_create();
 
-  list_t res, la, wv, rv, la0 = list_create();
-  list_t f = list_create(), r = list_create();
+  list_t res, la, wv = list_create(), rv = list_create(),
+    la0 = list_create(), f = list_create(), r = list_create();
   label_t lbl;
   Node *first = *instrs;
   Node *rest = first->next;

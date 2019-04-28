@@ -157,4 +157,9 @@ static inline R_Expr *unique(R_Expr * e) {
   return uniquify(e, list_create(), &n);
 }
 
+/*  Constant X_Arg Check */
+static inline int is_cons(X_ARG_TYPE t) {
+  return (t == X_ARG_MEM);
+}
+
 #endif                          /* RCC_H */

@@ -888,6 +888,39 @@ void patch_instr(X_Instr * xp, list_t instrs) {
         } else
           list_insert(instrs, xp);
         break;
+      case CMPQ:
+        left = ((X_Cmpq *) xp->instr)->left;
+        right = ((X_Cmpq *) xp->instr)->right;
+        if (left->type == X_ARG_MEM && right->type == X_ARG_MEM) {
+          list_insert(instrs, new_x_instr(MOVQ, new_x_movq(left, tmp)));
+          list_insert(instrs, new_x_instr(CMPQ, new_x_movq(tmp, right)));
+        } else if (is_cons(right->type)) {
+          list_insert(instrs, new_x_instr(MOVQ, new_x_movq(right, tmp)));
+          list_insert(instrs, new_x_instr(CMPQ, new_x_cmpq(left, tmp)));
+        } else
+          list_insert(instrs, xp);
+      case XORQ:
+        left = ((X_Xorq *) xp->instr)->left;
+        right = ((X_Xorq *) xp->instr)->right;
+        if (left->type == X_ARG_MEM && right->type == X_ARG_MEM) {
+          list_insert(instrs, new_x_instr(MOVQ, new_x_movq(left, tmp)));
+          list_insert(instrs, new_x_instr(XORQ, new_x_xorq(tmp, right)));
+        } else if (is_cons(right->type)) {
+          list_insert(instrs, new_x_instr(MOVQ, new_x_movq(right, tmp)));
+          list_insert(instrs, new_x_instr(XORQ, new_x_xorq(left, tmp)));
+        } else
+          list_insert(instrs, xp);
+      case MOVZBQ:
+        left = ((X_Movzbq *) xp->instr)->left;
+        right = ((X_Movzbq *) xp->instr)->right;
+        if (left->type == X_ARG_MEM && right->type == X_ARG_MEM) {
+          list_insert(instrs, new_x_instr(MOVQ, new_x_movq(left, tmp)));
+          list_insert(instrs, new_x_instr(MOVZBQ, new_x_movzbq(tmp, right)));
+        } else if (is_cons(right->type)) {
+          list_insert(instrs, new_x_instr(MOVQ, new_x_movq(right, tmp)));
+          list_insert(instrs, new_x_instr(MOVZBQ, new_x_movzbq(left, tmp)));
+        } else
+          list_insert(instrs, xp);
       default:
         list_insert(instrs, xp);
     };
